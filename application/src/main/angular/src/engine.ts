@@ -1,6 +1,5 @@
-//import "reflect-metadata";
-//import "zone.js/dist/zone-node";
-import "./polyfills";
+import "reflect-metadata";
+import "zone.js/dist/zone-node";
 import {renderModuleFactory} from "@angular/platform-server";
 import {AppServerModuleNgFactory} from "../dist/ngfactory/src/app/app.server.module.ngfactory";
 

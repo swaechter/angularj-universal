@@ -21,6 +21,11 @@ public class RenderController {
         return renderservice.renderPage("/");
     }
 
+    @GetMapping("/home")
+    public String showHome() {
+        return renderservice.renderPage("/home");
+    }
+
     @GetMapping("/about")
     public String showAbout() {
         return renderservice.renderPage("/about");

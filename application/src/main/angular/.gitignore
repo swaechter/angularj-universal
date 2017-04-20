@@ -1,0 +1,8 @@
+# Build system
+etc/
+node/
+node_modules/
+
+# Build
+dist/
+output/

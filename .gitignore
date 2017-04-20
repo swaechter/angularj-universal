@@ -1,0 +1,16 @@
+# Build system
+target/
+dist/
+etc/
+node/
+node_modules/
+public/
+
+# IDE from JetBrains
+.idea/
+*.iml
+
+# IDE from Eclipse
+.settings/
+.project
+.classpath

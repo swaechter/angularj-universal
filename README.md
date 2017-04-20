@@ -7,7 +7,7 @@ This project tries to provide a technical prototype on how to use Angular 4 with
 Please be aware that this is a proof of concept and not a production ready example. The prototype is heavily influenced by these projects (A huge thank you to the authors!):
 
 * https://github.com/bennylut/hello-angular2-universal-j2v8 for proving an Angular 2 example that shows how the J2V8 library and NodeJS can be used to render pages
-* https://github.com/evertonrobertoauler/cli-universal-demo for provind a server side example of Angular 2 that makes it possible to enable AOT compilation.
+* https://github.com/evertonrobertoauler/cli-universal-demo for providing a server side example of Angular 2 that makes it possible to enable AOT compilation.
 
 ## Overview
 
@@ -18,7 +18,7 @@ Based on the requirements, the Maven project is divided into two modules:
 
 ## Setup
 
-After one day of invested time, this is the way to get the example working. There are many cateats that have to be fixed or improved for the future:
+After one day of invested time, this is the way to get the example working. There are many caveats that have to be fixed or improved for the future:
 
     # Download the repository
     git clone https://github.com/swaechter/spring-boot-angular-renderer
@@ -40,17 +40,17 @@ The workflow of the prototype is divided into to phases: Bootstraping the setup 
 
 Workflow of the bootstrap process:
 
-1. Spring Boot is firing up and all components are getting intialized
+1. Spring Boot is firing up and all components are getting initialized
 2. The render service is trying to read the index.html and finding the server.js that is used to send server requests
 3. These values are sent to the V8RenderEngine class which provides a wrapper around the J2V8 library
 4. The wrapper is creating a NodeJS instance and executes the server.js (At this the node_module directory has to be present!)
-5. During the script executition, the script registers passes a render engine that uses angular-platform-server to the Java JVM. The class V8RenderEngine receives this method call and saves the render engine. This render engine is later used to parse the file template.
-6. Now the engine is reqdy to receive requests
+5. During the script execution, the script registers passes a render engine that uses angular-platform-server to the Java JVM. The class V8RenderEngine receives this method call and saves the render engine. This render engine is later used to parse the file template.
+6. Now the engine is ready to receive requests
 
 The workflow of a page request is as follow:
 
 1. A user is requesting a page through his browser/request tool
-2. Spring Boot handles the request and passes a request to the V8RenderEgine. This requests includes the URI (For example / or /about) that is used to choose the right Angular component if routing is used
+2. Spring Boot handles the request and passes a request to the V8RenderEngine. This requests includes the URI (For example / or /about) that is used to choose the right Angular component if routing is used
 3. The V8RenderEngine passes an asynchronous request to the saved render engine. The request includes the file template, the URI and a callback that is called as soon as the template is rendered. The implementation of the callback is a second method that is implemented in Java, so we are able to receive the result
 4. In the meantime the caller that send the request is polling for the result (See problems). As soon a result is available, the result is used
 5. The result is sent back to the client where he will see a server side rendered page
@@ -60,7 +60,7 @@ The workflow of a page request is as follow:
 As already mentioned, there are many problems that require improvements or a fix:
 
 * Bundle all dependencies into the Webpack build, so server.js doesn't depend  on it's node_modules directory and a developer doesn't have to set the path SERVER_FILE
-* Add a mechanism to catch the rendered output and assign it to the correct request that triggered the render process. At the moment the caller that triggers the render mechanism is polling and hence real multitrheading support is not possible at all
+* Add a mechanism to catch the rendered output and assign it to the correct request that triggered the render process. At the moment the caller that triggers the render mechanism is polling and hence real multithreading support is not possible at all
 * Choose the right J2V8 engine via Maven
 * Catch user input that is made before the rendered page is delivered (Preboot.js)
 * Add live reload functionality

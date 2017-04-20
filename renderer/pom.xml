@@ -8,6 +8,9 @@
         <version>0.1.0</version>
     </parent>
     <artifactId>renderer</artifactId>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>com.eclipsesource.j2v8</groupId>
@@ -20,7 +23,4 @@
             <version>2.8.0</version>
         </dependency>
     </dependencies>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 </project>

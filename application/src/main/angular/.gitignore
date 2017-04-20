@@ -4,5 +4,6 @@ node/
 node_modules/
 
 # Build
+*.log
 dist/
 output/

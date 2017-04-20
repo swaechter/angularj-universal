@@ -5,6 +5,7 @@ etc/
 node/
 node_modules/
 public/
+resources/
 
 # IDE from JetBrains
 .idea/

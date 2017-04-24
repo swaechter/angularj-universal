@@ -25,7 +25,7 @@ After one day of invested time, this is the way to get the example working. Ther
     git clone https://github.com/swaechter/spring-boot-angular-renderer
 
     # Use the right J2V8 bindings for your platform
-    nano renderer/pom.xml --> Search for com.eclipsesource.j2v8 and change the artifact so it matches your platform (See https://mvnrepository.com/artifact/com.eclipsesource.j2v8)
+    nano v8renderer/pom.xml --> Search for com.eclipsesource.j2v8 and change the artifact so it matches your platform (See https://mvnrepository.com/artifact/com.eclipsesource.j2v8)
 
     # Point Java to your server.js and NodeJS node_modules directory, because not all dependencies are integrated into the Webpack build
     nano application/src/main/java/ch/swaechter/springular/application/RendererService.java --> change the value SERVER_FILE so it points to the Angular directory and add the suffix dist/server.js

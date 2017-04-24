@@ -11,10 +11,11 @@ Please be aware that this is a proof of concept and not a production ready examp
 
 ## Overview
 
-Based on the requirements, the Maven project is divided into two modules:
+Based on the requirements, the Maven project is divided into three modules:
 
 1. Module application that serves the frontend and passes all input/user interaction to the renderer
-2. Module renderer that renders all request with the help of J2V8 and a NodeJS instance.
+2. Module renderer that provides the render engine kit
+3. Module v8renderer that uses the render engine kit and provides a V8 engine for rendering page requests with the help of J2V8 and NodeJS.
 
 ## Setup
 

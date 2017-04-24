@@ -17,17 +17,17 @@ public class RenderController {
     }
 
     @GetMapping("/")
-    public String showIndex() {
+    public String showIndex() throws Exception {
         return renderservice.renderPage("/");
     }
 
     @GetMapping("/home")
-    public String showHome() {
+    public String showHome() throws Exception {
         return renderservice.renderPage("/home");
     }
 
     @GetMapping("/about")
-    public String showAbout() {
+    public String showAbout() throws Exception {
         return renderservice.renderPage("/about");
     }
 }

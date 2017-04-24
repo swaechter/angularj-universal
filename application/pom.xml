@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>ch.swaechter</groupId>
-            <artifactId>renderer</artifactId>
+            <artifactId>v8renderer</artifactId>
             <version>0.1.0</version>
         </dependency>
         <dependency>

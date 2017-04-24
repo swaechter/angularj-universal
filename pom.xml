@@ -17,6 +17,7 @@
     <modules>
         <module>application</module>
         <module>renderer</module>
+        <module>v8renderer</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

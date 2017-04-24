@@ -26,7 +26,7 @@ public class RendererService {
      *
      * @TODO: Don't hardcode this path, but integrate all dependencies into the webpack build.
      */
-    private static final String SERVER_FILE = "/home/swaechter/Owncloud/Workspace_Node/cli-universal-demo/dist/server.js";
+    private static final String SERVER_FILE = "/home/swaechter/Owncloud/Workspace_Java/spring-boot-angular-renderer/application/src/main/angular/dist/server.js";
 
     /**
      * File path to the index page.
@@ -44,7 +44,7 @@ public class RendererService {
      * @throws Exception Exception in case we are unable to read the files
      */
     public RendererService() throws Exception {
-        RenderConfiguration configuration = new RenderConfiguration(new File(SERVER_FILE), readFile(readFile(INDEX_FILE)));
+        RenderConfiguration configuration = new RenderConfiguration(new File(SERVER_FILE), readFile(INDEX_FILE));
         RenderEngine engine = new V8RenderEngine(configuration);
         this.renderer = engine;
         this.renderer.start();

@@ -92,6 +92,7 @@ public class V8RenderEngine extends RenderEngine {
                         parameters.push(request.getUri());
                         parameters.push(rendercallback);
                         renderer.executeVoidFunction("renderPage", parameters);
+                        request.setRendering();
                     } finally {
                         parameters.release();
                     }

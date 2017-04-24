@@ -2,6 +2,8 @@ package ch.swaechter.springular.v8renderer;
 
 import ch.swaechter.springular.renderer.RenderConfiguration;
 import ch.swaechter.springular.renderer.RenderEngine;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,43 +12,41 @@ import java.nio.file.Paths;
 import java.util.concurrent.Future;
 
 /**
- * This class provides a test example for the V8 render engine.
+ * This class provides a test to garantee the functionality of the V8 render engine.
  *
  * @author Simon Wächter
  */
-public class Main {
+public class V8RenderEngineTest {
 
     /**
-     * Start the application.
-     *
-     * @param args Unused application parameters
+     * Test the render engine
      */
-    public static void main(String[] args) {
-        new Main();
-    }
-
-    /**
-     * Create a V8 render engine and render a few page requests.
-     */
-    Main() {
+    @Test
+    public void testRenderEngine(){
         try {
-            File serverfile = new File("/home/swaechter/Owncloud/Workspace_Node/cli-universal-demo/dist/server.js");
-            File indexfile = new File("/home/swaechter/Owncloud/Workspace_Node/cli-universal-demo/output/index.html");
+            File serverfile = new File("/home/swaechter/Owncloud/Workspace_Java/spring-boot-angular-renderer/application/src/main/angular/dist/server.js");
+            File indexfile = new File("/home/swaechter/Owncloud/Workspace_Java/spring-boot-angular-renderer/application/src/main/resources/public/index.html");
+
+            String content = readFile(indexfile);
+
+            Assert.assertNotNull(serverfile);
+            Assert.assertTrue(content.contains("app-root"));
 
             RenderConfiguration configuration = new RenderConfiguration(serverfile, readFile(indexfile));
             RenderEngine engine = new V8RenderEngine(configuration);
             engine.start();
-            System.out.println("Engine started");
 
             Future<String> future1 = engine.renderPage("/");
-            System.out.println("Value of /: " + future1.get());
+            Assert.assertNotNull(future1);
+            Assert.assertTrue(future1.get().contains("Home"));
 
             Future<String> future2 = engine.renderPage("/about");
-            System.out.println("Value of /about: " + future2.get());
+            Assert.assertNotNull(future2);
+            Assert.assertTrue(future2.get().contains("About"));
 
             engine.shutdown();
         } catch (Exception exception) {
-            throw new IllegalStateException("Unable to read the index file", exception);
+            Assert.fail("The test failed due an exception: " + exception.getMessage());
         }
     }
 

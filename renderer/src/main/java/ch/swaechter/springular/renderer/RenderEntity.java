@@ -11,15 +11,6 @@ import java.util.concurrent.CompletableFuture;
 public class RenderEntity {
 
     /**
-     * Different states in which the render request can be.
-     */
-    private enum Status {
-        UNTOUCHED,
-        RENDERING,
-        RENDERED,
-    }
-
-    /**
      * Completable future that will be provided to the caller. As soon the render request is rendered, the future will
      * be resolved an the value is accessible.
      */
@@ -36,9 +27,9 @@ public class RenderEntity {
     private final String uri;
 
     /**
-     * Status of the render requests.
+     * Status if the render request is rendering.
      */
-    private Status status;
+    private boolean rendering;
 
     /**
      * Create a new render requests.
@@ -49,7 +40,6 @@ public class RenderEntity {
         this.future = new CompletableFuture<>();
         this.uuid = UUID.randomUUID();
         this.uri = uri;
-        this.status = Status.UNTOUCHED;
     }
 
     /**
@@ -85,23 +75,23 @@ public class RenderEntity {
      * @return Status of the check
      */
     public boolean isUntouched() {
-        return status == Status.UNTOUCHED;
+        return !isRendering() && !isRendered();
     }
 
     /**
-     * Check if the request is rendered (Added, rendering but not rendered).
+     * Check if the render request is rendering.
      *
      * @return Status of the check
      */
-    public boolean isInRendering() {
-        return status == Status.RENDERING;
+    public boolean isRendering() {
+        return rendering;
     }
 
     /**
-     * Set the request rendering.
+     * Set the render request rendering.
      */
-    public void setInRendering() {
-        status = Status.RENDERED;
+    public void setRendering() {
+        rendering = true;
     }
 
     /**
@@ -110,7 +100,7 @@ public class RenderEntity {
      * @return Status of the check
      */
     public boolean isRendered() {
-        return status == Status.RENDERED;
+        return future.isDone();
     }
 
     /**
@@ -120,6 +110,5 @@ public class RenderEntity {
      */
     public void setRendered(String content) {
         future.complete(content);
-        status = Status.RENDERED;
     }
 }

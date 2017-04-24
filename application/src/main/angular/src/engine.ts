@@ -16,7 +16,7 @@ declare function registerRenderEngine(renderengine: RenderEngine);
  * @author Simon Wächter
  */
 export interface IRenderCallback {
-    (result: string, error: Error): void;
+    (uuid: string, result: string, error: Error): void;
 }
 
 /**
@@ -43,20 +43,21 @@ export class RenderEngine {
     }
 
     /**
-     * Render a page based on the given template an URI. The result will be passed to the callback that has to provided by
-     * the Java JVM (like the registerRenderEngine method).
+     * Render a page based on the given unique ID, the template and URI. The result will be passed to the callback that
+     * has to provided by the Java JVM (like the registerRenderEngine method).
      *
+     * @param uuid Unique ID that identifies the request
      * @param template String of the template, more or less always from the index.html file
      * @param uri Current URI of the client like / or about. The value is required to get the right Angular component routing.
      * @param callback Callback that will be used to pass the result
      */
-    public renderPage(template: string, uri: string, callback: IRenderCallback) {
+    public renderPage(uuid: string, template: string, uri: string, callback: IRenderCallback) {
         try {
             renderModuleFactory(AppServerModuleNgFactory, {document: template, url: uri}).then(html => {
-                callback(html, null);
-            })
+                callback(uuid, html, null);
+            });
         } catch (error) {
-            callback(null, error);
+            callback(uuid, null, error);
         }
     }
 }

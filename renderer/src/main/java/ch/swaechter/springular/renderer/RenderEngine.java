@@ -52,10 +52,10 @@ public abstract class RenderEngine extends Thread {
      * requests will be rendered and the render engine will shutdown afterwards.
      */
     public void shutdown() {
-        running = false;
         while (!queue.isEmpty()) {
             sleep(10);
         }
+        running = false;
     }
 
     /**

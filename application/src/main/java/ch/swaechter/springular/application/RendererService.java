@@ -45,9 +45,8 @@ public class RendererService {
      */
     public RendererService() throws Exception {
         RenderConfiguration configuration = new RenderConfiguration(new File(SERVER_FILE), readFile(INDEX_FILE));
-        RenderEngine engine = new V8RenderEngine(configuration);
-        this.renderer = engine;
-        this.renderer.start();
+        this.renderer = new V8RenderEngine(configuration);
+        this.renderer.startEngine();
     }
 
     /**

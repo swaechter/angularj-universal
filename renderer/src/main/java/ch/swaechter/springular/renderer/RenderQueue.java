@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * The class RenderQueue provides a util collection to simplify the common render engine tasks.
+ * The class RenderQueue provides a util collection to store the render requests and to simplify the common render
+ * engine tasks.
  *
  * @author Simon Wächter
  */
@@ -14,13 +15,13 @@ public class RenderQueue {
     /**
      * List with all touched and rendering requests.
      */
-    private final List<RenderEntity> entities;
+    private final List<RenderRequest> requests;
 
     /**
      * Create a new render queue.
      */
     public RenderQueue() {
-        this.entities = new LinkedList<>();
+        this.requests = new LinkedList<>();
     }
 
     /**
@@ -29,28 +30,28 @@ public class RenderQueue {
      * @return Status of the check
      */
     public boolean isEmpty() {
-        return entities.size() == 0;
+        return requests.size() == 0;
     }
 
     /**
-     * Create a new render entity.
+     * Create a new render request.
      *
      * @param uri URI of the requests
-     * @return New render entity
+     * @return New render request
      */
-    public RenderEntity createRenderEntity(String uri) {
-        RenderEntity entity = new RenderEntity(uri);
-        entities.add(entity);
-        return entity;
+    public RenderRequest createRenderRequest(String uri) {
+        RenderRequest request = new RenderRequest(uri);
+        requests.add(request);
+        return request;
     }
 
     /**
      * Remove a rendered render request.
      *
-     * @param entity Render request to remove
+     * @param request Render request to remove
      */
-    public void removeRenderEntity(RenderEntity entity) {
-        entities.remove(entity);
+    public void removeRenderRequest(RenderRequest request) {
+        requests.remove(request);
     }
 
     /**
@@ -59,8 +60,8 @@ public class RenderQueue {
      * @param uuid Unique UUID of the render request
      * @return Optional render request
      */
-    public Optional<RenderEntity> getRenderEntity(String uuid) {
-        return entities.stream().filter(item -> uuid.equals(item.getUuid())).findFirst();
+    public Optional<RenderRequest> getRenderRequest(String uuid) {
+        return requests.stream().filter(item -> uuid.equals(item.getUuid())).findFirst();
     }
 
     /**
@@ -68,7 +69,7 @@ public class RenderQueue {
      *
      * @return Optional next untouched render request
      */
-    public Optional<RenderEntity> getNextUntouchedRenderEntity() {
-        return entities.stream().filter(item -> item.isUntouched()).findFirst();
+    public Optional<RenderRequest> getNextUntouchedRenderRequest() {
+        return requests.stream().filter(item -> item.isUntouched()).findFirst();
     }
 }

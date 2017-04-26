@@ -4,11 +4,11 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * The class RenderEntity provides all information that are required to represent a render requests.
+ * The class RenderRequest provides all information that are required to represent a render requests.
  *
  * @author Simon Wächter
  */
-public class RenderEntity {
+public class RenderRequest {
 
     /**
      * Completable future that will be provided to the caller. As soon the render request is rendered, the future will
@@ -36,7 +36,7 @@ public class RenderEntity {
      *
      * @param uri URI of the request that is used to represent the routing in Angular
      */
-    public RenderEntity(String uri) {
+    public RenderRequest(String uri) {
         this.future = new CompletableFuture<>();
         this.uuid = UUID.randomUUID();
         this.uri = uri;

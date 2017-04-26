@@ -1,8 +1,8 @@
 package ch.swaechter.springular.v8renderer;
 
+import ch.swaechter.springular.renderer.AbstractRenderEngine;
 import ch.swaechter.springular.renderer.RenderConfiguration;
-import ch.swaechter.springular.renderer.RenderEngine;
-import ch.swaechter.springular.renderer.RenderEntity;
+import ch.swaechter.springular.renderer.RenderRequest;
 import com.eclipsesource.v8.NodeJS;
 import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Array;
@@ -11,9 +11,12 @@ import com.eclipsesource.v8.V8Object;
 import java.util.Optional;
 
 /**
- * The class V8RenderEngine provides a render engine that is based on the V8 engine.
+ * The class V8RenderEngine provides a reference implementation and is based on the AbstractRenderEngine. The render
+ * engine will render incoming render requests and provide the rendered result that can be accessed later on.
+ *
+ * @author Simon Wächter
  */
-public class V8RenderEngine extends RenderEngine {
+public class V8RenderEngine extends AbstractRenderEngine {
 
     /**
      * NodeJS instance that will load the server bundle.
@@ -31,22 +34,21 @@ public class V8RenderEngine extends RenderEngine {
     private V8Object rendercallback;
 
     /**
-     * Create a new V8 render engine. The engine has to be started manually.
+     * Create a new V8 render engine based on the given configuration. The render engine has to be started and stopped
+     * manually.
      *
-     * @param configuration Configuration of the render engine.
+     * @param configuration Configuration that will be used by the render engine.
      */
     public V8RenderEngine(RenderConfiguration configuration) {
         super(configuration);
     }
 
     /**
-     * Start the render engine.
+     * Let the render engine do it's work as long running is enabled.
      */
     @Override
-    public void run() {
+    protected void work() {
         try {
-            running = true;
-
             // Create the NodeJS server and get the V8 engine
             nodejs = NodeJS.createNodeJS();
 
@@ -63,9 +65,9 @@ public class V8RenderEngine extends RenderEngine {
                 String uuid = parameters.getString(0);
                 String content = parameters.getString(1);
 
-                Optional<RenderEntity> renderitem = queue.getRenderEntity(uuid);
+                Optional<RenderRequest> renderitem = getRenderQueue().getRenderRequest(uuid);
                 if (renderitem.isPresent()) {
-                    queue.removeRenderEntity(renderitem.get());
+                    getRenderQueue().removeRenderRequest(renderitem.get());
                     renderitem.get().setRendered(content);
                 }
             }, "renderCallback");
@@ -74,21 +76,21 @@ public class V8RenderEngine extends RenderEngine {
             rendercallback = engine.getObject("renderCallback");
 
             // Load the server file
-            nodejs.require(configuration.getBundleFile()).release();
+            nodejs.require(getConfiguration().getBundleFile()).release();
 
             // Handle incoming requests
-            while (running) {
+            while (isRunning()) {
                 // Handle the next message
                 nodejs.handleMessage();
 
                 // Get the next render request
-                Optional<RenderEntity> requestitem = queue.getNextUntouchedRenderEntity();
+                Optional<RenderRequest> requestitem = getRenderQueue().getNextUntouchedRenderRequest();
                 if (requestitem.isPresent()) {
-                    RenderEntity request = requestitem.get();
+                    RenderRequest request = requestitem.get();
                     V8Array parameters = new V8Array(engine);
                     try {
                         parameters.push(request.getUuid());
-                        parameters.push(configuration.getIndexPageContent());
+                        parameters.push(getConfiguration().getIndexPageContent());
                         parameters.push(request.getUri());
                         parameters.push(rendercallback);
                         renderer.executeVoidFunction("renderPage", parameters);

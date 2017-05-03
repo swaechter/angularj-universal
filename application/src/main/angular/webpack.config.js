@@ -1,29 +1,48 @@
-const path = require('path');
-const nodeExternals = require('webpack-node-externals');
+var path = require('path');
+const ngtools = require('@ngtools/webpack');
 
 module.exports = {
     entry: {
-        server: './src/server.ts'
+        main: './src/engine.ts'
     },
     resolve: {
+        modules: [
+            'node_modules',
+            path.resolve(process.cwd(), 'src')
+        ],
         extensions: ['.ts', '.js']
     },
-    target: 'node',
-    externals: [nodeExternals({
-        whitelist: [
-            /^@angular\/material/
-        ]
-    })],
-    node: {
-        __dirname: true
-    },
     output: {
-        path: path.join(__dirname, 'dist'),
+        path: path.join(process.cwd(), 'dist'),
         filename: '[name].js'
     },
+    target: 'node',
+    plugins: [
+        new ngtools.AotPlugin({
+            tsConfigPath: './tsconfig.json'
+        })
+    ],
     module: {
         rules: [
-            {test: /\.ts$/, loader: 'ts-loader'}
+            {
+                test: /\.ts$/,
+                loader: '@ngtools/webpack'
+            },
+            {
+                test: /\.html/,
+                use: 'raw-loader'
+            }
         ]
+    },
+    devServer: {
+        contentBase: './dist',
+        port: 9000,
+        inline: true,
+        historyApiFallback: true,
+        stats: 'errors-only',
+        watchOptions: {
+            aggregateTimeout: 300,
+            poll: 500
+        }
     }
 };

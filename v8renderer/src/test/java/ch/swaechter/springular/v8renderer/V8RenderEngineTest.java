@@ -24,10 +24,10 @@ public class V8RenderEngineTest {
     @Test
     public void testRenderEngine() {
         try {
-            File serverfile = new File("/home/swaechter/Owncloud/Workspace_Java/spring-boot-angular-renderer/application/src/main/angular/dist/server.js");
-            File indexfile = new File("/home/swaechter/Owncloud/Workspace_Java/spring-boot-angular-renderer/application/src/main/resources/public/index.html");
-            //File serverfile = new File("C:/Users/swaechter/Owncloud/Workspace_Java/spring-boot-angular-renderer/application/src/main/angular/dist/server.js");
-            //File indexfile = new File("C:/Users/swaechter/Owncloud/Workspace_Java/spring-boot-angular-renderer/application/src/main/resources/public/index.html");
+            //File serverfile = new File("/home/swaechter/Owncloud/Workspace_Java/spring-boot-angular-renderer/application/src/main/angular/dist/server.js");
+            //File indexfile = new File("/home/swaechter/Owncloud/Workspace_Java/spring-boot-angular-renderer/application/src/main/resources/public/index.html");
+            File serverfile = new File("C:/Users/swaechter/Owncloud/Workspace_Java/spring-boot-angular-renderer/application/src/main/angular/dist/main.js");
+            File indexfile = new File("C:/Users/swaechter/Owncloud/Workspace_Java/spring-boot-angular-renderer/application/src/main/resources/public/index.html");
 
             String content = readFile(indexfile);
 
@@ -40,11 +40,11 @@ public class V8RenderEngineTest {
 
             Future<String> future1 = engine.renderPage("/");
             Assert.assertNotNull(future1);
-            Assert.assertTrue(future1.get().contains("Home"));
+            Assert.assertTrue(future1.get().contains("Welcome"));
 
-            Future<String> future2 = engine.renderPage("/about");
+            /*Future<String> future2 = engine.renderPage("/about");
             Assert.assertNotNull(future2);
-            Assert.assertTrue(future2.get().contains("About"));
+            Assert.assertTrue(future2.get().contains("About"));*/
 
             engine.stopEngine();
         } catch (Exception exception) {

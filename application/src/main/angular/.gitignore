@@ -1,9 +1,9 @@
 # Build system
-etc/
-node/
 node_modules/
 
-# Build
-*.log
+# Build artifacts
 dist/
-output/
+src/ngfactory/
+
+# IDE from JetBrains
+.idea/

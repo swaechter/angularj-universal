@@ -29,11 +29,6 @@ public class V8RenderEngine extends AbstractRenderEngine {
     private V8Object renderer;
 
     /**
-     * Method that will be called when a page is rendered.
-     */
-    private V8Object rendercallback;
-
-    /**
      * Create a new V8 render engine based on the given configuration. The render engine has to be started and stopped
      * manually.
      *
@@ -60,7 +55,7 @@ public class V8RenderEngine extends AbstractRenderEngine {
                 renderer = parameters.getObject(0);
             }, "registerRenderEngine");
 
-            // Register a method to handle the JavaScript callback after the page has been rendered
+            // Register a method to receive the rendered page content
             engine.registerJavaMethod((V8Object object, V8Array parameters) -> {
                 String uuid = parameters.getString(0);
                 String content = parameters.getString(1);
@@ -70,10 +65,7 @@ public class V8RenderEngine extends AbstractRenderEngine {
                     getRenderQueue().removeRenderRequest(renderitem.get());
                     renderitem.get().setRendered(content);
                 }
-            }, "renderCallback");
-
-            // Get the render callback
-            rendercallback = engine.getObject("renderCallback");
+            }, "receiveRenderedPage");
 
             // Load the server file
             nodejs.require(getConfiguration().getBundleFile()).release();
@@ -92,7 +84,6 @@ public class V8RenderEngine extends AbstractRenderEngine {
                         parameters.push(request.getUuid());
                         parameters.push(getConfiguration().getIndexPageContent());
                         parameters.push(request.getUri());
-                        parameters.push(rendercallback);
                         renderer.executeVoidFunction("renderPage", parameters);
                         request.setRendering();
                     } finally {
@@ -105,9 +96,6 @@ public class V8RenderEngine extends AbstractRenderEngine {
         } finally {
             if (renderer != null)
                 renderer.release();
-
-            if (rendercallback != null)
-                rendercallback.release();
 
             if (nodejs != null)
                 nodejs.release();

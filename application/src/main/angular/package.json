@@ -1,46 +1,37 @@
 {
     "name": "springular",
-    "version": "0.0.0",
-    "license": "MIT",
+    "version": "0.1.0",
+    "description": "Springular is a prototye Angular application to show server side rendering in Java",
+    "license": "ISC",
+    "main": "index.js",
+    "repository": {},
     "scripts": {
-        "start": "ngc && ng build -prod --aot --output-path ../resources/public && webpack"
+        "build": "webpack",
+        "develop": "webpack-dev-server",
+        "start": "npm run build && node dist/main.js"
     },
-    "private": true,
+    "engines": {
+        "node": ">=6.0.0"
+    },
     "dependencies": {
-        "@angular/animations": "^4.0.0",
-        "@angular/common": "^4.0.0",
-        "@angular/compiler": "^4.0.0",
-        "@angular/core": "^4.0.0",
-        "@angular/forms": "^4.0.0",
-        "@angular/http": "^4.0.0",
-        "@angular/platform-browser": "^4.0.0",
-        "@angular/platform-browser-dynamic": "^4.0.0",
-        "@angular/platform-server": "^4.0.0",
-        "@angular/router": "^4.0.0",
-        "core-js": "^2.4.1",
-        "rxjs": "^5.1.0",
-        "zone.js": "^0.8.4"
+        "@angular/animations": "^4.1.0",
+        "@angular/common": "^4.1.0",
+        "@angular/compiler": "^4.1.0",
+        "@angular/compiler-cli": "^4.1.0",
+        "@angular/core": "^4.1.0",
+        "@angular/http": "^4.1.0",
+        "@angular/platform-browser": "^4.1.0",
+        "@angular/platform-server": "^4.1.0",
+        "@angular/router": "^4.1.0",
+        "@ngtools/webpack": "^1.2.9",
+        "@types/node": "^7.0.15",
+        "rxjs": "^5.2.1",
+        "typescript": "^2.1.1",
+        "webpack": "^2.3.1",
+        "zone.js": "^0.8.5"
     },
     "devDependencies": {
-        "@angular/cli": "1.0.0",
-        "@angular/compiler-cli": "^4.0.0",
-        "@types/jasmine": "2.5.38",
-        "@types/node": "~6.0.60",
-        "codelyzer": "~2.0.0",
-        "jasmine-core": "~2.5.2",
-        "jasmine-spec-reporter": "~3.2.0",
-        "karma": "~1.4.1",
-        "karma-chrome-launcher": "~2.0.0",
-        "karma-cli": "~1.0.1",
-        "karma-coverage-istanbul-reporter": "^0.2.0",
-        "karma-jasmine": "~1.1.0",
-        "karma-jasmine-html-reporter": "^0.2.2",
-        "protractor": "~5.1.0",
-        "ts-loader": "^2.0.3",
-        "ts-node": "~2.0.0",
-        "tslint": "~4.5.0",
-        "typescript": "~2.2.0",
-        "webpack": "^2.4.1",
-        "webpack-node-externals": "^1.5.4"
+        "raw-loader": "^0.5.1",
+        "webpack-dev-server": "^2.4.5"
     }
 }

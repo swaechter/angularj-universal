@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import "zone.js/dist/zone-node";
 import {renderModuleFactory} from "@angular/platform-server";
-import {AppServerModuleNgFactory} from "../dist/ngfactory/src/app/app.server.module.ngfactory";
+import {AppServerModuleNgFactory} from "./ngfactory/src/app/app.server.module.ngfactory";
 
 /**
  * Method that is used to register a valid render object. This method has to be provided by the Java JVM.
@@ -11,13 +11,13 @@ import {AppServerModuleNgFactory} from "../dist/ngfactory/src/app/app.server.mod
 declare function registerRenderEngine(renderengine: RenderEngine);
 
 /**
- * This interface provides a callback functionality to exchange data with the Java method.
+ * Method that is used to receive the rendered page content. This method has to be provided by the Java JVM.
  *
- * @author Simon Wächter
+ * @param uuid Unique ID that identifies the request
+ * @param content Rendered HTML page
+ * @param error Error if something went wrong
  */
-export interface IRenderCallback {
-    (uuid: string, result: string, error: Error): void;
-}
+declare function receiveRenderedPage(uuid: string, content: string, error: Error);
 
 /**
  * This class provides a JavaScript based render engine that is capable of rendering an HTML template. To make use of the
@@ -25,9 +25,9 @@ export interface IRenderCallback {
  * class. As a reason of that the NodeJs server script has to call RenderEngine.registerEngine method. This static
  * method class will pass a valid object via registerRenderEngine to the Java JVM.
  *
- * If the Java JVM has a valid object of RenderEngine, the Java JVM can access the renderPage method with the index
- * template, the URI (for example / or /about) and a callback. Because the method is asynchronous, the callback will
- * return the result directly to the Java JVM.
+ * If the Java JVM has a valid object of RenderEngine, the Java JVM can access the renderPage method with the an
+ * unique identifier for the request, the index template and the URI (for example / or /about). As soon the page is
+ * rednered, the method receiveRenderedpage will be called (This method also has to be provided by the Java JVM).
  *
  * @author Simon Wächter
  */
@@ -43,21 +43,23 @@ export class RenderEngine {
     }
 
     /**
-     * Render a page based on the given unique ID, the template and URI. The result will be passed to the callback that
+     * Render a page based on the given unique ID, the template and URI. The result will be passed to the method that
      * has to provided by the Java JVM (like the registerRenderEngine method).
      *
      * @param uuid Unique ID that identifies the request
      * @param template String of the template, more or less always from the index.html file
      * @param uri Current URI of the client like / or about. The value is required to get the right Angular component routing.
-     * @param callback Callback that will be used to pass the result
      */
-    public renderPage(uuid: string, template: string, uri: string, callback: IRenderCallback) {
+    public renderPage(uuid: string, template: string, uri: string) {
         try {
             renderModuleFactory(AppServerModuleNgFactory, {document: template, url: uri}).then(html => {
-                callback(uuid, html, null);
+                receiveRenderedPage(uuid, html, null);
             });
         } catch (error) {
-            callback(uuid, null, error);
+            receiveRenderedPage(uuid, null, error);
         }
     }
 }
+
+// Register the render engine in the Java JVM
+RenderEngine.registerEngine();

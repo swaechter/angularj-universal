@@ -1,9 +1,10 @@
 var path = require('path');
-const ngtools = require('@ngtools/webpack');
+var ngtools = require('@ngtools/webpack');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     entry: {
-        main: './src/engine.ts'
+        server: './src/engine.ts'
     },
     resolve: {
         modules: [
@@ -13,14 +14,20 @@ module.exports = {
         extensions: ['.ts', '.js']
     },
     output: {
-        path: path.join(process.cwd(), 'dist'),
-        filename: '[name].js'
+        path: path.join(process.cwd(), '../resources/public'),
+        filename: '[name].bundle.js'
     },
     target: 'node',
     plugins: [
         new ngtools.AotPlugin({
             tsConfigPath: './tsconfig.json'
-        })
+        }),
+        new CopyWebpackPlugin([
+            {
+                from: 'src/index.html',
+                to: '.'
+            }
+        ])
     ],
     module: {
         rules: [

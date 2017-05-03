@@ -68,7 +68,7 @@ public class V8RenderEngine extends AbstractRenderEngine {
             }, "receiveRenderedPage");
 
             // Load the server file
-            nodejs.require(getConfiguration().getBundleFile()).release();
+            nodejs.require(getConfiguration().getServerBundle()).release();
 
             // Handle incoming requests
             while (isRunning()) {
@@ -82,7 +82,7 @@ public class V8RenderEngine extends AbstractRenderEngine {
                     V8Array parameters = new V8Array(engine);
                     try {
                         parameters.push(request.getUuid());
-                        parameters.push(getConfiguration().getIndexPageContent());
+                        parameters.push(getConfiguration().getIndexContent());
                         parameters.push(request.getUri());
                         renderer.executeVoidFunction("renderPage", parameters);
                         request.setRendering();

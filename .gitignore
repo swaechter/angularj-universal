@@ -4,8 +4,10 @@ dist/
 etc/
 node/
 node_modules/
-public/
-resources/
+
+# Build artifacts
+application/src/main/resources/index.html
+application/src/main/resources/server.bundle.js
 
 # IDE from JetBrains
 .idea/

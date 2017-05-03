@@ -2,13 +2,11 @@ package ch.swaechter.springular.v8renderer;
 
 import ch.swaechter.springular.renderer.RenderConfiguration;
 import ch.swaechter.springular.renderer.RenderEngine;
+import ch.swaechter.springular.renderer.RenderUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.concurrent.Future;
 
 /**
@@ -24,17 +22,15 @@ public class V8RenderEngineTest {
     @Test
     public void testRenderEngine() {
         try {
-            //File serverfile = new File("/home/swaechter/Owncloud/Workspace_Java/spring-boot-angular-renderer/application/src/main/angular/dist/server.js");
-            //File indexfile = new File("/home/swaechter/Owncloud/Workspace_Java/spring-boot-angular-renderer/application/src/main/resources/public/index.html");
-            File serverfile = new File("C:/Users/swaechter/Owncloud/Workspace_Java/spring-boot-angular-renderer/application/src/main/angular/dist/main.js");
-            File indexfile = new File("C:/Users/swaechter/Owncloud/Workspace_Java/spring-boot-angular-renderer/application/src/main/resources/public/index.html");
+            String indexcontent = RenderUtils.readFile(this, "/index.html");
+            Assert.assertTrue(indexcontent.contains("app-root"));
 
-            String content = readFile(indexfile);
+            String serverbundlecontent = RenderUtils.readFile(this, "/server.bundle.js");
+            Assert.assertTrue(serverbundlecontent.contains("webpack"));
+            File serverbundle = RenderUtils.createTemporaryFile(serverbundlecontent);
+            Assert.assertNotNull(serverbundle);
 
-            Assert.assertNotNull(serverfile);
-            Assert.assertTrue(content.contains("app-root"));
-
-            RenderConfiguration configuration = new RenderConfiguration(serverfile, readFile(indexfile));
+            RenderConfiguration configuration = new RenderConfiguration(indexcontent, serverbundle);
             RenderEngine engine = new V8RenderEngine(configuration);
             engine.startEngine();
 
@@ -50,17 +46,5 @@ public class V8RenderEngineTest {
         } catch (Exception exception) {
             Assert.fail("The test failed due an exception: " + exception.getMessage());
         }
-    }
-
-    /**
-     * Read a file and return the file content.
-     *
-     * @param file File to read
-     * @return File content
-     * @throws IOException Exception in case of an IO problem
-     */
-    private String readFile(File file) throws IOException {
-        byte[] encoded = Files.readAllBytes(Paths.get(file.getAbsolutePath()));
-        return new String(encoded);
     }
 }

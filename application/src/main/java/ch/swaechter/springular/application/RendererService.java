@@ -2,15 +2,15 @@ package ch.swaechter.springular.application;
 
 import ch.swaechter.springular.renderer.RenderConfiguration;
 import ch.swaechter.springular.renderer.RenderEngine;
+import ch.swaechter.springular.renderer.RenderUtils;
 import ch.swaechter.springular.v8renderer.V8RenderEngine;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 
 /**
@@ -20,18 +20,6 @@ import java.util.concurrent.Future;
  */
 @Service
 public class RendererService {
-
-    /**
-     * File path to the server bundle.
-     *
-     * @TODO: Don't hardcode this path, but integrate all dependencies into the webpack build.
-     */
-    private static final String SERVER_FILE = "/home/swaechter/Owncloud/Workspace_Java/spring-boot-angular-renderer/application/src/main/angular/dist/server.js";
-
-    /**
-     * File path to the index page.
-     */
-    private static final String INDEX_FILE = "public/index.html";
 
     /**
      * Render engine that will render the page.
@@ -44,7 +32,9 @@ public class RendererService {
      * @throws Exception Exception in case we are unable to read the files
      */
     public RendererService() throws Exception {
-        RenderConfiguration configuration = new RenderConfiguration(new File(SERVER_FILE), readFile(INDEX_FILE));
+        String indexcontent = getResourceAsString("index.html");
+        File serverbundle = RenderUtils.createTemporaryFile(getResourceAsString("server.bundle.js"));
+        RenderConfiguration configuration = new RenderConfiguration(indexcontent, serverbundle);
         this.renderer = new V8RenderEngine(configuration);
         this.renderer.startEngine();
     }
@@ -62,21 +52,15 @@ public class RendererService {
     }
 
     /**
-     * Read a file from the resources and return the file content.
+     * Get the file content from an internal resource
      *
-     * @param resourcefile Path of the resource file
-     * @return File content
-     * @throws IOException Exception in case of an IO problem
+     * @param resourcepath Path to the resource
+     * @return Content of the resource
+     * @throws IOException
      */
-    private String readFile(String resourcefile) throws IOException {
-        Resource resource = new ClassPathResource(resourcefile);
-        InputStream inputstream = resource.getInputStream();
-        ByteArrayOutputStream result = new ByteArrayOutputStream();
-        int length;
-        byte[] buffer = new byte[1024];
-        while ((length = inputstream.read(buffer)) != -1) {
-            result.write(buffer, 0, length);
-        }
-        return result.toString("UTF-8");
+    public String getResourceAsString(String resourcepath) throws IOException {
+        ClassPathResource resource = new ClassPathResource(resourcepath);
+        byte[] data = FileCopyUtils.copyToByteArray(resource.getInputStream());
+        return new String(data, StandardCharsets.UTF_8);
     }
 }

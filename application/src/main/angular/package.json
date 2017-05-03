@@ -3,12 +3,12 @@
     "version": "0.1.0",
     "description": "Springular is a prototye Angular application to show server side rendering in Java",
     "license": "ISC",
-    "main": "index.js",
+    "main": "dist/server.bundle.js",
     "repository": {},
     "scripts": {
         "build": "webpack",
         "develop": "webpack-dev-server",
-        "start": "npm run build && node dist/main.js"
+        "start": "npm run build && node dist/server.bundle.js"
     },
     "engines": {
         "node": ">=6.0.0"
@@ -31,6 +31,7 @@
         "zone.js": "^0.8.5"
     },
     "devDependencies": {
+        "copy-webpack-plugin": "^4.0.1",
         "raw-loader": "^0.5.1",
         "webpack-dev-server": "^2.4.5"
     }

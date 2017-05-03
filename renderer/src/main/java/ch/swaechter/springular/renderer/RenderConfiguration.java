@@ -11,34 +11,24 @@ import java.io.File;
 public class RenderConfiguration {
 
     /**
-     * File of the JavaScript server bundle.
-     */
-    private final File bundlefile;
-
-    /**
      * File content of the index page.
      */
-    private final String indexpagecontent;
+    private final String indexcontent;
 
     /**
-     * Create a new configuration that provides the JavaScript server bundle and the content of the index page as
-     * string.
-     *
-     * @param bundlefile       File path to the JavaScript server bundle
-     * @param indexpagecontent Content of the index page
+     * File of the server bundle.
      */
-    public RenderConfiguration(File bundlefile, String indexpagecontent) {
-        this.bundlefile = bundlefile;
-        this.indexpagecontent = indexpagecontent;
-    }
+    private final File serverbundle;
 
     /**
-     * Get the file to the JavaScript server bundle.
+     * Create a new configuration based on the content of the index page and the server bundle.
      *
-     * @return File to the JavaScript server bundle
+     * @param indexcontent Content of the index page
+     * @param serverbundle File path to the server bundle
      */
-    public File getBundleFile() {
-        return bundlefile;
+    public RenderConfiguration(String indexcontent, File serverbundle) {
+        this.indexcontent = indexcontent;
+        this.serverbundle = serverbundle;
     }
 
     /**
@@ -46,7 +36,16 @@ public class RenderConfiguration {
      *
      * @return Content of the index page
      */
-    public String getIndexPageContent() {
-        return indexpagecontent;
+    public String getIndexContent() {
+        return indexcontent;
+    }
+
+    /**
+     * Get the server bundle.
+     *
+     * @return Server bundle
+     */
+    public File getServerBundle() {
+        return serverbundle;
     }
 }

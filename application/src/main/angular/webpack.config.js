@@ -14,7 +14,7 @@ module.exports = {
         extensions: ['.ts', '.js']
     },
     output: {
-        path: path.join(process.cwd(), '../resources/public'),
+        path: path.join(process.cwd(), '../resources'),
         filename: '[name].bundle.js'
     },
     target: 'node',

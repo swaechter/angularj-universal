@@ -52,11 +52,11 @@ public class RendererService {
     }
 
     /**
-     * Get the file content from an internal resource
+     * Get the file content from an internal resource.
      *
      * @param resourcepath Path to the resource
      * @return Content of the resource
-     * @throws IOException
+     * @throws IOException Exception in case of an IO problem
      */
     public String getResourceAsString(String resourcepath) throws IOException {
         ClassPathResource resource = new ClassPathResource(resourcepath);

@@ -1,7 +1,7 @@
 package ch.swaechter.springular.v8renderer;
 
 import ch.swaechter.springular.renderer.RenderConfiguration;
-import ch.swaechter.springular.renderer.AbstractRenderEngine;
+import ch.swaechter.springular.renderer.RenderEngine;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,7 +35,7 @@ public class V8RenderEngineTest {
             Assert.assertTrue(content.contains("app-root"));
 
             RenderConfiguration configuration = new RenderConfiguration(serverfile, readFile(indexfile));
-            AbstractRenderEngine engine = new V8RenderEngine(configuration);
+            RenderEngine engine = new V8RenderEngine(configuration);
             engine.startEngine();
 
             Future<String> future1 = engine.renderPage("/");

@@ -1,5 +1,6 @@
 var path = require('path');
 var ngtools = require('@ngtools/webpack');
+var UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
@@ -22,6 +23,7 @@ module.exports = {
         new ngtools.AotPlugin({
             tsConfigPath: './tsconfig.json'
         }),
+        new UglifyJSPlugin(),
         new CopyWebpackPlugin([
             {
                 from: 'src/index.html',

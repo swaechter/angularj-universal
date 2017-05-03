@@ -26,7 +26,6 @@ public class V8RenderEngineTest {
             Assert.assertTrue(indexcontent.contains("app-root"));
 
             String serverbundlecontent = RenderUtils.readFile(this, "/server.bundle.js");
-            Assert.assertTrue(serverbundlecontent.contains("webpack"));
             File serverbundle = RenderUtils.createTemporaryFile(serverbundlecontent);
             Assert.assertNotNull(serverbundle);
 
@@ -36,11 +35,15 @@ public class V8RenderEngineTest {
 
             Future<String> future1 = engine.renderPage("/");
             Assert.assertNotNull(future1);
-            Assert.assertTrue(future1.get().contains("Welcome"));
+            Assert.assertTrue(future1.get().contains("Home"));
 
-            /*Future<String> future2 = engine.renderPage("/about");
+            Future<String> future2 = engine.renderPage("/home");
             Assert.assertNotNull(future2);
-            Assert.assertTrue(future2.get().contains("About"));*/
+            Assert.assertTrue(future2.get().contains("Home"));
+
+            Future<String> future3 = engine.renderPage("/about");
+            Assert.assertNotNull(future3);
+            Assert.assertTrue(future3.get().contains("About"));
 
             engine.stopEngine();
         } catch (Exception exception) {

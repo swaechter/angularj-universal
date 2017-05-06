@@ -1,4 +1,4 @@
-package ch.swaechter.springular.application;
+package ch.swaechter.springular.application.renderer;
 
 import ch.swaechter.springular.renderer.RenderConfiguration;
 import ch.swaechter.springular.renderer.RenderEngine;

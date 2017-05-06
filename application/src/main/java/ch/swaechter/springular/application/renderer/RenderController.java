@@ -1,4 +1,4 @@
-package ch.swaechter.springular.application;
+package ch.swaechter.springular.application.renderer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,9 +21,9 @@ public class RenderController {
         return renderservice.renderPage("/");
     }
 
-    @GetMapping("/home")
-    public String showHome() throws Exception {
-        return renderservice.renderPage("/home");
+    @GetMapping("/overview")
+    public String showOverview() throws Exception {
+        return renderservice.renderPage("/overview");
     }
 
     @GetMapping("/about")

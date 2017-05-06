@@ -3,8 +3,9 @@ import {BrowserModule} from "@angular/platform-browser";
 import {RouterModule} from "@angular/router";
 import {AppComponent} from "./app.component";
 import {approutes} from "./app.routes";
-import {HomeComponent} from "./home/home.component";
+import {OverviewComponent} from "./overview/overview.component";
 import {AboutComponent} from "./about/about.component";
+import {KeywordService} from "./shared/keyword/keyword.service";
 
 @NgModule({
     imports: [
@@ -15,8 +16,11 @@ import {AboutComponent} from "./about/about.component";
     ],
     declarations: [
         AppComponent,
-        HomeComponent,
+        OverviewComponent,
         AboutComponent
+    ],
+    providers: [
+        KeywordService
     ],
     bootstrap: [
         AppComponent

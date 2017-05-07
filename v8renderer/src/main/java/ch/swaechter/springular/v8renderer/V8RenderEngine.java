@@ -92,7 +92,10 @@ public class V8RenderEngine extends AbstractRenderEngine {
         } catch (Exception exception) {
             exception.printStackTrace();
         } finally {
-            memorymanager.release();
+            if (memorymanager != null) {
+                memorymanager.release();
+            }
+
             if (nodejs != null) {
                 nodejs.release();
             }

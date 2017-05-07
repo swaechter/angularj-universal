@@ -1,12 +1,12 @@
 package ch.swaechter.springular.v8renderer;
 
-import ch.swaechter.springular.renderer.engine.AbstractRenderEngine;
 import ch.swaechter.springular.renderer.assets.AssetProvider;
+import ch.swaechter.springular.renderer.engine.AbstractRenderEngine;
 import ch.swaechter.springular.renderer.queue.RenderRequest;
 import com.eclipsesource.v8.NodeJS;
-import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Object;
+import com.eclipsesource.v8.utils.MemoryManager;
 
 import java.util.Optional;
 
@@ -17,6 +17,11 @@ import java.util.Optional;
  * @author Simon Wächter
  */
 public class V8RenderEngine extends AbstractRenderEngine {
+
+    /**
+     * Memory manager that handles all memory and provides a garbage collection.
+     */
+    private MemoryManager memorymanager;
 
     /**
      * NodeJS instance that will load the server bundle.
@@ -46,16 +51,16 @@ public class V8RenderEngine extends AbstractRenderEngine {
             // Create the NodeJS server and get the V8 engine
             nodejs = NodeJS.createNodeJS();
 
-            // Get the V8 engine from the NodeJS server
-            V8 engine = nodejs.getRuntime();
+            // Create the memory manager to enable auto garbage collection
+            memorymanager = new MemoryManager(nodejs.getRuntime());
 
             // Register a method to receive the JavaScript render engine that will render the page later on
-            engine.registerJavaMethod((V8Object object, V8Array parameters) -> {
+            nodejs.getRuntime().registerJavaMethod((V8Object object, V8Array parameters) -> {
                 renderer = parameters.getObject(0);
             }, "registerRenderEngine");
 
             // Register a method to receive the rendered page content
-            engine.registerJavaMethod((V8Object object, V8Array parameters) -> {
+            nodejs.getRuntime().registerJavaMethod((V8Object object, V8Array parameters) -> {
                 String uuid = parameters.getString(0);
                 String content = parameters.getString(1);
                 finishRenderRequest(uuid, content);
@@ -73,7 +78,7 @@ public class V8RenderEngine extends AbstractRenderEngine {
                 Optional<RenderRequest> requestitem = getNextUntouchedRenderRequest();
                 if (requestitem.isPresent()) {
                     RenderRequest request = requestitem.get();
-                    V8Array parameters = new V8Array(engine);
+                    V8Array parameters = new V8Array(nodejs.getRuntime());
                     try {
                         parameters.push(request.getUuid());
                         parameters.push(getRenderProvider().getIndexContent());
@@ -87,11 +92,10 @@ public class V8RenderEngine extends AbstractRenderEngine {
         } catch (Exception exception) {
             exception.printStackTrace();
         } finally {
-            if (renderer != null)
-                renderer.release();
-
-            if (nodejs != null)
+            memorymanager.release();
+            if (nodejs != null) {
                 nodejs.release();
+            }
         }
     }
 }

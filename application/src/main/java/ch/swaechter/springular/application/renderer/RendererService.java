@@ -1,15 +1,14 @@
 package ch.swaechter.springular.application.renderer;
 
-import ch.swaechter.springular.renderer.RenderConfiguration;
 import ch.swaechter.springular.renderer.RenderEngine;
-import ch.swaechter.springular.renderer.RenderUtils;
+import ch.swaechter.springular.renderer.assets.AssetProvider;
+import ch.swaechter.springular.renderer.assets.ResourceProvider;
 import ch.swaechter.springular.v8renderer.V8RenderEngine;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileCopyUtils;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 
@@ -29,13 +28,11 @@ public class RendererService {
     /**
      * Create a new render service.
      *
-     * @throws Exception Exception in case we are unable to read the files
+     * @throws IOException Exception in case we are unable to read the assets
      */
-    public RendererService() throws Exception {
-        String indexcontent = getResourceAsString("index.html");
-        File serverbundle = RenderUtils.createTemporaryFile(getResourceAsString("server.bundle.js"));
-        RenderConfiguration configuration = new RenderConfiguration(indexcontent, serverbundle);
-        this.renderer = new V8RenderEngine(configuration);
+    public RendererService() throws IOException {
+        AssetProvider provider = new ResourceProvider(getResourceAsInputStream("index.html"), getResourceAsInputStream("server.bundle.js"), StandardCharsets.UTF_8);
+        this.renderer = new V8RenderEngine(provider);
         this.renderer.startEngine();
     }
 
@@ -44,23 +41,22 @@ public class RendererService {
      *
      * @param uri URI of the page request
      * @return Rendered page
-     * @throws Exception Exception in case it's impossible to resolve the future
+     * @throws Exception Exception in case it's impossible to resolve the future or due a render engine error
      */
     public String renderPage(String uri) throws Exception {
-        Future<String> future = renderer.renderPage(uri);
+        Future<String> future = renderer.renderRequest(uri);
         return future.get();
     }
 
     /**
-     * Get the file content from an internal resource.
+     * Get a resource as input stream.
      *
      * @param resourcepath Path to the resource
-     * @return Content of the resource
+     * @return Input stream based on the resource
      * @throws IOException Exception in case of an IO problem
      */
-    public String getResourceAsString(String resourcepath) throws IOException {
+    private InputStream getResourceAsInputStream(String resourcepath) throws IOException {
         ClassPathResource resource = new ClassPathResource(resourcepath);
-        byte[] data = FileCopyUtils.copyToByteArray(resource.getInputStream());
-        return new String(data, StandardCharsets.UTF_8);
+        return resource.getInputStream();
     }
 }

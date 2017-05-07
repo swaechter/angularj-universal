@@ -1,4 +1,4 @@
-package ch.swaechter.springular.renderer;
+package ch.swaechter.springular.renderer.queue;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;

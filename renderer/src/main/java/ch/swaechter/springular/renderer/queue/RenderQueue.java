@@ -1,4 +1,5 @@
-package ch.swaechter.springular.renderer;
+package ch.swaechter.springular.renderer.queue;
+
 
 import java.util.LinkedList;
 import java.util.List;

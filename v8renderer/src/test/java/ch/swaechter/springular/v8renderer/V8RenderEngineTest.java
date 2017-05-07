@@ -1,12 +1,13 @@
 package ch.swaechter.springular.v8renderer;
 
-import ch.swaechter.springular.renderer.RenderConfiguration;
 import ch.swaechter.springular.renderer.RenderEngine;
-import ch.swaechter.springular.renderer.RenderUtils;
+import ch.swaechter.springular.renderer.assets.AssetProvider;
+import ch.swaechter.springular.renderer.assets.ResourceProvider;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.File;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 
 /**
@@ -22,26 +23,28 @@ public class V8RenderEngineTest {
     @Test
     public void testRenderEngine() {
         try {
-            String indexcontent = RenderUtils.readFile(this, "/index.html");
-            Assert.assertTrue(indexcontent.contains("app-root"));
+            InputStream indexinputstream = getClass().getResourceAsStream("/index.html");
+            Assert.assertNotNull(indexinputstream);
 
-            String serverbundlecontent = RenderUtils.readFile(this, "/server.bundle.js");
-            File serverbundle = RenderUtils.createTemporaryFile(serverbundlecontent);
-            Assert.assertNotNull(serverbundle);
+            InputStream serverbundleinputstream = getClass().getResourceAsStream("/server.bundle.js");
+            Assert.assertNotNull(serverbundleinputstream);
 
-            RenderConfiguration configuration = new RenderConfiguration(indexcontent, serverbundle);
-            RenderEngine engine = new V8RenderEngine(configuration);
+            AssetProvider provider = new ResourceProvider(indexinputstream, serverbundleinputstream, StandardCharsets.UTF_8);
+            Assert.assertTrue(provider.getIndexContent().contains("app-root"));
+            Assert.assertNotNull(provider.getServerBundle());
+
+            RenderEngine engine = new V8RenderEngine(provider);
             engine.startEngine();
 
-            Future<String> future1 = engine.renderPage("/");
+            Future<String> future1 = engine.renderRequest("/");
             Assert.assertNotNull(future1);
             Assert.assertTrue(future1.get().contains("Overview"));
 
-            Future<String> future2 = engine.renderPage("/overview");
+            Future<String> future2 = engine.renderRequest("/overview");
             Assert.assertNotNull(future2);
             Assert.assertTrue(future2.get().contains("Overview"));
 
-            Future<String> future3 = engine.renderPage("/about");
+            Future<String> future3 = engine.renderRequest("/about");
             Assert.assertNotNull(future3);
             Assert.assertTrue(future3.get().contains("About"));
 

@@ -2,6 +2,8 @@ package ch.swaechter.springular.renderer.assets;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.file.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The class FilesystemProvider represents an asset provider that is using the assets from a file system. If the files
@@ -10,7 +12,7 @@ import java.nio.charset.Charset;
  *
  * @author Simon Wächter
  */
-public class FilesystemProvider extends AssetProvider {
+public class FilesystemProvider implements RenderAssetProvider {
 
     /**
      * File that is used to get the content of the index template.
@@ -38,6 +40,11 @@ public class FilesystemProvider extends AssetProvider {
         this.indexfile = indexfile;
         this.serverbundlefile = serverbundlefile;
         this.charset = charset;
+        try {
+            new FilesystemWatcher(indexfile, serverbundlefile);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
     }
 
     /**
@@ -67,5 +74,49 @@ public class FilesystemProvider extends AssetProvider {
     @Override
     public File getServerBundle() throws IOException {
         return serverbundlefile;
+    }
+
+    private class FilesystemWatcher {
+
+        private final WatchService watchservice;
+
+        public FilesystemWatcher(File indexfile, File serverbundlefile) throws IOException {
+            this.watchservice = FileSystems.getDefault().newWatchService();
+            Path indexpath = Paths.get(indexfile.getParent());
+            Path serverbundlepath = Paths.get(serverbundlefile.getParent());
+            indexpath.register(watchservice, StandardWatchEventKinds.ENTRY_MODIFY);
+            serverbundlepath.register(watchservice, StandardWatchEventKinds.ENTRY_MODIFY);
+            try {
+                while (true) {
+                    WatchKey watchkey = watchservice.poll(10, TimeUnit.MINUTES);
+                    if (watchkey != null) {
+                        watchkey.pollEvents().forEach(event -> System.out.println(event.context()));
+                    }
+                    watchkey.reset();
+                }
+            } catch (InterruptedException exception) {
+
+            }
+        }
+    }
+
+    /**
+     * Check if the provider does support live reload.
+     *
+     * @return Status if the provider supports live reload
+     */
+    @Override
+    public boolean isLiveReloadSupported() {
+        return false;
+    }
+
+    /**
+     * Check if the provider detected an asset chance and wishes a live reload.
+     *
+     * @return Status of the provider wishes a live reload
+     */
+    @Override
+    public boolean isLiveReloadRequired() {
+        return false;
     }
 }

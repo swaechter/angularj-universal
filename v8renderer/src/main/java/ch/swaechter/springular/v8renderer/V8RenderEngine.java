@@ -1,8 +1,10 @@
 package ch.swaechter.springular.v8renderer;
 
-import ch.swaechter.springular.renderer.assets.AssetProvider;
-import ch.swaechter.springular.renderer.engine.AbstractRenderEngine;
+import ch.swaechter.springular.renderer.assets.RenderAssetProvider;
+import ch.swaechter.springular.renderer.engine.RenderEngine;
+import ch.swaechter.springular.renderer.queue.RenderQueue;
 import ch.swaechter.springular.renderer.queue.RenderRequest;
+import ch.swaechter.springular.renderer.queue.RenderResponse;
 import com.eclipsesource.v8.NodeJS;
 import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Object;
@@ -16,7 +18,7 @@ import java.util.Optional;
  *
  * @author Simon Wächter
  */
-public class V8RenderEngine extends AbstractRenderEngine {
+public class V8RenderEngine implements RenderEngine {
 
     /**
      * Memory manager that handles all memory and provides a garbage collection.
@@ -34,20 +36,22 @@ public class V8RenderEngine extends AbstractRenderEngine {
     private V8Object renderer;
 
     /**
-     * Create a new NodeJS/V8 render engine that usses the asset provider to access the assets.
-     *
-     * @param provider Asset provider that is used to access the assets
+     * Status if the render engine is running.
      */
-    public V8RenderEngine(AssetProvider provider) {
-        super(provider);
-    }
+    private boolean running;
 
     /**
-     * Create a NodeJS engine and get the V8 engine. The V8 engine will render all incoming requests and push them back.
+     * Create a NodeJS engine that uses the queue to access incoming requests and resolve the responses.
+     *
+     * @param queue    Queue that provides the requests and makes it possible to resolve responses
+     * @param provider Provider to access the assets
      */
     @Override
-    protected void doWork() {
+    public void doWork(RenderQueue queue, RenderAssetProvider provider) {
         try {
+            // Start the render engine
+            running = true;
+
             // Create the NodeJS server and get the V8 engine
             nodejs = NodeJS.createNodeJS();
 
@@ -63,25 +67,25 @@ public class V8RenderEngine extends AbstractRenderEngine {
             nodejs.getRuntime().registerJavaMethod((V8Object object, V8Array parameters) -> {
                 String uuid = parameters.getString(0);
                 String content = parameters.getString(1);
-                finishRenderRequest(uuid, content);
+                queue.resolveRenderFuture(new RenderResponse(uuid, content));
             }, "receiveRenderedPage");
 
             // Load the server file
-            nodejs.require(getRenderProvider().getServerBundle()).release();
+            nodejs.require(provider.getServerBundle()).release();
 
             // Handle incoming requests
-            while (isEngineRunning()) {
+            while (running) {
                 // Handle the next message
                 nodejs.handleMessage();
 
                 // Get the next render request
-                Optional<RenderRequest> requestitem = getNextUntouchedRenderRequest();
+                Optional<RenderRequest> requestitem = queue.getNextRenderRequest();
                 if (requestitem.isPresent()) {
                     RenderRequest request = requestitem.get();
                     V8Array parameters = new V8Array(nodejs.getRuntime());
                     try {
                         parameters.push(request.getUuid());
-                        parameters.push(getRenderProvider().getIndexContent());
+                        parameters.push(provider.getIndexContent());
                         parameters.push(request.getUri());
                         renderer.executeVoidFunction("renderPage", parameters);
                     } finally {
@@ -100,5 +104,21 @@ public class V8RenderEngine extends AbstractRenderEngine {
                 nodejs.release();
             }
         }
+    }
+
+    /**
+     * Finish the current requests and stop the engine.
+     */
+    public void stopWork() {
+        running = false;
+    }
+
+    /**
+     * Check if the render engine is working.
+     *
+     * @return Status if the render engine is working
+     */
+    public boolean isWorking() {
+        return running;
     }
 }

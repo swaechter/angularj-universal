@@ -1,76 +1,80 @@
 package ch.swaechter.springular.renderer.queue;
 
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * The class RenderQueue provides a util collection to store the render requests and to simplify the common render
- * engine tasks.
+ * The class RenderQueue contains all important queues that are required to store untouched render requests and their
+ * responses.
  *
  * @author Simon Wächter
  */
 public class RenderQueue {
 
     /**
-     * List with all touched and rendering requests.
+     * List with all render futures that can be resolved.
      */
-    private final List<RenderRequest> requests;
+    private final List<RenderFuture> futures;
 
     /**
-     * Create a new render queue.
+     * Create a new render queue that will handle all requests and futures.
      */
     public RenderQueue() {
-        this.requests = new LinkedList<>();
+        this.futures = new LinkedList<>();
     }
 
     /**
-     * Check if the queue is empty (Has no untouched or rendering requests.
+     * Check if objects in the queues are pending or if all objects have been resolbed.
      *
-     * @return Status of the check
+     * @return Status of the queue is pending or not
      */
-    public boolean isEmpty() {
-        return requests.size() == 0;
+    public boolean isQueuePending() {
+        return futures.size() == 0;
     }
 
     /**
-     * Create a new render request.
+     * Create a new render future that contains a render request.
      *
      * @param uri URI of the requests
-     * @return New render request
+     * @return New render future that contains the render request
      */
-    public RenderRequest createRenderRequest(String uri) {
-        RenderRequest request = new RenderRequest(uri);
-        requests.add(request);
-        return request;
+    public RenderFuture createRenderFuture(String uri) {
+        RenderFuture future = new RenderFuture(new RenderRequest(uri));
+        futures.add(future);
+        return future;
     }
 
     /**
-     * Remove a rendered render request.
+     * Get the next render requests. After receiving the render request, the request will be removed from the pending
+     * request queue.
      *
-     * @param request Render request to remove
-     */
-    public void removeRenderRequest(RenderRequest request) {
-        requests.remove(request);
-    }
-
-    /**
-     * Get a specific render request.
-     *
-     * @param uuid Unique UUID of the render request
      * @return Optional render request
      */
-    public Optional<RenderRequest> getRenderRequest(String uuid) {
-        return requests.stream().filter(item -> uuid.equals(item.getUuid())).findFirst();
+    public Optional<RenderRequest> getNextRenderRequest() {
+        Optional<RenderFuture> futureitem = futures.stream().filter(future -> !future.isRendering()).findFirst();
+        if (futureitem.isPresent()) {
+            RenderFuture future = futureitem.get();
+            RenderRequest request = future.getRequest();
+            future.setRendering();
+            return Optional.of(request);
+        } else {
+            return Optional.empty();
+        }
     }
 
     /**
-     * Get the next untouched render request.
+     * Resolve an existing render future and the request based on the response. All objects will be removed from the
+     * queue.
      *
-     * @return Optional next untouched render request
+     * @param response Render response that contains the
      */
-    public Optional<RenderRequest> getNextUntouchedRenderRequest() {
-        return requests.stream().filter(item -> item.isUntouched()).findFirst();
+    public void resolveRenderFuture(RenderResponse response) {
+        Optional<RenderFuture> futureitem = futures.stream().filter(i -> i.getRequest().getUuid().equals(response.getUuid())).findFirst();
+        if (futureitem.isPresent()) {
+            RenderFuture future = futureitem.get();
+            futures.remove(future);
+            future.getCompletableFuture().complete(response.getContent());
+        }
     }
 }

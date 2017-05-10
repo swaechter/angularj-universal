@@ -10,7 +10,7 @@ import java.nio.charset.Charset;
  *
  * @author Simon Wächter
  */
-public class ResourceProvider extends AssetProvider {
+public class ResourceProvider implements RenderAssetProvider {
 
     /**
      * Content that is used to represents the index template.
@@ -55,6 +55,26 @@ public class ResourceProvider extends AssetProvider {
     @Override
     public File getServerBundle() throws IOException {
         return serverbundle;
+    }
+
+    /**
+     * Check if the provider does support live reload.
+     *
+     * @return Status if the provider supports live reload
+     */
+    @Override
+    public boolean isLiveReloadSupported() {
+        return false;
+    }
+
+    /**
+     * Check if the provider detected an asset chance and wishes a live reload.
+     *
+     * @return Status of the provider wishes a live reload
+     */
+    @Override
+    public boolean isLiveReloadRequired() {
+        return false;
     }
 
     /**

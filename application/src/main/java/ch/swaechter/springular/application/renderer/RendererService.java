@@ -1,7 +1,7 @@
 package ch.swaechter.springular.application.renderer;
 
-import ch.swaechter.springular.renderer.RenderEngine;
-import ch.swaechter.springular.renderer.assets.AssetProvider;
+import ch.swaechter.springular.renderer.Renderer;
+import ch.swaechter.springular.renderer.assets.RenderAssetProvider;
 import ch.swaechter.springular.renderer.assets.ResourceProvider;
 import ch.swaechter.springular.v8renderer.V8RenderEngine;
 import org.springframework.core.io.ClassPathResource;
@@ -21,9 +21,9 @@ import java.util.concurrent.Future;
 public class RendererService {
 
     /**
-     * Render engine that will render the page.
+     * Renderer that will render the page.
      */
-    private final RenderEngine renderer;
+    private final Renderer renderer;
 
     /**
      * Create a new render service.
@@ -31,8 +31,8 @@ public class RendererService {
      * @throws IOException Exception in case we are unable to read the assets
      */
     public RendererService() throws IOException {
-        AssetProvider provider = new ResourceProvider(getResourceAsInputStream("index.html"), getResourceAsInputStream("server.bundle.js"), StandardCharsets.UTF_8);
-        this.renderer = new V8RenderEngine(provider);
+        RenderAssetProvider provider = new ResourceProvider(getResourceAsInputStream("index.html"), getResourceAsInputStream("server.bundle.js"), StandardCharsets.UTF_8);
+        this.renderer = new Renderer(new V8RenderEngine(), provider);
         this.renderer.startEngine();
     }
 

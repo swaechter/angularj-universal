@@ -4,9 +4,9 @@ import java.io.*;
 import java.nio.charset.Charset;
 
 /**
- * The class ResourceProvider represents an asset provider that is using the resource system of Java. If the streams of
- * the resources are valid, the asset provider will load them during creation time and provide a cached version. The
- * provider itself does not provide any reload functionality. As a reason of that, the provider is used in production.
+ * The class ResourceProvider represents an asset provider that is using the resource system. If the stream of the
+ * resources are valid, the asset provider will load them during creation time and provided a cached version. The
+ * provider itself does not provide any reload functionality.
  *
  * @author Simon Wächter
  */
@@ -28,7 +28,7 @@ public class ResourceProvider implements RenderAssetProvider {
      * @param indexinputstream        Input stream that is used to read the index template from
      * @param serverbundleinputstream Input stream that is used to read the server bundle from
      * @param charset                 Charset that will be used to read and write streams and files
-     * @throws IOException
+     * @throws IOException Exception in case of an IO/stream problem
      */
     public ResourceProvider(InputStream indexinputstream, InputStream serverbundleinputstream, Charset charset) throws IOException {
         this.indexcontent = getIndexContent(indexinputstream, charset);

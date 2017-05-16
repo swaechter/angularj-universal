@@ -3,8 +3,8 @@ package ch.swaechter.springular.renderer.queue;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * The class RenderFuture provides a resolvable render request that can be accesses as soon as the render request has
- * been rendered.
+ * The class RenderFuture represents a render request that provides a completable future to resolve the request to the
+ * caller. The render future also provides the information if a render request is in the process of becoming rendered.
  *
  * @author Simon Wächter
  */
@@ -16,10 +16,21 @@ public class RenderFuture {
      */
     private final CompletableFuture<String> future;
 
+    /**
+     * RenderRequest that contains the real render request.
+     */
     private final RenderRequest request;
 
+    /**
+     * Status if the render request is getting rendered.
+     */
     private boolean rendering;
 
+    /**
+     * Create a new render future that uses the given render request and provides a future.
+     *
+     * @param request Provided render request
+     */
     public RenderFuture(RenderRequest request) {
         this.future = new CompletableFuture<>();
         this.request = request;
@@ -45,16 +56,16 @@ public class RenderFuture {
     }
 
     /**
-     * Check if the render request of the future is getting rendered.
+     * Check if the render request is getting rendered.
      *
-     * @return Status if the request is rendering
+     * @return Status if the request is getting rendered.
      */
     public boolean isRendering() {
         return rendering;
     }
 
     /**
-     * Set the render request rendering .
+     * Set the render request rendering.
      */
     public void setRendering() {
         this.rendering = true;

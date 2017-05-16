@@ -13,8 +13,7 @@ import com.eclipsesource.v8.utils.MemoryManager;
 import java.util.Optional;
 
 /**
- * The class V8RenderEngine provides a NodeJS/V8 based implementation of the render engine. The implementation relies
- * on the reference implementation of the render engine.
+ * The class V8RenderEngine provides a NodeJS/V8 based implementation of the render engine.
  *
  * @author Simon Wächter
  */

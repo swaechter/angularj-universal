@@ -5,8 +5,8 @@ import java.io.IOException;
 
 /**
  * The interface RenderAssetProvider is responsible for providing the assets like the content of the index page and the
- * server bundle as a file. It's possible to develop specific asset providers (Resource, file system etc.) that can
- * support live reloading.
+ * server bundle as a file. It's possible to develop a specific asset provider based on the requirements of the client
+ * like resources, file system etc.
  *
  * @author Simon Wächter
  */

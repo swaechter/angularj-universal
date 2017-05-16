@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * The class RenderQueue contains all important queues that are required to store untouched render requests and their
- * responses.
+ * The class RenderQueue contains all render requests and manages their state. The render queue is passed to the render
+ * engine and accessed by this entity. There are methods to create a new render request, set the render request
+ * rendering and resolve it.
  *
  * @author Simon Wächter
  */
@@ -25,7 +26,7 @@ public class RenderQueue {
     }
 
     /**
-     * Check if objects in the queues are pending or if all objects have been resolbed.
+     * Check if objects in the queues are pending or if all objects have been rendered.
      *
      * @return Status of the queue is pending or not
      */

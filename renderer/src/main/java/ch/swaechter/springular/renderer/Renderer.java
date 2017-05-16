@@ -49,8 +49,8 @@ public class Renderer {
             return;
         }
 
-        Thread thread = new Thread(() -> engine.doWork(queue, provider));
-        thread.start();
+        new Thread(() -> engine.doWork(queue, provider)).start();
+        new Thread(() -> checkAssets()).start();
     }
 
     /**
@@ -86,6 +86,21 @@ public class Renderer {
     public Future<String> renderRequest(String uri) {
         RenderFuture future = queue.createRenderFuture(uri);
         return future.getCompletableFuture();
+    }
+
+    /**
+     * Check if the assets require a reload.
+     */
+    private void checkAssets() {
+        if (provider.isLiveReloadSupported()) {
+            while (engine.isWorking()) {
+                if (provider.isLiveReloadRequired()) {
+                    engine.stopWork();
+                    engine.doWork(queue, provider);
+                }
+            }
+
+        }
     }
 
     /**

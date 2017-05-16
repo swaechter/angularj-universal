@@ -5,7 +5,8 @@ import ch.swaechter.springular.renderer.queue.RenderQueue;
 
 /**
  * The interface RenderEngine represents a JavaScript engine that has to handle all incoming requests, render them and
- * push back the result. Each JavaScript engine has to implement this feature.
+ * push back the result. Each JavaScript engine has to implement this functionality and can use the given render queue
+ * and asset provider to work with.
  *
  * @author Simon Wächter
  */

@@ -2,13 +2,11 @@ package ch.swaechter.springular.renderer.assets;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.nio.file.*;
-import java.util.concurrent.TimeUnit;
 
 /**
- * The class FilesystemProvider represents an asset provider that is using the assets from a file system. If the files
- * change, the asset provider will reload them and request the render engine to reload itself with the new assets. As a
- * reason of that, this provider enables live reload during development.
+ * The class FilesystemProvider represents an asset provider that is using assets from the file system. If the files
+ * change, the asset provider can detect this chance and tell the renderer that the assets have changed. The renderer
+ * then can reload the assets.
  *
  * @author Simon Wächter
  */
@@ -30,7 +28,7 @@ public class FilesystemProvider implements RenderAssetProvider {
     private final Charset charset;
 
     /**
-     * Create a new file system provider and listen to file changes.
+     * Create a new file system provider.
      *
      * @param indexfile        File that will be used to get the content of the index template
      * @param serverbundlefile File that will be used to get the server bundle
@@ -40,11 +38,6 @@ public class FilesystemProvider implements RenderAssetProvider {
         this.indexfile = indexfile;
         this.serverbundlefile = serverbundlefile;
         this.charset = charset;
-        try {
-            new FilesystemWatcher(indexfile, serverbundlefile);
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
     }
 
     /**
@@ -74,30 +67,6 @@ public class FilesystemProvider implements RenderAssetProvider {
     @Override
     public File getServerBundle() throws IOException {
         return serverbundlefile;
-    }
-
-    private class FilesystemWatcher {
-
-        private final WatchService watchservice;
-
-        public FilesystemWatcher(File indexfile, File serverbundlefile) throws IOException {
-            this.watchservice = FileSystems.getDefault().newWatchService();
-            Path indexpath = Paths.get(indexfile.getParent());
-            Path serverbundlepath = Paths.get(serverbundlefile.getParent());
-            indexpath.register(watchservice, StandardWatchEventKinds.ENTRY_MODIFY);
-            serverbundlepath.register(watchservice, StandardWatchEventKinds.ENTRY_MODIFY);
-            try {
-                while (true) {
-                    WatchKey watchkey = watchservice.poll(10, TimeUnit.MINUTES);
-                    if (watchkey != null) {
-                        watchkey.pollEvents().forEach(event -> System.out.println(event.context()));
-                    }
-                    watchkey.reset();
-                }
-            } catch (InterruptedException exception) {
-
-            }
-        }
     }
 
     /**

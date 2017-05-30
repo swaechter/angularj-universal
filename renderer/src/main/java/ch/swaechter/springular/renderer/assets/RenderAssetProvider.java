@@ -2,6 +2,7 @@ package ch.swaechter.springular.renderer.assets;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * The interface RenderAssetProvider is responsible for providing the assets like the content of the index page and the
@@ -38,7 +39,9 @@ public interface RenderAssetProvider {
     /**
      * Check if the provider detected an asset chance and wishes a live reload.
      *
+     * @param date Date of the last reload
      * @return Status of the provider wishes a live reload
+     * @throws IOException Exception in case of an IO problem
      */
-    boolean isLiveReloadRequired();
+    boolean isLiveReloadRequired(Date date) throws IOException;
 }

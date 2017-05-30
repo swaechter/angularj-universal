@@ -5,6 +5,8 @@ import ch.swaechter.springular.renderer.engine.RenderEngine;
 import ch.swaechter.springular.renderer.queue.RenderFuture;
 import ch.swaechter.springular.renderer.queue.RenderQueue;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.concurrent.Future;
 
 /**
@@ -31,6 +33,11 @@ public class Renderer {
     private final RenderAssetProvider provider;
 
     /**
+     * Date of the last reload.
+     */
+    private Date reloaddate;
+
+    /**
      * Create a new render engine and use the render engine and render provider to access the assets.
      *
      * @param provider Render provider to access the assets
@@ -48,6 +55,8 @@ public class Renderer {
         if (engine.isWorking()) {
             return;
         }
+
+        reloaddate = new Date();
 
         new Thread(() -> engine.doWork(queue, provider)).start();
         new Thread(() -> checkAssets()).start();
@@ -89,17 +98,22 @@ public class Renderer {
     }
 
     /**
-     * Check if the assets require a reload.
+     * Check if the assets require a reload and reload the engine if necessary.
      */
     private void checkAssets() {
-        if (provider.isLiveReloadSupported()) {
-            while (engine.isWorking()) {
-                if (provider.isLiveReloadRequired()) {
-                    engine.stopWork();
-                    engine.doWork(queue, provider);
+        try {
+            if (provider.isLiveReloadSupported()) {
+                while (engine.isWorking()) {
+                    if (provider.isLiveReloadRequired(reloaddate)) {
+                        stopEngine();
+                        startEngine();
+                    }
+                    sleep(1000);
                 }
-            }
 
+            }
+        } catch (IOException exception) {
+            throw new IllegalStateException("The renderer was unable to check if the resource assets have changed");
         }
     }
 

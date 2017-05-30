@@ -2,6 +2,7 @@ package ch.swaechter.springular.renderer.assets;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.Date;
 
 /**
  * The class ResourceProvider represents an asset provider that is using the resource system. If the stream of the
@@ -70,10 +71,11 @@ public class ResourceProvider implements RenderAssetProvider {
     /**
      * Check if the provider detected an asset chance and wishes a live reload.
      *
+     * @param date Date of the last reload
      * @return Status of the provider wishes a live reload
      */
     @Override
-    public boolean isLiveReloadRequired() {
+    public boolean isLiveReloadRequired(Date date) {
         return false;
     }
 

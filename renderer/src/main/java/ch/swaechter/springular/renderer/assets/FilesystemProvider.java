@@ -2,6 +2,7 @@ package ch.swaechter.springular.renderer.assets;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.Date;
 
 /**
  * The class FilesystemProvider represents an asset provider that is using assets from the file system. If the files
@@ -34,7 +35,7 @@ public class FilesystemProvider implements RenderAssetProvider {
      * @param serverbundlefile File that will be used to get the server bundle
      * @param charset          Charset that will be used to read the files
      */
-    public FilesystemProvider(File indexfile, File serverbundlefile, Charset charset) {
+    public FilesystemProvider(File indexfile, File serverbundlefile, Charset charset) throws IOException {
         this.indexfile = indexfile;
         this.serverbundlefile = serverbundlefile;
         this.charset = charset;
@@ -76,16 +77,29 @@ public class FilesystemProvider implements RenderAssetProvider {
      */
     @Override
     public boolean isLiveReloadSupported() {
-        return false;
+        return true;
     }
 
     /**
      * Check if the provider detected an asset chance and wishes a live reload.
      *
+     * @param date Date of the last reload
      * @return Status of the provider wishes a live reload
      */
     @Override
-    public boolean isLiveReloadRequired() {
-        return false;
+    public boolean isLiveReloadRequired(Date date) throws IOException {
+        return isFileOutdated(indexfile, date) || isFileOutdated(serverbundlefile, date);
+    }
+
+    /**
+     * Check if the file modified date is after the reload, so whe have to reload the scripts.
+     *
+     * @param file File that will be checked
+     * @param date Date of the engine reload
+     * @return Status if the file is outdated
+     * @throws IOException Exception in case of an IO problem
+     */
+    private boolean isFileOutdated(File file, Date date) throws IOException {
+        return date.before(new Date(file.lastModified()));
     }
 }

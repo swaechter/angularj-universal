@@ -1,14 +1,13 @@
 package ch.swaechter.springular.application.renderer;
 
 import ch.swaechter.springular.renderer.Renderer;
+import ch.swaechter.springular.renderer.assets.FilesystemProvider;
 import ch.swaechter.springular.renderer.assets.RenderAssetProvider;
-import ch.swaechter.springular.renderer.assets.ResourceProvider;
 import ch.swaechter.springular.v8renderer.V8RenderEngine;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 
@@ -31,7 +30,10 @@ public class RendererService {
      * @throws IOException Exception in case we are unable to read the assets
      */
     public RendererService() throws IOException {
-        RenderAssetProvider provider = new ResourceProvider(getResourceAsInputStream("index.html"), getResourceAsInputStream("server.bundle.js"), StandardCharsets.UTF_8);
+        File indexfile = createTemporaryFileFromInputStream(getResourceAsInputStream("/index.html"));
+        File serverbundlefile = createTemporaryFileFromInputStream(getResourceAsInputStream("/server.bundle.js"));
+        RenderAssetProvider provider = new FilesystemProvider(indexfile, serverbundlefile, StandardCharsets.UTF_8);
+        //RenderAssetProvider provider = new ResourceProvider(getResourceAsInputStream("index.html"), getResourceAsInputStream("server.bundle.js"), StandardCharsets.UTF_8);
         this.renderer = new Renderer(new V8RenderEngine(), provider);
         this.renderer.startEngine();
     }
@@ -58,5 +60,23 @@ public class RendererService {
     private InputStream getResourceAsInputStream(String resourcepath) throws IOException {
         ClassPathResource resource = new ClassPathResource(resourcepath);
         return resource.getInputStream();
+    }
+
+    /**
+     * Create a temporary file from an input stream.
+     *
+     * @param inputstream Input stream with the file content
+     * @return Temporary file
+     * @throws IOException Exception in case of an IO problem
+     */
+    private File createTemporaryFileFromInputStream(InputStream inputstream) throws IOException {
+        File file = File.createTempFile("renderer", ".tmp");
+        OutputStream outputstream = new FileOutputStream(file);
+        int result = inputstream.read();
+        while (result != -1) {
+            outputstream.write((byte) result);
+            result = inputstream.read();
+        }
+        return file;
     }
 }

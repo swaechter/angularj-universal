@@ -24,6 +24,7 @@ Follow these instructions to start the application. The J2V8 bindings can be tri
     cd angularj-ssr
 
     # Go to the example application and build it (Grab a coffee because the build is automated - no local NodeJS or NPM are required)
+    cd example
     mvn clean package
 
     # Start the application
@@ -31,7 +32,7 @@ Follow these instructions to start the application. The J2V8 bindings can be tri
 
     # Open a web browser and head to these URLS
     http://localhost:8080 (Main page)
-    http://localhost:8080/api/keywords (REST API)
+    http://localhost:8080/api/keyword (REST API)
 
 ## Architecture
 

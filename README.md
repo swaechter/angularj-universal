@@ -1,46 +1,46 @@
-# Spring Boot Angular Render
+# Angular Server Side Rendering in Java
 
 ## Introduction
 
-This project tries to provide a technical prototype on how to use Angular 4 with server side rendering (@angular/platform-server)  in Spring Boot. Spring Boot is only used because I am familiar with the framework, but it's also possible to use the render in any other context/framework (For example even in a desktop application).
+This project tries to provide a technical prototype on how to use Angular 4 with server side rendering (@angular/platform-server) in Java (For example Angular 4 provided by a Java web server with Spring Boot + Tomcat). Of course it's also possible to use other technologies like Java EE or other web micro frameworks. It's even possible to run the example as a command line application if you like to see server side rendered HTML in your temrinal (You never know).
 
-Please be aware that this is a proof of concept and not a production ready example.
+Altough this repository is available as Maven library (https://mvnrepository.com/artifact/ch.swaechter/angularj-ssr), the whole project is a proof of concept and work is required.
 
 ## Overview
 
-Based on the requirements, the Maven project is divided into three modules:
+The repository is divided into two sections:
 
-1. Module application that serves the frontend and passes all input/user interaction to the renderer. It also contains the Angular application
-2. Module renderer that provides the abstract render engine kit
-3. Module v8renderer that uses the render engine kit and provides a V8 engine for rendering page requests with the help of J2V8 and NodeJS.
+1. Root directory: Contains the real angularj-ssr project and provides the Java library
+2. /example directory: A working application that uses the angularj-ssr library and making some HTTP requests to the backend
+
+At the moment the library uses J2V8 to render the request, but for the future other technologies like an IPC connection to a local NodeJS instance are also possible (Please open an issue if you need something. I am open for new ideas/workflows!).
 
 ## Setup
 
 Follow these instructions to start the application. The J2V8 bindings can be tricky, so if you encounter any issues feel free to create an issue:
 
     # Download the repository
-    git clone https://github.com/swaechter/spring-boot-angular-renderer
+    git clone https://github.com/swaechter/angularj-ssr
+    cd angularj-ssr
 
-    # Build the project and skip the tests
-    mvn clean package -DskipTests
-
-    # Open the project in your IDE and run the test
-    Navigate to the v8renderer test and run it
+    # Go to the example application and build it (Grab a coffee because the build is automated - no local NodeJS or NPM are required)
+    mvn clean package
 
     # Start the application
-    Navigate to the application and run it
+    java -jar target/angularj-ssr-example-0.0.1.jar
 
-    # Check the webpage
-    Navigate to http://localhost:8080 and see the home page
+    # Open a web browser and head to these URLS
+    http://localhost:8080 (Main page)
+    http://localhost:8080/api/keywords (REST API)
 
 ## Architecture
 
-The workflow of the prototype is divided into two phases: 1.) Bootstraping the setup and 2.) serving normal page requests:
+The workflow of the prototype is divided into two phases: 1.) Bootstraping the setup and 2.) serving normal page requests. You can replace Spring Boot with every Java technology you like and also J2V8 is interchangable with another technlogie that is able to communicate with NodeJS (For example IPC). It's just mentioned that people understand the workflow of a web-ish example.
 
-Workflow of the bootstrap process:
+Workflow of the bootstrap process based on the Spring Boot example (In :
 
 1. Spring Boot is firing up and all components are getting initialized
-2. The Java class RenderService is trying to read the index.html/server.bundle.js and creates a local file copy of the server.bundle.js
+2. The Java class RenderService is trying to read the index.html and server.bundle.js and creates a local file copy of both files (NodeJS only works with files and not with Java input stream)
 3. The values are sent to the V8RenderEngine class which provides a wrapper around the J2V8 language bindings
 4. The V8RenderEngine creates a NodeJS instance and loads the server.bundle.js
 5. During the script execution, the script passes a render engine object to the calling Java JVM that uses the @angular/platform-server functionality. The class V8RenderEngine receives this method call and saves the render engine object. This render engine object is later used to parse the file template.
@@ -58,15 +58,13 @@ The workflow of a page request is as follow:
 
 ## Problems
 
-At the moment, there are a few problems and many ideas for the future:
+All problems and ideas are discussed in this thread: https://github.com/angular/universal/issues/280
 
+There are a few problems and many ideas:
+
+* Problem: The author loses track of his work. Please hunt him down, send a mail every week or hit him with a stick
 * Problem: Sometimes, the J2V8 engine/NodeJS hangs up or isn't able to work in parallel. This needs some further investigation. On Linux it works really well, on Windows problems can occur
-* Feature: Add preboot.js to capture user events
-* Feature: Add live reload
-* Feature: Add a debug hook
-* Feature: Provide a library so other can use the project (Also without Spring Boot)
-
-In general, the idea is to get this project production read within a month.
+* Feature: Add preboot.js to capture and replay events. This is quite complicated, so it might be more interessting to integrate angular-ssr  that supports preboot.js (https://github.com/clbond/angular-ssr) into angularj-ssr
 
 ## Contact and feedback
 

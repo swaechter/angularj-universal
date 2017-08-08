@@ -3,16 +3,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>ch.swaechter</groupId>
-    <artifactId>angularj-ssr</artifactId>
+    <artifactId>angularj-universal</artifactId>
     <version>0.0.1</version>
-    <packaging>jar</packaging>
-    <name>angularj-ssr</name>
+    <packaging>pom</packaging>
+    <name>angularj-universal</name>
     <description>A Java library for rendering Angular 4+ applications on the server side</description>
     <url>https://github.com/swaechter/angularj-ssr</url>
     <licenses>
         <license>
             <name>GNU General Lesser Public License (LGPL) version 3.0 or later</name>
-            <url>https://www.gnu.org/licenses/lgpl-3.0.de.html</url>
+            <url>https://www.gnu.org/licenses/lgpl-3.0.en.html</url>
         </license>
     </licenses>
     <developers>
@@ -42,14 +42,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>angularj-universal-application</module>
+        <module>angularj-universal-renderer</module>
+        <module>angularj-universal-renderer-v8</module>
+        <module>angularj-universal-webserver</module>
+    </modules>
     <build>
         <plugins>
             <plugin>
@@ -103,51 +101,4 @@
             </plugin>
         </plugins>
     </build>
-    <profiles>
-        <profile>
-            <id>linux</id>
-            <activation>
-                <os>
-                    <family>unix</family>
-                </os>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>com.eclipsesource.j2v8</groupId>
-                    <artifactId>j2v8_linux_x86_64</artifactId>
-                    <version>4.6.0</version>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>windows</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                </os>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>com.eclipsesource.j2v8</groupId>
-                    <artifactId>j2v8_win32_x86_64</artifactId>
-                    <version>4.6.0</version>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>mac</id>
-            <activation>
-                <os>
-                    <family>mac</family>
-                </os>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>com.eclipsesource.j2v8</groupId>
-                    <artifactId>j2v8_macosx_x86_64</artifactId>
-                    <version>4.6.0</version>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
 </project>

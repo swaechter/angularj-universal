@@ -1,14 +1,3 @@
-# Build system
-target/
-dist/
-etc/
-node/
-node_modules/
-
-# Build artifacts
-application/src/main/resources/index.html
-application/src/main/resources/server.bundle.js
-
 # IDE from JetBrains
 .idea/
 *.iml
@@ -17,3 +6,10 @@ application/src/main/resources/server.bundle.js
 .settings/
 .project
 .classpath
+
+# Build system
+target/
+dist/
+etc/
+node/
+node_modules/

@@ -10,6 +10,7 @@ import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Object;
 import com.eclipsesource.v8.utils.MemoryManager;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 /**
@@ -30,9 +31,14 @@ public class V8RenderEngine implements RenderEngine {
     private NodeJS nodejs;
 
     /**
-     * Method that will be called to render a page.
+     * Function that will be used for rendering the module.
      */
-    private V8Object renderer;
+    private V8Object renderfunction;
+
+    /**
+     * Module that will be passed to the render function.
+     */
+    private V8Object rendermodule;
 
     /**
      * Status if the render engine is running.
@@ -48,6 +54,9 @@ public class V8RenderEngine implements RenderEngine {
     @Override
     public void doWork(RenderQueue queue, RenderAssetProvider provider) {
         try {
+            // Load the function
+            String functioncontent = V8Utils.getContentFromInputStream(this.getClass().getResourceAsStream("/Function.js"), StandardCharsets.UTF_8);
+
             // Start the render engine
             running = true;
 
@@ -57,20 +66,29 @@ public class V8RenderEngine implements RenderEngine {
             // Create the memory manager to enable auto garbage collection
             memorymanager = new MemoryManager(nodejs.getRuntime());
 
-            // Register a method to receive the JavaScript render engine that will render the page later on
-            nodejs.getRuntime().registerJavaMethod((V8Object object, V8Array parameters) -> {
-                renderer = parameters.getObject(0);
-            }, "registerRenderEngine");
+            // Register a method that represents the register function
+            nodejs.getRuntime().registerJavaMethod((v8Object, v8Array) -> {
+                renderfunction = v8Array.getObject(0);
+                rendermodule = v8Array.getObject(1);
+            }, "registerRenderElements");
 
-            // Register a method to receive the rendered page content
-            nodejs.getRuntime().registerJavaMethod((V8Object object, V8Array parameters) -> {
-                String uuid = parameters.getString(0);
-                String content = parameters.getString(1);
-                queue.resolveRenderFuture(new RenderResponse(uuid, content));
+            // Register a method that represents the finished render request function
+            nodejs.getRuntime().registerJavaMethod((v8Object, v8Array) -> {
+                String uuid = v8Array.getString(0);
+                String html = v8Array.getString(1);
+                V8Object error = v8Array.getObject(2);
+                if (error == null) {
+                    queue.resolveRenderFuture(new RenderResponse(uuid, html));
+                } else {
+                    System.err.println("The V8 render received a render response with an error for " + uuid + ": " + error);
+                }
             }, "receiveRenderedPage");
 
-            // Load the server file
-            nodejs.require(provider.getServerBundle()).release();
+            // Register the function
+            nodejs.getRuntime().executeScript(functioncontent);
+
+            // Load the server bundle
+            nodejs.exec(provider.getServerBundle());
 
             // Handle incoming requests
             while (running) {
@@ -83,10 +101,12 @@ public class V8RenderEngine implements RenderEngine {
                     RenderRequest request = requestitem.get();
                     V8Array parameters = new V8Array(nodejs.getRuntime());
                     try {
+                        parameters.push(renderfunction);
+                        parameters.push(rendermodule);
                         parameters.push(request.getUuid());
                         parameters.push(provider.getIndexContent());
                         parameters.push(request.getUri());
-                        renderer.executeVoidFunction("renderPage", parameters);
+                        nodejs.getRuntime().executeVoidFunction("renderPage", parameters);
                     } finally {
                         parameters.release();
                     }

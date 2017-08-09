@@ -1,9 +1,0 @@
-# Build system
-node_modules/
-
-# Build artifacts
-dist/
-src/ngfactory/
-
-# IDE from JetBrains
-.idea/

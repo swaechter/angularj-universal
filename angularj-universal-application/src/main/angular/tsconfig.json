@@ -1,23 +1,19 @@
 {
+    "compileOnSave": false,
     "compilerOptions": {
+        "outDir": "./dist/out-tsc",
+        "sourceMap": true,
+        "declaration": false,
         "moduleResolution": "node",
-        "module": "es2015",
-        "target": "es5",
-        "noImplicitAny": false,
-        "sourceMap": false,
-        "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "lib": [
-            "es2015",
-            "dom"
+        "experimentalDecorators": true,
+        "target": "es5",
+        "typeRoots": [
+            "node_modules/@types"
         ],
-        "outDir": "lib"
-    },
-    "include": [
-        "src/**/*"
-    ],
-    "angularCompilerOptions": {
-        "genDir": "src/ngfactory",
-        "entryModule": "./src/app/app.module#AppModule"
+        "lib": [
+            "es2017",
+            "dom"
+        ]
     }
 }

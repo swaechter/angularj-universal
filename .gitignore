@@ -7,9 +7,15 @@
 .project
 .classpath
 
-# Build system
+# Build system for Java
 target/
-dist/
+
+# Build system for JavaScript
+dist-*/
 etc/
 node/
 node_modules/
+package-lock.json
+
+# Generated build artifacts
+angularj-universal-application/src/main/resources/

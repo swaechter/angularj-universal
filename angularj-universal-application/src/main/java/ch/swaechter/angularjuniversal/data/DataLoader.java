@@ -15,7 +15,7 @@ public class DataLoader {
      * @return Input stream of the index template
      */
     public InputStream getIndexAsInputStream() {
-        return this.getClass().getResourceAsStream("/index.html");
+        return this.getClass().getResourceAsStream("/public/index.html");
     }
 
     /**

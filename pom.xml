@@ -7,8 +7,8 @@
     <version>0.0.1</version>
     <packaging>pom</packaging>
     <name>angularj-universal</name>
-    <description>A Java library for rendering Angular 4+ applications on the server side</description>
-    <url>https://github.com/swaechter/angularj-ssr</url>
+    <description>A Java library for rendering Angular 4+ on the server side and providing them on the client side as universal application</description>
+    <url>https://github.com/swaechter/angularj-universal</url>
     <licenses>
         <license>
             <name>GNU General Lesser Public License (LGPL) version 3.0 or later</name>
@@ -24,9 +24,9 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:git:git://github.com/swaechter/angularj-ssr.git</connection>
-        <developerConnection>scm:git:ssh://github.com:swaechter/angularj-ssr.git</developerConnection>
-        <url>https://github.com/swaechter/angularj-ssr</url>
+        <connection>scm:git:git://github.com/swaechter/angularj-universal.git</connection>
+        <developerConnection>scm:git:ssh://github.com:swaechter/angularj-universal.git</developerConnection>
+        <url>https://github.com/swaechter/angularj-universal</url>
     </scm>
     <distributionManagement>
         <snapshotRepository>

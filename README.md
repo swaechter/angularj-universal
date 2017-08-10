@@ -1,80 +1,315 @@
-# Angular Server Side Rendering in Java
+# Angular Universal for Java
 
-## Introduction
+## Background
 
-This project tries to provide a technical prototype on how to use Angular 4 with server side rendering (@angular/platform-server) in Java (For example Angular 4 provided by a Java web server with Spring Boot + Tomcat). Of course it's also possible to use other technologies like Java EE or other web micro frameworks. It's even possible to run the example as a command line application if you like to see server side rendered HTML in your temrinal (You never know).
+With the introduction of Angular Universal, a solution for rendering Angular applications on the server side and sending them to the browser as 'already-bootstraped' application, Angular became more interesting for many developers that were using a Node.js environment. It solved the problems of SEO optimization, prerended page previews from Facebook and resource management (For more information see https://scotch.io/tutorials/server-side-rendering-in-angular-2-with-angular-universal). For traditional web developers in the Java enterprise environment with technologies like Spring Boot or Java EE, these technologies required the use of a separate Node.js server - a requirement that often just wasn't possible or not allowed (Skepticism against Node.js/JavaScript, technology fragmentation, more complicated setup etc.).
 
-Altough this repository is available as Maven library (https://mvnrepository.com/artifact/ch.swaechter/angularj-ssr), the whole project is a proof of concept and work is required.
+The author of this project used the benefits and advantages of the Node.js environment and tried to make them accessible in a Java and JVM environment. In the end, he was able to integrate and embed a Node.js instance that is launched and handled by the Java application. This makes it possible to use all the Angular Universal features in Java without the costs of having a local Node.js instance (Everything is integrated in the Java application and also managed). This makes it possible integrate Angular 4+ with Angular Universal into a traditional Java web stack.
 
 ## Overview
 
-The repository is divided into two sections:
+This repository is divided into several modules:
 
-1. Root directory: Contains the real angularj-ssr project and provides the Java library
-2. /example directory: A working application that uses the angularj-ssr library and making some HTTP requests to the backend
+* angularj-universal-renderer: Render SDK that provides the core functionality and allows a developer to implement an own render solution
+* angularj-universal-renderer-v8: Specific implementation that uses a Node.js/V8 engine for rendering
+* angularj-universal-application: Traditional angular application and the required server files
+* angularj-universal-webserver: Web server with Spring Boot that serves as an example
 
-At the moment the library uses J2V8 to render the request, but for the future other technologies like an IPC connection to a local NodeJS instance are also possible (Please open an issue if you need something. I am open for new ideas/workflows!).
+## Getting started
 
-## Setup
+### Phase 0: Overview
+The process to create a new Java project, a new Angular application and combining everything together can be splitted up into three phases:
 
-Follow these instructions to start the application. The J2V8 bindings can be tricky, so if you encounter any issues feel free to create an issue:
+1. Create a new Java application with Maven as build system
+2. Create a new Angular application inside the Java project
+3. Integrate the Angular application into the Java project and vice versa
 
-    # Download the repository
-    git clone https://github.com/swaechter/angularj-ssr
-    cd angularj-ssr
+In ths example we will provide Angular as a web application with Spring Boot. If you don't want to use Spring Boot but instead other technologies like Java EE or other frameworks, you have to change the web server related code accordingly (I won't cover that).
 
-    # Go to the example application and build it (Grab a coffee because the build is automated - no local NodeJS or NPM are required)
-    cd example
-    mvn clean package
+### Phase 1: Create a new Java project
 
-    # Start the application
-    java -jar target/angularj-ssr-example-0.0.1.jar
+Start your favorite Java IDE and create a new Maven project:
 
-    # Open a web browser and head to these URLS
-    http://localhost:8080 (Main page)
-    http://localhost:8080/api/keyword (REST API)
+```bash
+Create a new Maven project
+```
 
-## Architecture
+Add all Spring Boot and AngularJ Universal related dependencies to your `demoapp/pom.xml`:
 
-The workflow of the prototype is divided into two phases: 1.) Bootstraping the setup and 2.) serving normal page requests. You can replace Spring Boot with every Java technology you like and also J2V8 is interchangable with another technlogie that is able to communicate with NodeJS (For example IPC). It's just mentioned that people understand the workflow of a web-ish example.
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.example</groupId>
+    <artifactId>demoapp</artifactId>
+    <packaging>jar</packaging>
+    <version>0.0.1</version>
+    <name>demoapp</name>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.6.RELEASE</version>
+        <relativePath/>
+    </parent>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>1.5.6.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <version>1.5.6.RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.swaechter</groupId>
+            <artifactId>angularj-universal-renderer-v8</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.2</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>1.5.6.RELEASE</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>
 
-Workflow of the bootstrap process based on the Spring Boot example (In :
+```
 
-1. Spring Boot is firing up and all components are getting initialized
-2. The Java class RenderService is trying to read the index.html and server.bundle.js and creates a local file copy of both files (NodeJS only works with files and not with Java input stream)
-3. The values are sent to the V8RenderEngine class which provides a wrapper around the J2V8 language bindings
-4. The V8RenderEngine creates a NodeJS instance and loads the server.bundle.js
-5. During the script execution, the script passes a render engine object to the calling Java JVM that uses the @angular/platform-server functionality. The class V8RenderEngine receives this method call and saves the render engine object. This render engine object is later used to parse the file template.
-6. Now the engine is ready to receive page requests
+Now that we have a project layout, we can continue with phase 2 and create a new Angular application inside the Java project.
 
-The workflow of a page request is as follow:
+### Phase 2: Create a new Angular application
 
-1. A user is requesting a page through his browser/request tool
-2. Spring Boot handles the request and passes the request to the V8RenderEngine. This requests includes the URI (For example / or /about) that is used to choose the right Angular component if routing is used. The render requests provide a Future object (Like a promise), that can be completed (resolved) in the future
-3. The V8RenderEngine passes an asynchronous request to the saved render engine. The request includes an unique render request UUID, the file template and the URI.
-4. The V8RenderEngine will render the request and pass the result to a method that has to be implemented in Java
-5. This method will reidentify the render request based on the UUID and complete the future of the caller
-6. The caller now can get the content of the render request and pass it to the client
-7. The client will see the page as prerendered HTML
+To make the integration with Java as smooth as possible, the Angular application will be located in `demoapp/src/main/angular` and the build output in `demoapp/src/main/resources`.
 
-## Problems
+Install the Angular CLI, create a new Angular application and rename the directory:
 
-All problems and ideas are discussed in this thread: https://github.com/angular/universal/issues/280
+```bash
+sudo npm install -g @angular/cli
+cd demoapp/src/main
+ng new demoapp
+mv demoapp angular
+```
 
-There are a few problems and many ideas:
+Modify your application to create a client and server bundle/build. You can skip 'Testing the bundle' if you would like to, because we will provide an own server later on:
 
-* Problem: The author loses track of his work. Please hunt him down, send a mail every week or hit him with a stick
-* Problem: Sometimes, the J2V8 engine/NodeJS hangs up or isn't able to work in parallel. This needs some further investigation. On Linux it works really well, on Windows problems can occur
-* Feature: Add preboot.js to capture and replay events. This is quite complicated, so it might be more interessting to integrate angular-ssr  that supports preboot.js (https://github.com/clbond/angular-ssr) into angularj-ssr
+```bash
+https://github.com/angular/angular-cli/wiki/stories-universal-rendering
+```
 
-## Contact and feedback
+Because Angular CLI uses CommonJS as module system for the server bundle, the resulting server bundle isn't relocatable. As soon the module system of the server bundle isn't able to find it's node_modules directory, it will fail to run. This isn't a problem while developing, but as soon as you embed your application into a Java resource and push it into production, your server bundle won't work anymore because it's unable to find the whole node_modules directory to load it's module from.
 
-This is a prototype that was published after a few days of work. If you encounter any problems or think something is poorly implemented, please create an issue or write me a mail (waechter.simon@gmail). I am really open to feedback as long it is constructive!
+To get around this problem, we use Webpack to create a relocatable server bundle (We refer to this bundle as relocatable server bundle beside the old server bundle). Create a Webpack configuration `demofile/src/main/angular/webpack.config.js` with the following content:
+
+```js
+var path = require('path');
+
+module.exports = {
+    target: 'node',
+    entry: {
+        server: path.resolve(process.cwd(), 'server.js')
+    },
+    output: {
+        path: path.resolve(process.cwd(), 'dist-serverbundle'),
+        filename: '[name].bundle.js'
+    },
+    resolve: {
+        modules: [
+            'node_modules'
+        ],
+        extensions: [
+            '.js'
+        ]
+    }
+};
+```
+
+In addition to that we also need a new file to integrate the server bundle into the newly built relocatable server bundle. Create a new server bundle file `demoapp/src/main/angular/server.js` with the following content:
+
+```js
+require("reflect-metadata");
+require("zone.js/dist/zone-node");
+
+var renderModuleFactory = require("@angular/platform-server").renderModuleFactory;
+var AppServerModuleFactory = require("./dist-server/main.bundle.js").AppServerModuleNgFactory;
+
+registerRenderElements(renderModuleFactory, AppServerModuleFactory);
+```
+
+That file will include the Angular Renderer `renderModuleFactory` that provides the functionality for rendering a module as well the precompiled (AOT) module `AppServerModuleFactory` from the server bundle. These two variables will be passed to a at the moment non existing function called `registerRenderElements` which we will later on provide within our Java JVM.
+
+If you take a closer look at the imports in your server.js you will see, that we are importing the server bundle as `dist-server/main.bundle.js`. This file doesn't exist because Angular CLI hashes the file name by default. To overcome this problem and to stick to the Java conventions for a valid project layout we need to change the output directories. But first of all we have to install operating system independent tools like `mkdirp` and `ncp`:
+
+```bash
+cd demoapp/src/main/angular
+npm install --save-dev ncp mkdirp
+```
+
+After that we disable the hashing for the server bundle and set the output directory to `demoapp/src/main/resources` in our `demoapp/src/main/angular/package.json` (Snipped build section):
+
+```json
+"scripts": {
+    "build": "npm run build-directory && npm run build-client && npm run build-server && npm run build-serverbundle",
+    "build-directory": "mkdirp ../resources",
+    "build-client": "ng build --app 0 --prod --output-path ../resources/public",
+    "build-server": "ng build --app 1 --prod --output-hashing none",
+    "build-serverbundle": "webpack && ncp dist-serverbundle/server.bundle.js ../resources/server.bundle.js"
+},
+```
+
+Now we can build all three bundles with the NPM build command:
+
+```bash
+cd demoapp/src/main/angular
+npm run build
+```
+
+As mentioned at the beginning, all final build output should land in `demoapp/src/main/resources`. This path is accessible from inside the Java application later on. The subdirectory `public` will be publicly accessible by the Spring Boot web server (If you are not using Spring Boot change `public` accordingly).
+
+Now we can continue with phase 3 and integrate the Angular application into the Java project.
+
+### Phase 3: Integrate the Angular application into the Java project
+
+Now we switch back to the Java part and create a web application with a controller and a service that is going to render our application.
+
+Create a new Java class file `demoapp/src/main/java/com/example/demoapp/DemoApplication.java` with the following content:
+
+```java
+package com.example.demoapp;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class DemoApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(DemoApplication.class, args);
+    }
+}
+```
+
+Create a new Java class file `demoapp/src/main/java/com/example/demoapp/DemoController.java` with the following content:
+
+```java
+package com.example.demoapp;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@Controller
+public class DemoController {
+
+    private final DemoService demoservice;
+
+    @Autowired
+    public DemoController(DemoService demoservice) {
+        this.demoservice = demoservice;
+    }
+
+    @ResponseBody
+    @GetMapping("/")
+    public String showIndex() throws Exception {
+        return demoservice.renderPage("/").get();
+    }
+}
+```
+
+Create a new Java class file `demoapp/src/main/java/com/example/demoapp/DemoService.java` with the following content:
+
+```java
+package com.example.demoapp;
+
+import ch.swaechter.angularjuniversal.renderer.Renderer;
+import ch.swaechter.angularjuniversal.renderer.assets.RenderAssetProvider;
+import ch.swaechter.angularjuniversal.renderer.assets.ResourceProvider;
+import ch.swaechter.angularjuniversal.v8renderer.V8RenderEngine;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Future;
+
+@Service
+public class DemoService {
+
+    private final Renderer renderer;
+
+    public DemoService() throws IOException {
+        // Get our index.html template and the relocatable server bundle
+        InputStream indexinputstream = getClass().getResourceAsStream("/public/index.html");
+        InputStream serverbundleinputstream = getClass().getResourceAsStream("/server.bundle.js");
+
+        // Pass these streams to an asset provider for the renderer
+        RenderAssetProvider provider = new ResourceProvider(indexinputstream, serverbundleinputstream, StandardCharsets.UTF_8);
+        // Or for a real file system: = new FilesystemProvider(new File("<index file path>"), new File("<server bundle file path>"), StandardCharsets.UTF_8);
+
+        // Create a V8 render engine and pass it to the renderer
+        V8RenderEngine v8renderengine = new V8RenderEngine();
+        this.renderer = new Renderer(v8renderengine, provider);
+
+        // Start the renderer
+        renderer.startEngine();
+    }
+
+    public Future<String> renderPage(String uri) {
+        // Render a request and return a resolvable future
+        return renderer.renderRequest(uri);
+    }
+}
+```
+
+Now start the Spring Boot application and head to the URL:
+
+```bash
+http://localhost:8080
+```
+
+You can test if the server side rendering is working if:
+
+* You see the page in general
+* You disable JavaScript temporary, reload and still see the page
+* You inspect the source code of the current page
+
+### Final notes
+
+Be aware of these information:
+
+* You have to build the Angular application with `npm run build`, otherwise the AngularJ Universal won't file the index template and relocatable server bundle and will fail
+* If you rebuild the Angular application you have to restart/reload the web application
+* The render asset provider `FilesystemProvider` which is loading it's files from the file system and not the Java resource has a watch mode you can use during development (If the file change date changes, the render engine will reload itself)
+* If you run into a problem, you can also check out the `angularj-universal-application` and `angularj-universal-webserver` modules. The application is separated from the web server to reuse the the generated files in other modules for testing.
+
+## Issues and Questions
+
+If you encounter a problem/bug or something isn't documented well enough, feel free to create an issue in the issue tracker (https://github.com/swaechter/angularj-universal/issues) or send me a mail (waechter.simon@gmail.com)
 
 ## Credits
 
- The prototype is heavily influenced by these projects (A huge thank you to the authors!):
+This project was heavily influenced by many other projects (A huge thank you to the authors):
 
-* https://github.com/bennylut/hello-angular2-universal-j2v8 for proving an Angular 2 example that shows how the J2V8 library and NodeJS can be used to render pages
-* https://github.com/evertonrobertoauler/cli-universal-demo for providing a server side example of Angular 2 that makes it possible to enable AOT compilation.
+* https://github.com/bennylut/hello-angular2-universal-j2v8 for providing an Angular 2 example that shows how the J2V8 library and NodeJS can be used to render pages
 * https://github.com/blacksonic/angular2-aot-cli-webpack-plugin for providing an example of a relocatable webpack bundle

@@ -2,23 +2,24 @@
 
 ## Background
 
-With the introduction of Angular Universal, a solution for rendering Angular applications on the server side and sending them to the browser as 'already-bootstraped' application, Angular became more interesting for many developers that were using a Node.js environment. It solved the problems of SEO optimization, prerended page previews from Facebook and resource management (For more information see https://scotch.io/tutorials/server-side-rendering-in-angular-2-with-angular-universal). For traditional web developers in the Java enterprise environment with technologies like Spring Boot or Java EE, these technologies required the use of a separate Node.js server - a requirement that often just wasn't possible or not allowed (Skepticism against Node.js/JavaScript, technology fragmentation, more complicated setup etc.).
+With the introduction of Angular Universal, a solution for rendering Angular applications on the server side and sending them to the browser as 'already-bootstraped' application, Angular became more interesting for many developers that were using a Node.js environment. It solved the problems of SEO optimization, prerended page previews from Facebook & others and resource management (For more information see https://scotch.io/tutorials/server-side-rendering-in-angular-2-with-angular-universal). For traditional web developers in the Java enterprise environment with technologies like Spring Boot or Java EE, these technologies required the use of a separate Node.js runtime in combination with a web framework like Express.js - requirements that often just weren't possible or not allowed (Two run times with two web sockets, technology fragmentation or just skepticism against Node.js/JavaScript in general etc.).
 
-The author of this project used the benefits and advantages of the Node.js environment and tried to make them accessible in a Java and JVM environment. In the end, he was able to integrate and embed a Node.js instance that is launched and handled by the Java application. This makes it possible to use all the Angular Universal features in Java without the costs of having a local Node.js instance (Everything is integrated in the Java application and also managed). This makes it possible integrate Angular 4+ with Angular Universal into a traditional Java web stack.
+The author of this project used the benefits and advantages of the Node.js environment and tried to make them accessible in a Java and JVM environment without a having a server framework like Express.js. In the end, he was able to integrate and embed a Node.js instance that is launched and handled by the Java application. This makes it possible to use all the Angular Universal features in Java without the costs of having a local Node.js instance (Everything is integrated in the Java application and also managed). This makes it possible integrate Angular 4+ with Angular Universal into a traditional Java web stack.
 
 ## Overview
 
 This repository is divided into several modules:
 
 * angularj-universal-renderer: Render SDK that provides the core functionality and allows a developer to implement an own render solution
-* angularj-universal-renderer-v8: Specific implementation that uses a Node.js/V8 engine for rendering
-* angularj-universal-application: Traditional angular application and the required server files
+* angularj-universal-renderer-v8: Specific render solution that uses a Node.js/V8 engine for rendering
+* angularj-universal-application: Traditional Angular application and the required server files
 * angularj-universal-webserver: Web server with Spring Boot that serves as an example
 
 ## Getting started
 
 ### Phase 0: Overview
-The process to create a new Java project, a new Angular application and combining everything together can be splitted up into three phases:
+
+The whole getting started process can be divided into three phases:
 
 1. Create a new Java application with Maven as build system
 2. Create a new Angular application inside the Java project
@@ -28,85 +29,33 @@ In ths example we will provide Angular as a web application with Spring Boot. If
 
 ### Phase 1: Create a new Java project
 
-Start your favorite Java IDE and create a new Maven project:
+Head over to `http://start.spring.io/` and create a new Spring Boot project with Maven. It is important to select `Ẁeb` as dependency:
 
 ```bash
-Create a new Maven project
+http://start.spring.io/
 ```
 
-Add all Spring Boot and AngularJ Universal related dependencies to your `demoapp/pom.xml`:
+Download and import that Maven project in your favorite Java IDE and add the V8 renderer of AngularJ Unviersal as dependency:
 
 ```xml
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.example</groupId>
-    <artifactId>demoapp</artifactId>
-    <packaging>jar</packaging>
+<dependency>
+    <groupId>ch.swaechter</groupId>
+    <artifactId>angularj-universal-renderer-v8</artifactId>
     <version>0.0.1</version>
-    <name>demoapp</name>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.6.RELEASE</version>
-        <relativePath/>
-    </parent>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>1.8</java.version>
-    </properties>
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <version>1.5.6.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <version>1.5.6.RELEASE</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>ch.swaechter</groupId>
-            <artifactId>angularj-universal-renderer-v8</artifactId>
-            <version>0.0.1</version>
-        </dependency>
-    </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.2</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>1.5.6.RELEASE</version>
-            </plugin>
-        </plugins>
-    </build>
-</project>
-
+</dependency>
 ```
 
 Now that we have a project layout, we can continue with phase 2 and create a new Angular application inside the Java project.
 
 ### Phase 2: Create a new Angular application
 
-To make the integration with Java as smooth as possible, the Angular application will be located in `demoapp/src/main/angular` and the build output in `demoapp/src/main/resources`.
+To make the integration with Java as smooth as possible, we will stick to the Maven default layout `https://maven.apache.org/guides/introduction/introduction-to-the-standard-directory-layout.html`. The Angular application will be located in `demoapp/src/main/angular` and the build output in `demoapp/src/main/resources`.
 
 Install the Angular CLI, create a new Angular application and rename the directory:
 
 ```bash
-sudo npm install -g @angular/cli
 cd demoapp/src/main
+sudo npm install -g @angular/cli
 ng new demoapp
 mv demoapp angular
 ```
@@ -197,8 +146,22 @@ Create a new Java class file `demoapp/src/main/java/com/example/demoapp/DemoAppl
 ```java
 package com.example.demoapp;
 
+import ch.swaechter.angularjuniversal.renderer.Renderer;
+import ch.swaechter.angularjuniversal.renderer.assets.RenderAssetProvider;
+import ch.swaechter.angularjuniversal.renderer.assets.ResourceProvider;
+import ch.swaechter.angularjuniversal.v8renderer.V8RenderEngine;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Future;
 
 @SpringBootApplication
 public class DemoApplication {
@@ -206,78 +169,50 @@ public class DemoApplication {
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
     }
-}
-```
 
-Create a new Java class file `demoapp/src/main/java/com/example/demoapp/DemoController.java` with the following content:
+    @Controller
+    public class DemoController {
 
-```java
-package com.example.demoapp;
+        private final DemoService demoservice;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+        @Autowired
+        public DemoController(DemoService demoservice) {
+            this.demoservice = demoservice;
+        }
 
-@Controller
-public class DemoController {
-
-    private final DemoService demoservice;
-
-    @Autowired
-    public DemoController(DemoService demoservice) {
-        this.demoservice = demoservice;
+        @ResponseBody
+        @GetMapping("/")
+        public String showIndex() throws Exception {
+            return demoservice.renderPage("/").get();
+        }
     }
 
-    @ResponseBody
-    @GetMapping("/")
-    public String showIndex() throws Exception {
-        return demoservice.renderPage("/").get();
-    }
-}
-```
+    @Service
+    public class DemoService {
 
-Create a new Java class file `demoapp/src/main/java/com/example/demoapp/DemoService.java` with the following content:
+        private final Renderer renderer;
 
-```java
-package com.example.demoapp;
+        public DemoService() throws IOException {
+            // Get our index.html template and the relocatable server bundle
+            InputStream indexinputstream = getClass().getResourceAsStream("/public/index.html");
+            InputStream serverbundleinputstream = getClass().getResourceAsStream("/server.bundle.js");
 
-import ch.swaechter.angularjuniversal.renderer.Renderer;
-import ch.swaechter.angularjuniversal.renderer.assets.RenderAssetProvider;
-import ch.swaechter.angularjuniversal.renderer.assets.ResourceProvider;
-import ch.swaechter.angularjuniversal.v8renderer.V8RenderEngine;
-import org.springframework.stereotype.Service;
+            // Pass these streams to an asset provider for the renderer
+            RenderAssetProvider provider = new ResourceProvider(indexinputstream, serverbundleinputstream, StandardCharsets.UTF_8);
+            // Or for a real file system: = new FilesystemProvider(new File("<index file path>"), new File("<server bundle file path>"), StandardCharsets.UTF_8);
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.Future;
+            // Create a V8 render engine and pass it to the renderer
+            V8RenderEngine v8renderengine = new V8RenderEngine();
+            this.renderer = new Renderer(v8renderengine, provider);
 
-@Service
-public class DemoService {
+            // Start the renderer
+            renderer.startEngine();
+        }
 
-    private final Renderer renderer;
-
-    public DemoService() throws IOException {
-        // Get our index.html template and the relocatable server bundle
-        InputStream indexinputstream = getClass().getResourceAsStream("/public/index.html");
-        InputStream serverbundleinputstream = getClass().getResourceAsStream("/server.bundle.js");
-
-        // Pass these streams to an asset provider for the renderer
-        RenderAssetProvider provider = new ResourceProvider(indexinputstream, serverbundleinputstream, StandardCharsets.UTF_8);
-        // Or for a real file system: = new FilesystemProvider(new File("<index file path>"), new File("<server bundle file path>"), StandardCharsets.UTF_8);
-
-        // Create a V8 render engine and pass it to the renderer
-        V8RenderEngine v8renderengine = new V8RenderEngine();
-        this.renderer = new Renderer(v8renderengine, provider);
-
-        // Start the renderer
-        renderer.startEngine();
-    }
-
-    public Future<String> renderPage(String uri) {
-        // Render a request and return a resolvable future
-        return renderer.renderRequest(uri);
+        public Future<String> renderPage(String uri) {
+            // Render a request and return a resolvable future
+            return renderer.renderRequest(uri);
+        }
     }
 }
 ```

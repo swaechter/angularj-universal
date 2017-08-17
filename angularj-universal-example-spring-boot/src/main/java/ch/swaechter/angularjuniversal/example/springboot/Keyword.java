@@ -1,4 +1,4 @@
-package ch.swaechter.angularjuniversal.webserver;
+package ch.swaechter.angularjuniversal.example.springboot;
 
 /**
  * This class is responsible for representing a keyword with a name.

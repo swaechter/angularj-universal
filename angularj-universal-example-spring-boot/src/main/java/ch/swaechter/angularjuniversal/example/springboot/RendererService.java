@@ -1,4 +1,4 @@
-package ch.swaechter.angularjuniversal.webserver;
+package ch.swaechter.angularjuniversal.example.springboot;
 
 import ch.swaechter.angularjuniversal.data.DataLoader;
 import ch.swaechter.angularjuniversal.renderer.Renderer;
@@ -31,13 +31,12 @@ public class RendererService {
      * @throws IOException Exception in case we are unable to read the assets
      */
     public RendererService() throws IOException {
-        // In our web application we load the index template/server bundle from our JAR resources, but a file system provider is also possible
         DataLoader dataloader = new DataLoader();
         InputStream indexinputstream = dataloader.getIndexAsInputStream();
         InputStream serverbundleinputstream = dataloader.getServerBundleAsInputStream();
         RenderAssetProvider provider = new ResourceProvider(indexinputstream, serverbundleinputstream, StandardCharsets.UTF_8);
-        this.renderer = new Renderer(new V8RenderEngine(), provider);
-        this.renderer.startEngine();
+        renderer = new Renderer(new V8RenderEngine(), provider);
+        renderer.startEngine();
     }
 
     /**

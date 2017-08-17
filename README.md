@@ -13,7 +13,7 @@ This repository is divided into several modules:
 * angularj-universal-renderer: Render SDK that provides the core functionality and allows a developer to implement an own render solution
 * angularj-universal-renderer-v8: Specific render solution that uses a Node.js/V8 engine for rendering
 * angularj-universal-application: Traditional Angular application and the required server files
-* angularj-universal-webserver: Web server with Spring Boot that serves as an example
+* angularj-universal-example-spring-boot: Example with Spring Boot as web framework
 
 ## Getting started
 
@@ -236,7 +236,7 @@ Be aware of these information:
 * You have to build the Angular application with `npm run build`, otherwise the AngularJ Universal won't file the index template and relocatable server bundle and will fail
 * If you rebuild the Angular application you have to restart/reload the web application
 * The render asset provider `FilesystemProvider` which is loading it's files from the file system and not the Java resource has a watch mode you can use during development (If the file change date changes, the render engine will reload itself)
-* If you run into a problem, you can also check out the `angularj-universal-application` and `angularj-universal-webserver` modules. The application is separated from the web server to reuse the the generated files in other modules for testing.
+* If you run into a problem, you can also check out the `angularj-universal-application` and `angularj-universal-example-spring-boot` modules. The application is separated from the web server to reuse the the generated files in other modules for testing.
 
 ## Issues and Questions
 

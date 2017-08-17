@@ -1,4 +1,4 @@
-package ch.swaechter.angularjuniversal.webserver;
+package ch.swaechter.angularjuniversal.example.springboot;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,11 +1,11 @@
-package ch.swaechter.angularjuniversal.webserver;
+package ch.swaechter.angularjuniversal.example.springboot;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 
 /**
- * This class provides the entry point for firing up the Spring Boot Application.
+ * This class provides the entry point for firing up the Spring Boot application.
  *
  * @author Simon Wächter
  */

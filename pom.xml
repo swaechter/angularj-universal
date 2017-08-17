@@ -46,14 +46,14 @@
         <module>angularj-universal-application</module>
         <module>angularj-universal-renderer</module>
         <module>angularj-universal-renderer-v8</module>
-        <module>angularj-universal-webserver</module>
+        <module>angularj-universal-example-spring-boot</module>
     </modules>
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.1</version>
+                <version>3.6.2</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>

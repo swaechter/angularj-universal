@@ -1,4 +1,4 @@
-package ch.swaechter.angularjuniversal.webserver;
+package ch.swaechter.angularjuniversal.example.springboot;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

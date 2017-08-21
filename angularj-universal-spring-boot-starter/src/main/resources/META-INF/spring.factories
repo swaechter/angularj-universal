@@ -1,0 +1,1 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=ch.swaechter.angularjuniversal.springboot.starter.AngularJUniversalAutoConfiguration

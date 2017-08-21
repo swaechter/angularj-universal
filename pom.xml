@@ -46,6 +46,7 @@
         <module>angularj-universal-application</module>
         <module>angularj-universal-renderer</module>
         <module>angularj-universal-renderer-v8</module>
+        <module>angularj-universal-spring-boot-starter</module>
         <module>angularj-universal-example-spring-boot</module>
     </modules>
     <build>

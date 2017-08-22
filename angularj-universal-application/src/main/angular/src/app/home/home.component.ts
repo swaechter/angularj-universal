@@ -3,9 +3,9 @@ import {KeywordService} from "../shared/keyword/keyword.service";
 import {Keyword} from "../shared/keyword/keyword.model";
 
 @Component({
-    templateUrl: "overview.component.html"
+    templateUrl: "home.component.html"
 })
-export class OverviewComponent implements OnInit {
+export class HomeComponent implements OnInit {
 
     keywords: Keyword[];
 

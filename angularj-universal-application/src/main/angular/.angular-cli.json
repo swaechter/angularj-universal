@@ -30,10 +30,7 @@
             "platform": "server",
             "root": "src",
             "outDir": "dist-server",
-            "assets": [
-                "assets",
-                "favicon.ico"
-            ],
+            "assets": [],
             "index": "index.html",
             "main": "main.server.ts",
             "test": "test.ts",
@@ -75,28 +72,6 @@
     },
     "defaults": {
         "styleExt": "css",
-        "component": {
-            "spec": false,
-            "inlineStyle": true,
-            "inlineTemplate": true
-        },
-        "directive": {
-            "spec": false
-        },
-        "class": {
-            "spec": false
-        },
-        "guard": {
-            "spec": false
-        },
-        "module": {
-            "spec": false
-        },
-        "pipe": {
-            "spec": false
-        },
-        "service": {
-            "spec": false
-        }
+        "component": {}
     }
 }

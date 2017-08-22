@@ -43,10 +43,10 @@ public class WebApplicationTest {
     @Test
     public void testPages() {
         String page1 = resttemplate.getForObject("/", String.class);
-        Assert.assertTrue(page1.contains("Overview"));
+        Assert.assertTrue(page1.contains("Home"));
 
-        String page2 = resttemplate.getForObject("/overview", String.class);
-        Assert.assertTrue(page2.contains("Overview"));
+        String page2 = resttemplate.getForObject("/home", String.class);
+        Assert.assertTrue(page2.contains("Home"));
 
         String page3 = resttemplate.getForObject("/about", String.class);
         Assert.assertTrue(page3.contains("About"));

@@ -106,7 +106,6 @@ public class AngularJUniversalAutoConfiguration {
      */
     @Bean
     public ViewResolver getViewResolver(Renderer renderer) {
-        //AngularJUniversalViewResolver viewresolver = new AngularJUniversalViewResolver(renderer);
         AngularJUniversalViewResolver viewresolver = new AngularJUniversalViewResolver(renderer);
         viewresolver.setOrder(0);
         return viewresolver;

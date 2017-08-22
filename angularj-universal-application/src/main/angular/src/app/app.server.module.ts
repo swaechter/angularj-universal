@@ -1,4 +1,4 @@
-import {NgModule, enableProdMode} from "@angular/core";
+import {NgModule} from "@angular/core";
 import {ServerModule} from "@angular/platform-server";
 import {AppModule} from "./app.module";
 import {AppComponent} from "./app.component";
@@ -8,11 +8,7 @@ import {AppComponent} from "./app.component";
         AppModule,
         ServerModule
     ],
-    bootstrap: [
-        AppComponent
-    ]
+    bootstrap: [AppComponent],
 })
 export class AppServerModule {
 }
-
-enableProdMode();

@@ -1,17 +1,15 @@
-import {Http} from "@angular/http";
 import {Injectable} from "@angular/core";
-import {Observable} from "rxjs";
-import "rxjs/Rx";
-import {Settings} from "../../settings";
+import {HttpClient} from "@angular/common/http";
 import {Keyword} from "./keyword.model";
+import {Settings} from "../../settings";
 
 @Injectable()
 export class KeywordService {
 
-    constructor(private http: Http) {
+    constructor(private http: HttpClient) {
     }
 
-    getKeywords(): Observable<Keyword[]> {
-        return this.http.get(Settings.BACKEND_URL + "/api/keyword").map(data => <Keyword[]> data.json());
+    getKeywords() {
+        return this.http.get<Keyword[]>(Settings.BACKEND_URL + "/api/keyword");
     }
 }

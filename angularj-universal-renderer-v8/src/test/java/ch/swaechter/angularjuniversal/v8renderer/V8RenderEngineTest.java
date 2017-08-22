@@ -36,11 +36,11 @@ public class V8RenderEngineTest {
 
         Future<String> future1 = renderer.renderRequest("/");
         Assert.assertNotNull(future1);
-        Assert.assertTrue(future1.get().contains("Overview"));
+        Assert.assertTrue(future1.get().contains("Home"));
 
-        Future<String> future2 = renderer.renderRequest("/overview");
+        Future<String> future2 = renderer.renderRequest("/home");
         Assert.assertNotNull(future2);
-        Assert.assertTrue(future2.get().contains("Overview"));
+        Assert.assertTrue(future2.get().contains("Home"));
 
         Future<String> future3 = renderer.renderRequest("/about");
         Assert.assertNotNull(future3);

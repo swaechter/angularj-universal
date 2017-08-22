@@ -1,16 +1,16 @@
 import {Routes} from "@angular/router";
-import {OverviewComponent} from "./overview/overview.component";
+import {HomeComponent} from "./home/home.component";
 import {AboutComponent} from "./about/about.component";
 
 export const approutes: Routes = [
     {
         path: "",
-        redirectTo: "/overview",
+        redirectTo: "/home",
         pathMatch: "full"
     },
     {
-        path: "overview",
-        component: OverviewComponent
+        path: "home",
+        component: HomeComponent
     },
     {
         path: "about",
@@ -18,6 +18,6 @@ export const approutes: Routes = [
     },
     {
         path: "**",
-        component: OverviewComponent
+        component: HomeComponent
     }
 ];

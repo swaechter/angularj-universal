@@ -19,12 +19,17 @@
     <dependencies>
         <dependency>
             <groupId>ch.swaechter</groupId>
+            <artifactId>angularj-universal-application</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.swaechter</groupId>
             <artifactId>angularj-universal-renderer-v8</artifactId>
             <version>0.0.1</version>
         </dependency>
         <dependency>
             <groupId>ch.swaechter</groupId>
-            <artifactId>angularj-universal-application</artifactId>
+            <artifactId>angularj-universal-spring-boot-starter</artifactId>
             <version>0.0.1</version>
         </dependency>
         <dependency>

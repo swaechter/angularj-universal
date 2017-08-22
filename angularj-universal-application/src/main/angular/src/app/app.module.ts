@@ -1,33 +1,27 @@
-import {NgModule} from "@angular/core";
 import {BrowserModule} from "@angular/platform-browser";
+import {NgModule} from "@angular/core";
 import {RouterModule} from "@angular/router";
+import {HttpClientModule} from "@angular/common/http";
 import {AppComponent} from "./app.component";
-import {approutes} from "./app.routes";
-import {OverviewComponent} from "./overview/overview.component";
+import {HomeComponent} from "./home/home.component";
 import {AboutComponent} from "./about/about.component";
 import {KeywordService} from "./shared/keyword/keyword.service";
+import {approutes} from "./app.routes";
 
 @NgModule({
-    imports: [
-        RouterModule.forRoot(approutes),
-        BrowserModule.withServerTransition({
-            appId: "app-root"
-        }),
-    ],
     declarations: [
         AppComponent,
-        OverviewComponent,
+        HomeComponent,
         AboutComponent
     ],
-    providers: [
-        KeywordService
+    imports: [
+        BrowserModule.withServerTransition({appId: "my-app"}),
+        RouterModule.forRoot(approutes),
+        HttpClientModule
     ],
-    bootstrap: [
-        AppComponent
-    ],
-    exports: [
-        AppComponent
-    ]
+    exports: [RouterModule],
+    providers: [KeywordService],
+    bootstrap: [AppComponent]
 })
 export class AppModule {
 }

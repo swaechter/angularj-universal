@@ -13,7 +13,8 @@ This repository is divided into several modules:
 * angularj-universal-renderer: Render SDK that provides the core functionality and allows a developer to implement an own render solution
 * angularj-universal-renderer-v8: Specific render solution that uses a Node.js/V8 engine for rendering
 * angularj-universal-application: Traditional Angular application and the required server files
-* angularj-universal-example-spring-boot: Example with Spring Boot as web framework
+* angularj-universal-spring-boot-starter: Spring Boot starter that provides an integration into Spring Boot
+* angularj-universal-example-spring-boot: Web application as example with Spring Boot and the starter integration
 
 ## Getting started
 

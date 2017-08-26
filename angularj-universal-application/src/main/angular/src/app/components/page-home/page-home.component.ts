@@ -1,11 +1,12 @@
 import {Component, OnInit} from "@angular/core";
-import {KeywordService} from "../shared/keyword/keyword.service";
-import {Keyword} from "../shared/keyword/keyword.model";
+import {KeywordService} from "../../services/keyword/keyword.service";
+import {Keyword} from "../../services/keyword/keyword.model";
 
 @Component({
-    templateUrl: "home.component.html"
+    templateUrl: "page-home.component.html",
+    styleUrls: ["page-home.component.css"]
 })
-export class HomeComponent implements OnInit {
+export class PageHomeComponent implements OnInit {
 
     keywords: Keyword[];
 

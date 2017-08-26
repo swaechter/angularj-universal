@@ -18,8 +18,14 @@
             "tsconfig": "tsconfig.app.json",
             "testTsconfig": "tsconfig.spec.json",
             "prefix": "app",
-            "styles": [],
-            "scripts": [],
+            "styles": [
+                "../node_modules/bootstrap/dist/css/bootstrap.min.css"
+            ],
+            "scripts": [
+                "../node_modules/jquery/dist/jquery.min.js",
+                "../node_modules/tether/dist/js/tether.min.js",
+                "../node_modules/bootstrap/dist/js/bootstrap.min.js"
+            ],
             "environmentSource": "environments/environment.ts",
             "environments": {
                 "dev": "environments/environment.ts",
@@ -37,8 +43,14 @@
             "tsconfig": "tsconfig.server.json",
             "testTsconfig": "tsconfig.spec.json",
             "prefix": "app",
-            "styles": [],
-            "scripts": [],
+            "styles": [
+                "../node_modules/bootstrap/dist/css/bootstrap.min.css"
+            ],
+            "scripts": [
+                "../node_modules/jquery/dist/jquery.min.js",
+                "../node_modules/tether/dist/js/tether.min.js",
+                "../node_modules/bootstrap/dist/js/bootstrap.min.js"
+            ],
             "environmentSource": "environments/environment.ts",
             "environments": {
                 "dev": "environments/environment.ts",

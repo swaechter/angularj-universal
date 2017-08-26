@@ -1,0 +1,27 @@
+<div class="container">
+    <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+        <button class="navbar-toggler-right navbar-toggler" type="button" data-toggle="collapse"
+                data-target="#pagenavigation" aria-controls="pagenavigation" aria-expanded="false"
+                aria-label="Toggle Navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand" href="#">Angular</a>
+        <div class="collapse navbar-collapse" id="pagenavigation">
+            <ul class="nav navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/page/home" routerLinkActive="active">Home</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/page/about" routerLinkActive="active">About</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/logout" routerLinkActive="active">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <router-outlet></router-outlet>
+</div>

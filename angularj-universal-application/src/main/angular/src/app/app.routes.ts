@@ -1,23 +1,48 @@
 import {Routes} from "@angular/router";
-import {HomeComponent} from "./home/home.component";
-import {AboutComponent} from "./about/about.component";
+//import {AuthenticationGuard} from "./guards/authentication.guard";
+import {LoginComponent} from "./components/login/login.component";
+import {LogoutComponent} from "./components/logout/logout.component";
+import {PageComponent} from "./components/page/page.component";
+import {PageHomeComponent} from "./components/page-home/page-home.component";
+import {PageAboutComponent} from "./components/page-about/page-about.component";
 
 export const approutes: Routes = [
     {
         path: "",
-        redirectTo: "/home",
+        redirectTo: "/login",
         pathMatch: "full"
     },
     {
-        path: "home",
-        component: HomeComponent
+        path: "login",
+        component: LoginComponent
     },
     {
-        path: "about",
-        component: AboutComponent
+        path: "logout",
+        component: LogoutComponent
+    },
+    {
+        path: "page",
+        component: PageComponent,
+        //canActivate: [AuthenticationGuard],
+        children: [
+            {
+                path: "",
+                redirectTo: "home",
+                pathMatch: "full"
+            },
+            {
+                path: "home",
+                component: PageHomeComponent
+            },
+            {
+                path: "about",
+                component: PageAboutComponent
+            }
+        ]
     },
     {
         path: "**",
-        component: HomeComponent
+        redirectTo: "/login",
+        pathMatch: "full"
     }
 ];

@@ -50,7 +50,7 @@ public class AngularJUniversalViewResolver extends AbstractTemplateViewResolver 
      */
     @Override
     public boolean canHandle(String modelname, Locale locale) {
-        List<String> endpoints = Arrays.asList("/", "/home", "/about"); // TODO: Remove hardcoded values
+        List<String> endpoints = Arrays.asList("/", "/login", "/logout", "/page", "/page/home", "/page/about"); // TODO: Remove hardcoded values
         if (endpoints.contains(modelname)) {
             return true;
         } else {

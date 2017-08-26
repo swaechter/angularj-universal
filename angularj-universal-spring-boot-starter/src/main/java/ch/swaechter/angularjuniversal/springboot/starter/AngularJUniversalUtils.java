@@ -27,7 +27,6 @@ public class AngularJUniversalUtils {
         } catch (Exception exception) {
             return null;
         }
-
     }
 
     /**

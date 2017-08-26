@@ -11,6 +11,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class AngularJUniversalProperties {
 
     /**
+     * Comma separated list with all routes of the application.
+     */
+    private String routes = "/";
+
+    /**
      * Path of the index resource.
      */
     private String indexresourcepath = "/public/index.html";
@@ -24,6 +29,24 @@ public class AngularJUniversalProperties {
      * Charset used for reading and rendering.
      */
     private String charset = "UTF-8";
+
+    /**
+     * Get all routes of the application as comma separated list.
+     *
+     * @return All routes as comma separated list
+     */
+    public String getRoutes() {
+        return routes;
+    }
+
+    /**
+     * Set all routes of the application as comma separated list.
+     *
+     * @param routes All routes as comma separated list
+     */
+    public void setRoutes(String routes) {
+        this.routes = routes;
+    }
 
     /**
      * Get the path of the index resource.

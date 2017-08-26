@@ -18,6 +18,8 @@ import org.springframework.web.servlet.ViewResolver;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This class serves as an entry point for the AngularJ Universal Spring Boot starter.
@@ -28,6 +30,11 @@ import java.nio.charset.Charset;
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(AngularJUniversalProperties.class)
 public class AngularJUniversalAutoConfiguration {
+
+    /**
+     * Delimiter that separates the routes in the configuration.
+     */
+    private static final String ROUTE_DELIMITER = ",";
 
     /**
      * Properties loaded by Spring Boot and used by this starter.
@@ -55,6 +62,11 @@ public class AngularJUniversalAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public Renderer getRenderer(RenderEngine engine, ResourceLoader resourceloader) throws IOException {
+        // Check the routes
+        if (properties.getRoutes().split(ROUTE_DELIMITER).length == 0) {
+            throw new RuntimeException("AngularJ Universal starter is unable to parse and find any routes for " + properties.getRoutes());
+        }
+
         // Get the input stream for the index
         InputStream indexinputstream = AngularJUniversalUtils.getInputStreamFromResource(resourceloader, properties.getIndexResourcePath());
         if (indexinputstream == null) {
@@ -106,7 +118,8 @@ public class AngularJUniversalAutoConfiguration {
      */
     @Bean
     public ViewResolver getViewResolver(Renderer renderer) {
-        AngularJUniversalViewResolver viewresolver = new AngularJUniversalViewResolver(renderer);
+        List<String> routes = Arrays.asList(properties.getRoutes().split(ROUTE_DELIMITER));
+        AngularJUniversalViewResolver viewresolver = new AngularJUniversalViewResolver(renderer, routes);
         viewresolver.setOrder(0);
         return viewresolver;
     }

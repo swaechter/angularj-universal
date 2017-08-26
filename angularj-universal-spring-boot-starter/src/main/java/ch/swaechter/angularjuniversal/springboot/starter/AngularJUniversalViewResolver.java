@@ -4,7 +4,6 @@ import ch.swaechter.angularjuniversal.renderer.Renderer;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -21,13 +20,20 @@ public class AngularJUniversalViewResolver extends AbstractTemplateViewResolver 
     private final Renderer renderer;
 
     /**
-     * Constructor with the renderer that will be passed to the view.
+     * All routes of the application that are supported by the view resolver.
+     */
+    private final List<String> routes;
+
+    /**
+     * Constructor with the renderer that will be passed to the view and all supported routes by the view resolver.
      *
      * @param renderer Renderer
+     * @param routes   All supported routes
      */
-    public AngularJUniversalViewResolver(Renderer renderer) {
+    public AngularJUniversalViewResolver(Renderer renderer, List<String> routes) {
         setViewClass(requiredViewClass());
         this.renderer = renderer;
+        this.routes = routes;
     }
 
     /**
@@ -50,12 +56,7 @@ public class AngularJUniversalViewResolver extends AbstractTemplateViewResolver 
      */
     @Override
     public boolean canHandle(String modelname, Locale locale) {
-        List<String> endpoints = Arrays.asList("/", "/login", "/logout", "/page", "/page/home", "/page/about"); // TODO: Remove hardcoded values
-        if (endpoints.contains(modelname)) {
-            return true;
-        } else {
-            return false;
-        }
+        return routes.contains(modelname);
     }
 
     /**

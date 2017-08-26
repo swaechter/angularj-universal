@@ -2,7 +2,6 @@ package ch.swaechter.angularjuniversal.renderer;
 
 import ch.swaechter.angularjuniversal.renderer.assets.RenderAssetProvider;
 import ch.swaechter.angularjuniversal.renderer.engine.RenderEngine;
-import ch.swaechter.angularjuniversal.renderer.queue.RenderFuture;
 import ch.swaechter.angularjuniversal.renderer.queue.RenderQueue;
 
 import java.io.IOException;
@@ -70,7 +69,7 @@ public class Renderer {
             return;
         }
 
-        while (!queue.isQueuePending()) {
+        while (!queue.isQueueEmpty()) {
             sleep(50);
         }
 
@@ -93,8 +92,7 @@ public class Renderer {
      * @return Future that can be accessed later on to get the rendered content
      */
     public Future<String> renderRequest(String uri) {
-        RenderFuture future = queue.createRenderFuture(uri);
-        return future.getCompletableFuture();
+        return queue.createRenderFuture(uri).getFuture();
     }
 
     /**

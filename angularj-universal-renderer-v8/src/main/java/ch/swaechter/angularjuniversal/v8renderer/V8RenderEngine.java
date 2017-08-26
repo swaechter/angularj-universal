@@ -4,14 +4,12 @@ import ch.swaechter.angularjuniversal.renderer.assets.RenderAssetProvider;
 import ch.swaechter.angularjuniversal.renderer.engine.RenderEngine;
 import ch.swaechter.angularjuniversal.renderer.queue.RenderQueue;
 import ch.swaechter.angularjuniversal.renderer.queue.RenderRequest;
-import ch.swaechter.angularjuniversal.renderer.queue.RenderResponse;
 import com.eclipsesource.v8.NodeJS;
 import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Object;
 import com.eclipsesource.v8.utils.MemoryManager;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
 /**
  * The class V8RenderEngine provides a NodeJS/V8 based implementation of the render engine.
@@ -78,7 +76,7 @@ public class V8RenderEngine implements RenderEngine {
                 String html = v8Array.getString(1);
                 V8Object error = v8Array.getObject(2);
                 if (error == null) {
-                    queue.resolveRenderFuture(new RenderResponse(uuid, html));
+                    queue.resolveRenderReuest(uuid, html);
                 } else {
                     System.err.println("The V8 render received a render response with an error for " + uuid + ": " + error);
                 }
@@ -90,28 +88,37 @@ public class V8RenderEngine implements RenderEngine {
             // Load the server bundle
             nodejs.exec(provider.getServerBundle());
 
+            // Handle the first two registered methods
+            nodejs.handleMessage();
+            nodejs.handleMessage();
+
             // Handle incoming requests
             while (running) {
                 // Handle the next message
                 nodejs.handleMessage();
 
                 // Get the next render request
-                Optional<RenderRequest> requestitem = queue.getNextRenderRequest();
-                if (requestitem.isPresent()) {
-                    RenderRequest request = requestitem.get();
-                    V8Array parameters = new V8Array(nodejs.getRuntime());
-                    try {
-                        parameters.push(renderfunction);
-                        parameters.push(rendermodule);
-                        parameters.push(request.getUuid());
-                        parameters.push(provider.getIndexContent());
-                        parameters.push(request.getUri());
-                        nodejs.getRuntime().executeVoidFunction("renderPage", parameters);
-                    } finally {
-                        parameters.release();
+                RenderRequest renderrequest = queue.getNextRenderRequest();
+                V8Array parameters = new V8Array(nodejs.getRuntime());
+                try {
+                    // Execute the render request
+                    parameters.push(renderfunction);
+                    parameters.push(rendermodule);
+                    parameters.push(renderrequest.getUuid());
+                    parameters.push(provider.getIndexContent());
+                    parameters.push(renderrequest.getUri());
+                    nodejs.getRuntime().executeVoidFunction("renderPage", parameters);
+
+                    // Handle messages until the render request is resolved
+                    while (!renderrequest.getFuture().isDone()) {
+                        nodejs.handleMessage();
                     }
+                } finally {
+                    parameters.release();
                 }
             }
+        } catch (InterruptedException exception) {
+            // Do nothing
         } catch (Exception exception) {
             exception.printStackTrace();
         } finally {

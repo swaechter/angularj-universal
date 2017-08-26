@@ -1,81 +1,83 @@
 package ch.swaechter.angularjuniversal.renderer.queue;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
- * The class RenderQueue contains all render requests and manages their state. The render queue is passed to the render
- * engine and accessed by this entity. There are methods to create a new render request, set the render request
- * rendering and resolve it.
+ * The class RenderQueue contains all render requests including queued render requests and requests that are being
+ * processed. There are methods to create a new render request, get the next unresolved one and to resolve a processed
+ * render request.
  *
  * @author Simon Wächter
  */
 public class RenderQueue {
 
     /**
-     * List with all render futures that can be resolved.
+     * Queue with all unresolved render requests.
      */
-    private final List<RenderFuture> futures;
+    private final BlockingQueue<RenderRequest> renderqueue;
+
+    /**
+     * Queue with all render requests.
+     */
+    private final List<RenderRequest> renderlist;
 
     /**
      * Create a new render queue that will handle all requests and futures.
      */
     public RenderQueue() {
-        this.futures = new LinkedList<>();
+        this.renderqueue = new LinkedBlockingDeque<>();
+        this.renderlist = new ArrayList<>();
     }
 
     /**
-     * Check if objects in the queues are pending or if all objects have been rendered.
+     * Check if the queue is empty and all render requests have been rendered.
      *
-     * @return Status of the queue is pending or not
+     * @return Status if the queue is empty
      */
-    public boolean isQueuePending() {
-        return futures.size() == 0;
+    public boolean isQueueEmpty() {
+        return renderqueue.size() == 0 && renderlist.size() == 0;
     }
 
     /**
-     * Create a new render future that contains a render request.
+     * Create a new render request based on the given URI.
      *
-     * @param uri URI of the requests
-     * @return New render future that contains the render request
+     * @param uri URI for the render request
+     * @return Render request
      */
-    public RenderFuture createRenderFuture(String uri) {
-        RenderFuture future = new RenderFuture(new RenderRequest(uri));
-        futures.add(future);
-        return future;
+    public RenderRequest createRenderFuture(String uri) {
+        RenderRequest renderrequest = new RenderRequest(uri);
+        renderqueue.add(renderrequest);
+        renderlist.add(renderrequest);
+        return renderrequest;
     }
 
     /**
-     * Get the next render requests. After receiving the render request, the request will be removed from the pending
-     * request queue.
+     * Get the next blocking render request. After receiving the render request, the request will be removed from the
+     * pending request queue.
      *
-     * @return Optional render request
+     * @return Blocking render request
+     * @throws InterruptedException Exception in case of an interrupt
      */
-    public Optional<RenderRequest> getNextRenderRequest() {
-        Optional<RenderFuture> futureitem = futures.stream().filter(future -> !future.isRendering()).findFirst();
-        if (futureitem.isPresent()) {
-            RenderFuture future = futureitem.get();
-            RenderRequest request = future.getRequest();
-            future.setRendering();
-            return Optional.of(request);
-        } else {
-            return Optional.empty();
-        }
+    public RenderRequest getNextRenderRequest() throws InterruptedException {
+        return renderqueue.take();
     }
 
     /**
-     * Resolve an existing render future and the request based on the response. All objects will be removed from the
-     * queue.
+     * Resolve a render request with completing the future of the render request.
      *
-     * @param response Render response that contains the
+     * @param uuid    UUID of the render requests
+     * @param content Received rendered content
      */
-    public void resolveRenderFuture(RenderResponse response) {
-        Optional<RenderFuture> futureitem = futures.stream().filter(i -> i.getRequest().getUuid().equals(response.getUuid())).findFirst();
-        if (futureitem.isPresent()) {
-            RenderFuture future = futureitem.get();
-            futures.remove(future);
-            future.getCompletableFuture().complete(response.getContent());
+    public void resolveRenderReuest(String uuid, String content) {
+        Optional<RenderRequest> renderrequestitem = renderlist.stream().filter(i -> i.getUuid().equals(uuid)).findFirst();
+        if (renderrequestitem.isPresent()) {
+            RenderRequest renderrequest = renderrequestitem.get();
+            renderlist.remove(renderrequest);
+            renderrequest.getFuture().complete(content);
         }
     }
 }

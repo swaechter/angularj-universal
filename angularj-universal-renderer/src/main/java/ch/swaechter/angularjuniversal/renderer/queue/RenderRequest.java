@@ -1,49 +1,64 @@
 package ch.swaechter.angularjuniversal.renderer.queue;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 /**
- * The class RenderRequest represents a render requests that contains the given URI for the request. The render request
- * will generate a unique identifier that is used later on to access the rendered response.
+ * This class represents a render request with a completable future that will contain the rendered content, a unique
+ * UUID and the URI of the request.
  *
  * @author Simon Wächter
  */
 public class RenderRequest {
 
     /**
-     * Unique identifier of the render request.
+     * Completable future that will contain the rendered content.
      */
-    private final String uuid;
+    private CompletableFuture<String> future;
 
     /**
-     * URI of the page request.
+     * Unique UUID of the request.
      */
-    private final String uri;
+    private String uuid;
 
     /**
-     * Create a new render request based on the URI. The render request is accessible by a generated unique identifier.
+     * URI of the request.
+     */
+    private String uri;
+
+    /**
+     * Create a new render request based on the given URI.
      *
      * @param uri URI of the page request
      */
     public RenderRequest(String uri) {
+        this.future = new CompletableFuture<>();
         this.uuid = UUID.randomUUID().toString();
         this.uri = uri;
     }
 
     /**
-     * Get the unique identifier of the page.
+     * Get the completable future of the render request that will contain the render content.
      *
-     * @return Unique identifier of the page
+     * @return Completable future of the render request
      */
+    public CompletableFuture<String> getFuture() {
+        return future;
+    }
 
+    /**
+     * Get the unique UUID of the render request.
+     *
+     * @return Unique UUID of the render request
+     */
     public String getUuid() {
         return uuid;
     }
 
     /**
-     * Get the URI of the page request.
+     * Get the URI of the render request.
      *
-     * @return URI of the page request
+     * @return URI of the render request
      */
     public String getUri() {
         return uri;

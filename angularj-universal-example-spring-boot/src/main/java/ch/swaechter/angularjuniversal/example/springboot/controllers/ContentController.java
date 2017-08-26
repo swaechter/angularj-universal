@@ -53,5 +53,4 @@ public class ContentController {
     public ModelAndView showPageAbout() {
         return new ModelAndView("/page/about");
     }
-
 }

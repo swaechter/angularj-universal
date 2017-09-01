@@ -1,20 +1,29 @@
-var path = require('path');
+const path = require('path');
 
 module.exports = {
     target: 'node',
     entry: {
-        server: path.resolve(process.cwd(), 'server.js')
+        server: path.join(__dirname, './server/server.ts')
     },
     output: {
-        path: path.resolve(process.cwd(), 'dist-serverbundle'),
-        filename: '[name].bundle.js'
+        path: path.resolve(__dirname, 'dist-serverbundle'),
+        filename: 'server.bundle.js'
     },
     resolve: {
         modules: [
             'node_modules'
         ],
         extensions: [
+            '.ts',
             '.js'
+        ]
+    },
+    module: {
+        rules: [
+            {
+                test: /\.ts$/,
+                loader: 'ts-loader'
+            }
         ]
     }
 };

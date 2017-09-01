@@ -9,8 +9,6 @@ import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Object;
 import com.eclipsesource.v8.utils.MemoryManager;
 
-import java.nio.charset.StandardCharsets;
-
 /**
  * The class V8RenderEngine provides a NodeJS/V8 based implementation of the render engine.
  *
@@ -29,14 +27,9 @@ public class V8RenderEngine implements RenderEngine {
     private NodeJS nodejs;
 
     /**
-     * Function that will be used for rendering the module.
+     * Render adapter that will be used for rendering the module.
      */
-    private V8Object renderfunction;
-
-    /**
-     * Module that will be passed to the render function.
-     */
-    private V8Object rendermodule;
+    private V8Object renderadapter;
 
     /**
      * Status if the render engine is running.
@@ -52,9 +45,6 @@ public class V8RenderEngine implements RenderEngine {
     @Override
     public void doWork(RenderQueue queue, RenderAssetProvider provider) {
         try {
-            // Load the function
-            String functioncontent = V8Utils.getContentFromInputStream(this.getClass().getResourceAsStream("/Function.js"), StandardCharsets.UTF_8);
-
             // Start the render engine
             running = true;
 
@@ -66,9 +56,8 @@ public class V8RenderEngine implements RenderEngine {
 
             // Register a method that represents the register function
             nodejs.getRuntime().registerJavaMethod((v8Object, v8Array) -> {
-                renderfunction = v8Array.getObject(0);
-                rendermodule = v8Array.getObject(1);
-            }, "registerRenderElements");
+                renderadapter = v8Array.getObject(0);
+            }, "registerRenderAdapter");
 
             // Register a method that represents the finished render request function
             nodejs.getRuntime().registerJavaMethod((v8Object, v8Array) -> {
@@ -82,15 +71,15 @@ public class V8RenderEngine implements RenderEngine {
                 }
             }, "receiveRenderedPage");
 
-            // Register the function
-            nodejs.getRuntime().executeScript(functioncontent);
-
             // Load the server bundle
             nodejs.exec(provider.getServerBundle());
+            nodejs.handleMessage();
 
-            // Handle the first two registered methods
-            nodejs.handleMessage();
-            nodejs.handleMessage();
+            // Load the HTML
+            V8Array parameters = new V8Array(nodejs.getRuntime());
+            parameters.push(provider.getIndexContent());
+            renderadapter.executeVoidFunction("setHtml", parameters);
+            parameters.release();
 
             // Handle incoming requests
             while (running) {
@@ -99,23 +88,18 @@ public class V8RenderEngine implements RenderEngine {
 
                 // Get the next render request
                 RenderRequest renderrequest = queue.getNextRenderRequest();
-                V8Array parameters = new V8Array(nodejs.getRuntime());
-                try {
-                    // Execute the render request
-                    parameters.push(renderfunction);
-                    parameters.push(rendermodule);
-                    parameters.push(renderrequest.getUuid());
-                    parameters.push(provider.getIndexContent());
-                    parameters.push(renderrequest.getUri());
-                    nodejs.getRuntime().executeVoidFunction("renderPage", parameters);
+                parameters = new V8Array(nodejs.getRuntime());
+                parameters.push(renderrequest.getUuid());
+                parameters.push(renderrequest.getUri());
+                renderadapter.executeVoidFunction("renderPage", parameters);
 
-                    // Handle messages until the render request is resolved
-                    while (!renderrequest.getFuture().isDone()) {
-                        nodejs.handleMessage();
-                    }
-                } finally {
-                    parameters.release();
+                // Handle messages until the render request is resolved
+                while (!renderrequest.getFuture().isDone()) {
+                    nodejs.handleMessage();
                 }
+
+                // Release the parameters
+                parameters.release();
             }
         } catch (InterruptedException exception) {
             // Do nothing

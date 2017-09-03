@@ -1,4 +1,4 @@
-import {RenderAdapter, RenderCallback} from "./serveradapter";
+import {RenderAdapter, RenderCallback} from "./renderadapter";
 
 const AppServerModuleNgFactory = require('./../dist-server/main.bundle').AppServerModuleNgFactory;
 
@@ -10,4 +10,5 @@ const rendercallback: RenderCallback = (uuid: string, html: string, error: any) 
     receiveRenderedPage(uuid, html, error);
 };
 
-registerRenderAdapter(new RenderAdapter(AppServerModuleNgFactory, rendercallback));
+const renderadapter = new RenderAdapter(AppServerModuleNgFactory, rendercallback);
+registerRenderAdapter(renderadapter);

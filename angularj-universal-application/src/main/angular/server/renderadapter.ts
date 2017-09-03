@@ -1,5 +1,4 @@
 require('zone.js/dist/zone-node');
-require('reflect-metadata');
 
 import {renderModuleFactory} from "@angular/platform-server";
 

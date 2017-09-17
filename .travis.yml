@@ -3,6 +3,7 @@ dist: trusty
 jdk:
   - openjdk8
   - oraclejdk8
+install: true
 script:
   - mvn clean install -B -Dgpg.skip=true
 notifications:

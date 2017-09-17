@@ -1,4 +1,4 @@
-# Angular Universal for Java
+# Angular Universal for Java [![Build Status](https://travis-ci.org/swaechter/angularj-universal.svg?branch=master)](https://travis-ci.org/swaechter/angularj-universal)
 
 ## Background
 

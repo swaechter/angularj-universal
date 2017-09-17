@@ -1,0 +1,11 @@
+language: java
+dist: trusty
+jdk:
+  - openjdk8
+  - oraclejdk8
+script:
+  - mvn test
+notifications:
+  email:
+    on_success: always
+    on_failure: always

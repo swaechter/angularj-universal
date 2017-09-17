@@ -1,10 +1,10 @@
 package ch.swaechter.angularjuniversal.springboot.starter;
 
 import ch.swaechter.angularjuniversal.renderer.Renderer;
-import ch.swaechter.angularjuniversal.renderer.assets.RenderAssetProvider;
-import ch.swaechter.angularjuniversal.renderer.assets.ResourceProvider;
-import ch.swaechter.angularjuniversal.renderer.engine.RenderEngine;
-import ch.swaechter.angularjuniversal.v8renderer.V8RenderEngine;
+import ch.swaechter.angularjuniversal.renderer.configuration.RenderConfiguration;
+import ch.swaechter.angularjuniversal.renderer.engine.RenderEngineFactory;
+import ch.swaechter.angularjuniversal.renderer.utils.RenderUtils;
+import ch.swaechter.angularjuniversal.v8renderer.V8RenderEngineFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.servlet.ViewResolver;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -52,22 +53,26 @@ public class AngularJUniversalAutoConfiguration {
     }
 
     /**
-     * Get the renderer.
+     * Get the render engine factory. At the moment the V8 implementation is used.
      *
-     * @param engine         Render engine used to render page requests
-     * @param resourceloader Resource loader used for loading the index and server bundle resources
-     * @return Renderer used to render page requests
-     * @throws IOException Exception in case of a problem
+     * @return Render engine factory
      */
     @Bean
     @ConditionalOnMissingBean
-    public Renderer getRenderer(RenderEngine engine, ResourceLoader resourceloader) throws IOException {
-        // Check the routes
-        if (properties.getRoutes().split(ROUTE_DELIMITER).length == 0) {
-            throw new RuntimeException("AngularJ Universal starter is unable to parse and find any routes for " + properties.getRoutes());
-        }
+    public RenderEngineFactory getRenderEngineFactory() {
+        return new V8RenderEngineFactory();
+    }
 
-        // Get the input stream for the index
+    /**
+     * Get the render configuration.
+     *
+     * @param resourceloader Resource loader for accessing the assets
+     * @return Render configuration
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public RenderConfiguration getRenderConfiguration(ResourceLoader resourceloader) {
+        // Get the content of the index template
         InputStream indexinputstream = AngularJUniversalUtils.getInputStreamFromResource(resourceloader, properties.getIndexResourcePath());
         if (indexinputstream == null) {
             throw new RuntimeException("AngularJ Universal starter is unable get an input stream for " + properties.getIndexResourcePath());
@@ -85,29 +90,46 @@ public class AngularJUniversalAutoConfiguration {
             throw new RuntimeException("AngularJ Universal starter is unable to interpret the charset " + properties.getCharset());
         }
 
-        // Create the asset provider
-        RenderAssetProvider assetprovider;
-        try {
-            assetprovider = new ResourceProvider(indexinputstream, serverbundleinputstream, charset);
-        } catch (Exception exception) {
-            throw new RuntimeException("AngularJ Universal is unable to create the asset provider");
+        // Check the engine number
+        int engines = properties.getEngines();
+        if (engines < 0) {
+            throw new RuntimeException("AngularJ Universal requires at least one engine not " + engines);
         }
 
-        // Create the renderer
-        Renderer renderer = new Renderer(engine, assetprovider);
-        renderer.startEngine();
-        return renderer;
+        // Read the content from the index template
+        String templatecontent;
+        try {
+            templatecontent = RenderUtils.getStringFromInputStream(indexinputstream, charset);
+        } catch (IOException exception) {
+            throw new RuntimeException("AngularJ Universal is unable to read the template content for " + properties.getIndexResourcePath());
+        }
+
+        // Create a temporary server bundle from the input stream
+        File serverbundlefile;
+        try {
+            serverbundlefile = RenderUtils.createTemporaryFileFromInputStream("serverbundle", ".js", serverbundleinputstream);
+        } catch (IOException exception) {
+            throw new RuntimeException("AngularJ Universal is unable to cache the server bundle file for " + properties.getServerBundleResourcePath());
+        }
+
+        // Create the configuration
+        return new RenderConfiguration(templatecontent, serverbundlefile, engines, false);
     }
 
     /**
-     * Get the render engine. At the moment a V8 engine is used by default.
+     * Get the renderer.
      *
-     * @return Render engine
+     * @param renderenginefactory Injected render engine factory
+     * @param renderconfiguration Injected render configuration
+     * @return Started renderer
      */
     @Bean
     @ConditionalOnMissingBean
-    public RenderEngine getRenderEngine() {
-        return new V8RenderEngine();
+    public Renderer getRenderer(RenderEngineFactory renderenginefactory, RenderConfiguration renderconfiguration) {
+        // Create the renderer
+        Renderer renderer = new Renderer(renderenginefactory, renderconfiguration);
+        renderer.startRenderer();
+        return renderer;
     }
 
     /**
@@ -118,6 +140,12 @@ public class AngularJUniversalAutoConfiguration {
      */
     @Bean
     public ViewResolver getViewResolver(Renderer renderer) {
+        // Check the routes
+        if (properties.getRoutes().split(ROUTE_DELIMITER).length == 0) {
+            throw new RuntimeException("AngularJ Universal starter is unable to parse and find any routes for " + properties.getRoutes());
+        }
+
+        // Create the view resolver
         List<String> routes = Arrays.asList(properties.getRoutes().split(ROUTE_DELIMITER));
         AngularJUniversalViewResolver viewresolver = new AngularJUniversalViewResolver(renderer, routes);
         viewresolver.setOrder(0);

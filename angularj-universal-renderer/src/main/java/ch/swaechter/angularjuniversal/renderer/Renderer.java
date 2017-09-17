@@ -1,88 +1,126 @@
 package ch.swaechter.angularjuniversal.renderer;
 
-import ch.swaechter.angularjuniversal.renderer.assets.RenderAssetProvider;
+import ch.swaechter.angularjuniversal.renderer.configuration.RenderConfiguration;
 import ch.swaechter.angularjuniversal.renderer.engine.RenderEngine;
-import ch.swaechter.angularjuniversal.renderer.queue.RenderQueue;
+import ch.swaechter.angularjuniversal.renderer.engine.RenderEngineFactory;
+import ch.swaechter.angularjuniversal.renderer.request.RenderRequest;
 
-import java.io.IOException;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
- * The class Render provides a manager to render requests with the render engine based on the data from the asset
- * manager.
+ * The class Render provides a manager to render requests with the render engine and the render configuration.
  *
  * @author Simon Wächter
  */
-public class Renderer {
+public final class Renderer {
 
     /**
-     * Queue that is used to store the render requests.
+     * Render engine factory for creating new render requests.
      */
-    private final RenderQueue queue;
+    private final RenderEngineFactory renderenginefactory;
 
     /**
-     * Engine that is used to render requests.
+     * List with all active render engines.
      */
-    private final RenderEngine engine;
+    private final List<RenderEngine> renderengines;
 
     /**
-     * Provider that is used to access the assets.
+     * Queue with all active render requests.
      */
-    private final RenderAssetProvider provider;
+    private final BlockingQueue<Optional<RenderRequest>> renderrequests;
 
     /**
-     * Date of the last reload.
+     * Render configuration with all important information.
      */
-    private Date reloaddate;
+    private final RenderConfiguration renderconfiguration;
 
     /**
-     * Create a new render engine and use the render engine and render provider to access the assets.
+     * Date of the server bundle file, needed for live reload.
+     */
+    private Date startdate;
+
+    /**
+     * Create a new render engine that used the render engine factory for creating new render engines and the render
+     * configuration for the configuration.
      *
-     * @param provider Render provider to access the assets
+     * @param renderenginefactory Render engine factory used for creating new render engines
+     * @param renderconfiguration Render configuration used for the configuration
      */
-    public Renderer(RenderEngine engine, RenderAssetProvider provider) {
-        this.queue = new RenderQueue();
-        this.engine = engine;
-        this.provider = provider;
+    public Renderer(RenderEngineFactory renderenginefactory, RenderConfiguration renderconfiguration) {
+        this.renderenginefactory = renderenginefactory;
+        this.renderengines = new ArrayList<>();
+        this.renderrequests = new LinkedBlockingDeque<>();
+        this.renderconfiguration = renderconfiguration;
     }
 
     /**
-     * Start the render engine. If render requests were already added, the will be rendered.
+     * Start the renderer. If the renderer is already running, this has no impact.
      */
-    public void startEngine() {
-        if (engine.isWorking()) {
+    public synchronized void startRenderer() {
+        if (renderengines.size() != 0) {
             return;
         }
 
-        reloaddate = new Date();
+        startdate = new Date();
 
-        new Thread(() -> engine.doWork(queue, provider)).start();
-        new Thread(() -> checkAssets()).start();
+        for (int i = 0; i < renderconfiguration.getEngines(); i++) {
+            RenderEngine renderengine = renderenginefactory.createRenderEngine();
+            renderengines.add(renderengine);
+
+            Thread thread = new Thread(() -> {
+                renderengine.startWorking(renderrequests, renderconfiguration);
+            });
+            thread.start();
+        }
+
+        if (renderconfiguration.getLiveReload()) {
+            Thread thread = new Thread(() -> {
+                while (isRendererRunning()) {
+                    File file = renderconfiguration.getServerBundleFile();
+                    if (startdate.before(new Date(file.lastModified()))) {
+                        stopRenderer();
+                        startRenderer();
+                    }
+                }
+            });
+            thread.start();
+        }
     }
 
     /**
-     * Stop the render engine. If render requests are still there, the render engine will render them before stopping.
+     * Stop the render engine while waiting for rendering all render requests. If the renderer is already stopped,
+     * this has no impact.
      */
-    public void stopEngine() {
-        if (!engine.isWorking()) {
+    public synchronized void stopRenderer() {
+        if (renderengines.size() == 0) {
             return;
         }
 
-        while (!queue.isQueueEmpty()) {
-            sleep(50);
+        for (int i = 0; i < renderconfiguration.getEngines(); i++) {
+            renderrequests.add(Optional.empty());
         }
 
-        engine.stopWork();
+        while (renderrequests.size() != 0) {
+            // Wait for an empty request queue
+        }
+
+        renderengines.clear();
     }
 
     /**
-     * Check if the render engine is running.
+     * Check if the render engine is already running.
      *
-     * @return Result of the check
+     * @return Status of the check
      */
-    public boolean isEngineRunning() {
-        return engine.isWorking();
+    public synchronized boolean isRendererRunning() {
+        return renderengines.size() != 0;
     }
 
     /**
@@ -91,40 +129,9 @@ public class Renderer {
      * @param uri URI of the render request
      * @return Future that can be accessed later on to get the rendered content
      */
-    public Future<String> renderRequest(String uri) {
-        return queue.createRenderFuture(uri).getFuture();
-    }
-
-    /**
-     * Check if the assets require a reload and reload the engine if necessary.
-     */
-    private void checkAssets() {
-        try {
-            if (provider.isLiveReloadSupported()) {
-                while (engine.isWorking()) {
-                    if (provider.isLiveReloadRequired(reloaddate)) {
-                        stopEngine();
-                        startEngine();
-                    }
-                    sleep(1000);
-                }
-
-            }
-        } catch (IOException exception) {
-            throw new IllegalStateException("The renderer was unable to check if the resource assets have changed");
-        }
-    }
-
-    /**
-     * Sleep for the given amount of milliseconds.
-     *
-     * @param miliseconds Sleep time in milliseconds
-     */
-    private void sleep(int miliseconds) {
-        try {
-            Thread.sleep(miliseconds);
-        } catch (Exception exception) {
-            throw new IllegalStateException("An error occurred while working with the engine: " + exception.getMessage(), exception);
-        }
+    public Future<String> addRenderRequest(String uri) {
+        RenderRequest renderrequest = new RenderRequest(uri);
+        renderrequests.add(Optional.of(renderrequest));
+        return renderrequest.getFuture();
     }
 }

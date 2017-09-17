@@ -31,6 +31,11 @@ public class AngularJUniversalProperties {
     private String charset = "UTF-8";
 
     /**
+     * Number of render engines.
+     */
+    private int engines = 5;
+
+    /**
      * Get all routes of the application as comma separated list.
      *
      * @return All routes as comma separated list
@@ -100,5 +105,23 @@ public class AngularJUniversalProperties {
      */
     public void setCharsetend(String charset) {
         this.charset = charset;
+    }
+
+    /**
+     * Get the number of render engines.
+     *
+     * @return Number of render engines
+     */
+    public int getEngines() {
+        return engines;
+    }
+
+    /**
+     * Set the new number of render engines.
+     *
+     * @param engines New number of render engines
+     */
+    public void setEngines(int engines) {
+        this.engines = engines;
     }
 }

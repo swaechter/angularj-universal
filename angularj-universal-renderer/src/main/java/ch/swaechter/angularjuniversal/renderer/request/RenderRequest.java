@@ -1,4 +1,4 @@
-package ch.swaechter.angularjuniversal.renderer.queue;
+package ch.swaechter.angularjuniversal.renderer.request;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;

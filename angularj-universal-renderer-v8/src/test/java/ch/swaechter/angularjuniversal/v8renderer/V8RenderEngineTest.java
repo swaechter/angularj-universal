@@ -2,66 +2,80 @@ package ch.swaechter.angularjuniversal.v8renderer;
 
 import ch.swaechter.angularjuniversal.data.DataLoader;
 import ch.swaechter.angularjuniversal.renderer.Renderer;
-import ch.swaechter.angularjuniversal.renderer.assets.RenderAssetProvider;
-import ch.swaechter.angularjuniversal.renderer.assets.ResourceProvider;
+import ch.swaechter.angularjuniversal.renderer.configuration.RenderConfiguration;
+import ch.swaechter.angularjuniversal.renderer.engine.RenderEngineFactory;
+import ch.swaechter.angularjuniversal.renderer.utils.RenderUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 
 /**
- * This class provides a test to guarantee the functionality of the V8 render engine.
+ * This class provides a test to guarantee the functionality of the V8 renderer.
  *
  * @author Simon Wächter
  */
 public class V8RenderEngineTest {
 
     /**
-     * Test the render engine.
+     * Test the renderer.
      */
     @Test
     public void testRenderEngine() throws Exception {
         DataLoader dataloader = new DataLoader();
         InputStream indexinputstream = dataloader.getIndexAsInputStream();
         InputStream serverbundleinputstream = dataloader.getServerBundleAsInputStream();
+        Assert.assertNotNull(indexinputstream);
+        Assert.assertNotNull(serverbundleinputstream);
 
-        RenderAssetProvider provider = new ResourceProvider(indexinputstream, serverbundleinputstream, StandardCharsets.UTF_8);
-        Assert.assertTrue(provider.getIndexContent().contains("app-root"));
-        Assert.assertNotNull(provider.getServerBundle());
+        String templatecontent = RenderUtils.getStringFromInputStream(indexinputstream, StandardCharsets.UTF_8);
+        File serverbundlefile = RenderUtils.createTemporaryFileFromInputStream("serverbundle", ".js", serverbundleinputstream);
+        Assert.assertTrue(templatecontent.contains("app-root"));
+        Assert.assertTrue(serverbundlefile.exists());
 
-        Renderer renderer = new Renderer(new V8RenderEngine(), provider);
-        renderer.startEngine();
+        RenderEngineFactory renderenginefactory = new V8RenderEngineFactory();
+        RenderConfiguration renderconfiguration = new RenderConfiguration(templatecontent, serverbundlefile, 5, false);
+        Renderer renderer = new Renderer(renderenginefactory, renderconfiguration);
 
-        Future<String> future1 = renderer.renderRequest("/");
+        Assert.assertFalse(renderer.isRendererRunning());
+        renderer.startRenderer();
+        Assert.assertTrue(renderer.isRendererRunning());
+        renderer.stopRenderer();
+        Assert.assertFalse(renderer.isRendererRunning());
+        renderer.startRenderer();
+        Assert.assertTrue(renderer.isRendererRunning());
+
+        Future<String> future1 = renderer.addRenderRequest("/");
         Assert.assertNotNull(future1);
         Assert.assertTrue(future1.get().contains("Login"));
 
-        Future<String> future2 = renderer.renderRequest("/login");
+        Future<String> future2 = renderer.addRenderRequest("/login");
         Assert.assertNotNull(future2);
         Assert.assertTrue(future2.get().contains("Login"));
 
-        Future<String> future3 = renderer.renderRequest("/logout");
+        Future<String> future3 = renderer.addRenderRequest("/logout");
         Assert.assertNotNull(future3);
         Assert.assertTrue(future3.get().contains("Login"));
 
-        Future<String> future4 = renderer.renderRequest("/page");
+        Future<String> future4 = renderer.addRenderRequest("/page");
         Assert.assertNotNull(future4);
         Assert.assertTrue(future4.get().contains("Home"));
 
-        Future<String> future5 = renderer.renderRequest("/page/home");
+        Future<String> future5 = renderer.addRenderRequest("/page/home");
         Assert.assertNotNull(future5);
         Assert.assertTrue(future5.get().contains("Home"));
 
-        Future<String> future6 = renderer.renderRequest("/page/about");
+        Future<String> future6 = renderer.addRenderRequest("/page/about");
         Assert.assertNotNull(future6);
         Assert.assertTrue(future6.get().contains("About"));
 
-        Future<String> future7 = renderer.renderRequest("/invalid");
+        Future<String> future7 = renderer.addRenderRequest("/invalid");
         Assert.assertNotNull(future7);
         Assert.assertTrue(future7.get().contains("Login"));
 
-        renderer.stopEngine();
+        renderer.stopRenderer();
     }
 }

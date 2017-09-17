@@ -4,7 +4,7 @@ jdk:
   - openjdk8
   - oraclejdk8
 script:
-  - mvn test
+  - mvn clean install -B -Dgpg.skip=true
 notifications:
   email:
     on_success: always

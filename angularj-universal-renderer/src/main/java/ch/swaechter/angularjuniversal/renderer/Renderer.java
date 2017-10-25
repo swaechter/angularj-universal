@@ -19,7 +19,7 @@ import java.util.concurrent.LinkedBlockingDeque;
  *
  * @author Simon Wächter
  */
-public final class Renderer {
+public class Renderer {
 
     /**
      * Render engine factory for creating new render requests.

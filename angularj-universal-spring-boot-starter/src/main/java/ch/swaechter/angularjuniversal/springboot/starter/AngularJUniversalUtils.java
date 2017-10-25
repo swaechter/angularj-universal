@@ -4,7 +4,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 import java.io.InputStream;
-import java.nio.charset.Charset;
 
 /**
  * This class provides several util functions.
@@ -16,7 +15,7 @@ public class AngularJUniversalUtils {
     /**
      * Get the input stream from a resource.
      *
-     * @param resourceloader Resource loader that serves as resource context
+     * @param resourceloader   Resource loader that serves as resource context
      * @param resourcefilepath Path to the resouce
      * @return Valid input stream or null
      */
@@ -24,20 +23,6 @@ public class AngularJUniversalUtils {
         try {
             Resource resource = resourceloader.getResource("classpath:" + resourcefilepath);
             return resource.getInputStream();
-        } catch (Exception exception) {
-            return null;
-        }
-    }
-
-    /**
-     * Get the charset from a charset name.
-     *
-     * @param name Name for the charset
-     * @return Valid charset or null
-     */
-    public static Charset getCharsetFromName(String name) {
-        try {
-            return Charset.forName(name);
         } catch (Exception exception) {
             return null;
         }

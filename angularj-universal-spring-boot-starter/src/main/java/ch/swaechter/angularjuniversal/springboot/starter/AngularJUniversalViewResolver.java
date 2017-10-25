@@ -4,7 +4,6 @@ import ch.swaechter.angularjuniversal.renderer.Renderer;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;
 
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -20,20 +19,20 @@ public class AngularJUniversalViewResolver extends AbstractTemplateViewResolver 
     private final Renderer renderer;
 
     /**
-     * All routes of the application that are supported by the view resolver.
+     * Properties that will be used to check the routes and as charset.
      */
-    private final List<String> routes;
+    private final AngularJUniversalProperties properties;
 
     /**
-     * Constructor with the renderer that will be passed to the view and all supported routes by the view resolver.
+     * Constructor with the renderer and properties that will be passed to the view.
      *
-     * @param renderer Renderer
-     * @param routes   All supported routes
+     * @param renderer   Renderer
+     * @param properties Properties
      */
-    public AngularJUniversalViewResolver(Renderer renderer, List<String> routes) {
+    public AngularJUniversalViewResolver(Renderer renderer, AngularJUniversalProperties properties) {
         setViewClass(requiredViewClass());
         this.renderer = renderer;
-        this.routes = routes;
+        this.properties = properties;
     }
 
     /**
@@ -56,7 +55,7 @@ public class AngularJUniversalViewResolver extends AbstractTemplateViewResolver 
      */
     @Override
     public boolean canHandle(String modelname, Locale locale) {
-        return routes.contains(modelname);
+        return properties.getRoutes().contains(modelname);
     }
 
     /**
@@ -67,6 +66,6 @@ public class AngularJUniversalViewResolver extends AbstractTemplateViewResolver 
      */
     @Override
     public AbstractUrlBasedView buildView(String uri) {
-        return new AngularJUniversalView(renderer);
+        return new AngularJUniversalView(renderer, properties);
     }
 }

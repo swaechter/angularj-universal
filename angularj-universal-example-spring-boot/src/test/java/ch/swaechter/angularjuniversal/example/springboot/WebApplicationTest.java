@@ -33,9 +33,9 @@ public class WebApplicationTest {
         ResponseEntity<Keyword[]> responseentity = resttemplate.getForEntity("/api/keyword", Keyword[].class);
         Keyword[] keywords = responseentity.getBody();
         Assert.assertEquals(3, keywords.length);
-        Assert.assertEquals("Angular", keywords[0].getName());
-        Assert.assertEquals("TypeScript", keywords[1].getName());
-        Assert.assertEquals("J2V8", keywords[2].getName());
+        Assert.assertEquals("Hallo Welt!", keywords[0].getName());
+        Assert.assertEquals("Hello world!", keywords[1].getName());
+        Assert.assertEquals("Здравствуй, мир!", keywords[2].getName());
     }
 
     /**

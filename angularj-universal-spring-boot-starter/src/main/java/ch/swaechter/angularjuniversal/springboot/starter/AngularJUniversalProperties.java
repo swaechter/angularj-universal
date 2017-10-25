@@ -2,6 +2,11 @@ package ch.swaechter.angularjuniversal.springboot.starter;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * This class is responsible for providing all mapped properties.
  *
@@ -13,7 +18,7 @@ public class AngularJUniversalProperties {
     /**
      * Comma separated list with all routes of the application.
      */
-    private String routes = "/";
+    private List<String> routes = Arrays.asList("/");
 
     /**
      * Path of the index resource.
@@ -28,7 +33,7 @@ public class AngularJUniversalProperties {
     /**
      * Charset used for reading and rendering.
      */
-    private String charset = "UTF-8";
+    private Charset charset = StandardCharsets.UTF_8;
 
     /**
      * Number of render engines.
@@ -36,20 +41,20 @@ public class AngularJUniversalProperties {
     private int engines = 5;
 
     /**
-     * Get all routes of the application as comma separated list.
+     * Get all routes as list.
      *
-     * @return All routes as comma separated list
+     * @return All routes as list
      */
-    public String getRoutes() {
+    public List<String> getRoutes() {
         return routes;
     }
 
     /**
-     * Set all routes of the application as comma separated list.
+     * Set all routes as list.
      *
-     * @param routes All routes as comma separated list
+     * @param routes All routes as list
      */
-    public void setRoutes(String routes) {
+    public void setRoutes(List<String> routes) {
         this.routes = routes;
     }
 
@@ -94,7 +99,7 @@ public class AngularJUniversalProperties {
      *
      * @return Charset
      */
-    public String getCharset() {
+    public Charset getCharset() {
         return charset;
     }
 
@@ -103,7 +108,7 @@ public class AngularJUniversalProperties {
      *
      * @param charset New charset
      */
-    public void setCharsetend(String charset) {
+    public void setCharset(Charset charset) {
         this.charset = charset;
     }
 

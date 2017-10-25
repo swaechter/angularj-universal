@@ -18,9 +18,6 @@ import org.springframework.web.servlet.ViewResolver;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * This class serves as an entry point for the AngularJ Universal Spring Boot starter.
@@ -31,11 +28,6 @@ import java.util.List;
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(AngularJUniversalProperties.class)
 public class AngularJUniversalAutoConfiguration {
-
-    /**
-     * Delimiter that separates the routes in the configuration.
-     */
-    private static final String ROUTE_DELIMITER = ",";
 
     /**
      * Properties loaded by Spring Boot and used by this starter.
@@ -84,22 +76,21 @@ public class AngularJUniversalAutoConfiguration {
             throw new RuntimeException("AngularJ Universal starter is unable get an input stream for " + properties.getServerBundleResourcePath());
         }
 
-        // Get the encoding
-        Charset charset = AngularJUniversalUtils.getCharsetFromName(properties.getCharset());
-        if (charset == null) {
-            throw new RuntimeException("AngularJ Universal starter is unable to interpret the charset " + properties.getCharset());
-        }
-
         // Check the engine number
         int engines = properties.getEngines();
         if (engines < 0) {
             throw new RuntimeException("AngularJ Universal requires at least one engine not " + engines);
         }
 
+        // Check the charset
+        if (properties.getCharset() == null) {
+            throw new RuntimeException("AngularJ Universal starter is unable to parse the charset");
+        }
+
         // Read the content from the index template
         String templatecontent;
         try {
-            templatecontent = RenderUtils.getStringFromInputStream(indexinputstream, charset);
+            templatecontent = RenderUtils.getStringFromInputStream(indexinputstream, properties.getCharset());
         } catch (IOException exception) {
             throw new RuntimeException("AngularJ Universal is unable to read the template content for " + properties.getIndexResourcePath());
         }
@@ -141,13 +132,17 @@ public class AngularJUniversalAutoConfiguration {
     @Bean
     public ViewResolver getViewResolver(Renderer renderer) {
         // Check the routes
-        if (properties.getRoutes().split(ROUTE_DELIMITER).length == 0) {
+        if (properties.getRoutes().isEmpty()) {
             throw new RuntimeException("AngularJ Universal starter is unable to parse and find any routes for " + properties.getRoutes());
         }
 
+        // Check the charset
+        if (properties.getCharset() == null) {
+            throw new RuntimeException("AngularJ Universal starter is unable to parse the charset");
+        }
+
         // Create the view resolver
-        List<String> routes = Arrays.asList(properties.getRoutes().split(ROUTE_DELIMITER));
-        AngularJUniversalViewResolver viewresolver = new AngularJUniversalViewResolver(renderer, routes);
+        AngularJUniversalViewResolver viewresolver = new AngularJUniversalViewResolver(renderer, properties);
         viewresolver.setOrder(0);
         return viewresolver;
     }

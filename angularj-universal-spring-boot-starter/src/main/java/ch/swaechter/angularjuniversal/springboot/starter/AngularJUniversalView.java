@@ -16,12 +16,19 @@ public class AngularJUniversalView extends AbstractTemplateView {
     private final Renderer renderer;
 
     /**
-     * Constructor with the new renderer for rendering page requests.
-     *
-     * @param renderer Renderer
+     * Properties for writing responses.
      */
-    public AngularJUniversalView(Renderer renderer) {
+    private final AngularJUniversalProperties properties;
+
+    /**
+     * Constructor with the new renderer and the properties for rendering page requests.
+     *
+     * @param renderer   Renderer
+     * @param properties Properties
+     */
+    public AngularJUniversalView(Renderer renderer, AngularJUniversalProperties properties) {
         this.renderer = renderer;
+        this.properties = properties;
     }
 
     /**
@@ -44,6 +51,8 @@ public class AngularJUniversalView extends AbstractTemplateView {
      */
     @Override
     protected void renderMergedTemplateModel(Map<String, Object> map, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        response.setCharacterEncoding(properties.getCharset().name());
+        response.setContentType("text/html");
         PrintWriter writer = response.getWriter();
         writer.println(renderer.addRenderRequest(getBeanName()).get());
         writer.flush();

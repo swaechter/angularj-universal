@@ -40,6 +40,8 @@ public class RenderUtils {
      */
     public static File createTemporaryFileFromInputStream(String suffix, String prefix, InputStream inputstream) throws IOException {
         File file = File.createTempFile(suffix, prefix);
+        file.deleteOnExit();
+
         OutputStream outputstream = new FileOutputStream(file);
         int result = inputstream.read();
         while (result != -1) {

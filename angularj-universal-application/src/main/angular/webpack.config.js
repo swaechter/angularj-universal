@@ -3,11 +3,11 @@ const path = require('path');
 module.exports = {
     target: 'node',
     entry: {
-        server: path.join(__dirname, './server/server.ts')
+        server: path.join(__dirname, './library/server.ts')
     },
     output: {
-        path: path.resolve(__dirname, 'dist-serverbundle'),
-        filename: 'server.bundle.js'
+        path: path.resolve(__dirname, './../resources'),
+        filename: '[name].bundle.js'
     },
     resolve: {
         modules: [

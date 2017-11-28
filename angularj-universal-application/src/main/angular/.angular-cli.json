@@ -6,7 +6,7 @@
     "apps": [
         {
             "root": "src",
-            "outDir": "dist",
+            "outDir": "../resources/public",
             "assets": [
                 "assets",
                 "favicon.ico"
@@ -19,7 +19,8 @@
             "testTsconfig": "tsconfig.spec.json",
             "prefix": "app",
             "styles": [
-                "../node_modules/bootstrap/dist/css/bootstrap.css"
+                "../node_modules/bootstrap/dist/css/bootstrap.css",
+                "styles.css"
             ],
             "scripts": [
                 "../node_modules/jquery/dist/jquery.slim.min.js",
@@ -35,7 +36,7 @@
         {
             "platform": "server",
             "root": "src",
-            "outDir": "dist-server",
+            "outDir": "dist",
             "assets": [],
             "index": "index.html",
             "main": "main.server.ts",
@@ -43,14 +44,8 @@
             "tsconfig": "tsconfig.server.json",
             "testTsconfig": "tsconfig.spec.json",
             "prefix": "app",
-            "styles": [
-                "../node_modules/bootstrap/dist/css/bootstrap.css"
-            ],
-            "scripts": [
-                "../node_modules/jquery/dist/jquery.slim.min.js",
-                "../node_modules/popper.js/dist/umd/popper.min.js",
-                "../node_modules/bootstrap/dist/js/bootstrap.min.js"
-            ],
+            "styles": [],
+            "scripts": [],
             "environmentSource": "environments/environment.ts",
             "environments": {
                 "dev": "environments/environment.ts",

@@ -3,8 +3,8 @@ import {NgModule} from "@angular/core";
 import {RouterModule} from "@angular/router";
 import {HttpClientModule} from "@angular/common/http";
 import {FormsModule} from "@angular/forms";
+
 import {AppComponent} from "./app.component";
-import {approutes} from "./app.routes";
 import {LoginComponent} from "./components/login/login.component";
 import {LogoutComponent} from "./components/logout/logout.component";
 import {PageComponent} from "./components/page/page.component";
@@ -12,6 +12,7 @@ import {PageHomeComponent} from "./components/page-home/page-home.component";
 import {PageAboutComponent} from "./components/page-about/page-about.component";
 import {AuthenticationService} from "./services/authentication/authentication.service";
 import {KeywordService} from "./services/keyword/keyword.service";
+import {approutes} from "./app.routes";
 
 @NgModule({
     declarations: [
@@ -26,7 +27,7 @@ import {KeywordService} from "./services/keyword/keyword.service";
         BrowserModule.withServerTransition({appId: "my-app"}),
         RouterModule.forRoot(approutes),
         HttpClientModule,
-        FormsModule,
+        FormsModule
     ],
     exports: [RouterModule],
     providers: [

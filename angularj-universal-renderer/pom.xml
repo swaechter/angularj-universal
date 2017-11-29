@@ -5,7 +5,7 @@
     <parent>
         <groupId>ch.swaechter</groupId>
         <artifactId>angularj-universal</artifactId>
-        <version>0.0.1</version>
+        <version>0.0.2</version>
     </parent>
     <artifactId>angularj-universal-renderer</artifactId>
     <packaging>jar</packaging>
@@ -17,7 +17,7 @@
         <dependency>
             <groupId>ch.swaechter</groupId>
             <artifactId>angularj-universal-application</artifactId>
-            <version>0.0.1</version>
+            <version>0.0.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>

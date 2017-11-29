@@ -28,7 +28,7 @@ public class AngularJUniversalProperties {
     /**
      * Path of the server bundle resource.
      */
-    private String serverbundleresourcepath = "/server.bundle.js";
+    private String serverbundleresourcepath = "/server.js";
 
     /**
      * Charset used for reading and rendering.

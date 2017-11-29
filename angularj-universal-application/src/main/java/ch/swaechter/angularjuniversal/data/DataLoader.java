@@ -24,6 +24,6 @@ public class DataLoader {
      * @return Input stream of the server bundle
      */
     public InputStream getServerBundleAsInputStream() {
-        return this.getClass().getResourceAsStream("/server.bundle.js");
+        return this.getClass().getResourceAsStream("/server.js");
     }
 }

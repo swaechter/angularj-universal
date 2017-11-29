@@ -22,13 +22,13 @@ public class AngularJUniversalPropertiesTest {
         Assert.assertEquals(1, properties.getRoutes().size());
         Assert.assertTrue(properties.getRoutes().get(0).equals("/"));
         Assert.assertTrue(properties.getIndexResourcePath().equals("/public/index.html"));
-        Assert.assertTrue(properties.getServerBundleResourcePath().equals("/server.bundle.js"));
+        Assert.assertTrue(properties.getServerBundleResourcePath().equals("/server.js"));
         Assert.assertTrue(properties.getCharset().equals(StandardCharsets.UTF_8));
         Assert.assertEquals(5, properties.getEngines());
 
         properties.setRoutes(Arrays.asList("/", "/home"));
         properties.setIndexResourcePath("/other/public/index.html");
-        properties.setServerBundleResourcePath("/other.server.bundle.js");
+        properties.setServerBundleResourcePath("/other.server.js");
         properties.setCharset(StandardCharsets.ISO_8859_1);
         properties.setEngines(10);
 
@@ -36,7 +36,7 @@ public class AngularJUniversalPropertiesTest {
         Assert.assertTrue(properties.getRoutes().get(0).equals("/"));
         Assert.assertTrue(properties.getRoutes().get(1).equals("/home"));
         Assert.assertTrue(properties.getIndexResourcePath().equals("/other/public/index.html"));
-        Assert.assertTrue(properties.getServerBundleResourcePath().equals("/other.server.bundle.js"));
+        Assert.assertTrue(properties.getServerBundleResourcePath().equals("/other.server.js"));
         Assert.assertTrue(properties.getCharset().equals(StandardCharsets.ISO_8859_1));
         Assert.assertEquals(10, properties.getEngines());
     }

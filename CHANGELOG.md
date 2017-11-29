@@ -21,9 +21,9 @@
 
 ## 0.0.1 (17.08.2017)
 
-* Initial functionality for rendering an Angular application on the server side
-
 ### New Features
+
+* Initial functionality for rendering an Angular application on the server side
 
 ### Breaking Changes
 

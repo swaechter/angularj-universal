@@ -152,7 +152,7 @@ Now let's update our Node scripts for building all three applications (Snipped f
 ```json
 "scripts": {
     "start": "npm run build",
-    "build": "ng build --app 0 --prod --build-optimizer; ng build --app 1 --prod --output-hashing none; webpack --config webpack.server.config.js"
+    "build": "ng build --app 0 --prod --build-optimizer && ng build --app 1 --prod --output-hashing none && webpack --config webpack.server.config.js"
 },
 ```
 

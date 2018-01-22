@@ -4,7 +4,7 @@
     "license": "ISC",
     "scripts": {
         "start": "npm run build",
-        "build": "ng build --app 0 --prod --build-optimizer && ng build --app 1 --prod --output-hashing none && webpack --config webpack.server.config.js"
+        "build": "ng build --app 0 --prod --build-optimizer && ng build --app 1 --prod --output-hashing none && webpack"
     },
     "private": true,
     "dependencies": {
@@ -18,6 +18,7 @@
         "@angular/platform-browser-dynamic": "^5.0.0",
         "@angular/platform-server": "^5.0.0",
         "@angular/router": "^5.0.0",
+        "@nguniversal/module-map-ngfactory-loader": "^5.0.0-beta.5",
         "bootstrap": "4.0.0-beta.2",
         "core-js": "^2.4.1",
         "jquery": "^3.2.1",

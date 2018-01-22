@@ -1,21 +1,16 @@
-require('zone.js/dist/zone-node');
+require("zone.js/dist/zone-node");
 
+import {provideModuleMap} from "@nguniversal/module-map-ngfactory-loader";
 import {renderModuleFactory} from "@angular/platform-server";
 
-export type RenderCallback = (uuid: string, html: string, error: any) => void;
+export declare function registerRenderAdapter(renderadapter: RenderAdapter): void;
+
+export declare function receiveRenderedPage(uuid: string, html: string, error: any): void;
 
 export class RenderAdapter {
 
-    private appservermodulengfactory: any;
-
-    private callback: RenderCallback;
-
-    private html: string;
-
-    constructor(appservermodulengfactory: any, callback: RenderCallback) {
-        this.appservermodulengfactory = appservermodulengfactory;
-        this.callback = callback;
-        this.html = "<app-root></app-root>";
+    constructor(private appservermodulengfactory: any, private lazymodulemap: any, private html: string) {
+        registerRenderAdapter(this);
     }
 
     setHtml(html: string) {
@@ -23,8 +18,14 @@ export class RenderAdapter {
     }
 
     renderPage(uuid: string, uri: string) {
-        renderModuleFactory(this.appservermodulengfactory, {document: this.html, url: uri}).then(html => {
-            this.callback(uuid, html, null);
+        renderModuleFactory(this.appservermodulengfactory, {
+            document: this.html,
+            url: uri,
+            extraProviders: [
+                provideModuleMap(this.lazymodulemap)
+            ]
+        }).then(html => {
+            receiveRenderedPage(uuid, html, null);
         });
     }
 }

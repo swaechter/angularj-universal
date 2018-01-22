@@ -1,14 +1,5 @@
-import {RenderAdapter, RenderCallback} from "./renderadapter";
+import {RenderAdapter} from "./renderadapter";
 
-const AppServerModuleNgFactory = require('./../dist/main.bundle').AppServerModuleNgFactory;
+const {AppServerModuleNgFactory, LAZY_MODULE_MAP} = require("./../dist/main.bundle");
 
-export declare function registerRenderAdapter(renderadapter: RenderAdapter): void;
-
-export declare function receiveRenderedPage(uuid: string, html: string, error: any): void;
-
-export const rendercallback: RenderCallback = (uuid: string, html: string, error: any) => {
-    receiveRenderedPage(uuid, html, error);
-};
-
-const renderadapter = new RenderAdapter(AppServerModuleNgFactory, rendercallback);
-registerRenderAdapter(renderadapter);
+new RenderAdapter(AppServerModuleNgFactory, LAZY_MODULE_MAP, "<app-root></app-root>");

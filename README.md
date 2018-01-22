@@ -77,41 +77,35 @@ cd angularj-universal-example-spring-boot-simple/src/main
 ng new angular
 ```
 
-This will create a traditional single page application (SPA) that needs some adjustment and preparations for server side rendering. Modify your application with the link bellow and execute steps 1 - 3 and 5, but skip 4 (See notes bellow):
+This will create a traditional single page application (SPA) that needs some adjustment and preparations for server side rendering. Modify your application with the link bellow and execute step 1 - 3, but skip step 4 and 5 (We will take care of them later on):
 
 ```bash
 https://github.com/angular/angular-cli/wiki/stories-universal-rendering
 ```
 
-But keep a few things in mind:
+In addition, keep a few things in mind:
 
- 1. In the step "Step 3: Create a new project in .angular-cli.json", set the output path of your second application to `"outDir": "../resources/public",` to respect the Maven project layout
- 2. Step 4 isn't required because we provide an own Java webserver in addition with some server.ts glue code later on
- 3. In step 5, only copy the `webpack.config.js` but change the bundle entry to `entry: {server: './library/server.ts'},` and the bundle output to `path: path.join(__dirname, '../resources'),`. We write the suitable NPM scripts later on
+ 1. In "Step 3: Create a new project in .angular-cli.json", set the output path of app 1 to `"outDir": "../resources/public",` to respect the Maven project layout
+ 2. Step 4 and 5 are skipped because we already have a server (Java & Spring Boot) running and don't need a second one (Express.js)
 
-Because the server side rendering code in the wiki article uses Express.js as we framework, we will write our own server code.
+Now we need to create a communication mechanism with which the Java JVM can speak to the Angular application (Render a page request) and handle the answer (Receive rendered page request). For this, the Java JVM execute a script that establish this communication.
 
-Create a file `library/renderadapter.ts` that provides the API (I should move this file to an own, consumable NPM library):
+Create a file `library/renderadapter.ts` that provides the communication mechanism (I should move this code to an own consumable NPM library):
 
 ```typescript
-require('zone.js/dist/zone-node');
+require("zone.js/dist/zone-node");
 
+import {provideModuleMap} from "@nguniversal/module-map-ngfactory-loader";
 import {renderModuleFactory} from "@angular/platform-server";
 
-export type RenderCallback = (uuid: string, html: string, error: any) => void;
+export declare function registerRenderAdapter(renderadapter: RenderAdapter): void;
+
+export declare function receiveRenderedPage(uuid: string, html: string, error: any): void;
 
 export class RenderAdapter {
 
-    private appservermodulengfactory: any;
-
-    private callback: RenderCallback;
-
-    private html: string;
-
-    constructor(appservermodulengfactory: any, callback: RenderCallback) {
-        this.appservermodulengfactory = appservermodulengfactory;
-        this.callback = callback;
-        this.html = "<app-root></app-root>";
+    constructor(private appservermodulengfactory: any, private lazymodulemap: any, private html: string) {
+        registerRenderAdapter(this);
     }
 
     setHtml(html: string) {
@@ -119,46 +113,81 @@ export class RenderAdapter {
     }
 
     renderPage(uuid: string, uri: string) {
-        renderModuleFactory(this.appservermodulengfactory, {document: this.html, url: uri}).then(html => {
-            this.callback(uuid, html, null);
+        renderModuleFactory(this.appservermodulengfactory, {
+            document: this.html,
+            url: uri,
+            extraProviders: [
+                provideModuleMap(this.lazymodulemap)
+            ]
+        }).then(html => {
+            receiveRenderedPage(uuid, html, null);
         });
     }
 }
 ```
 
-The create another file `library/server.ts` that will consume the API:
+Then create another file `library/server.ts` that is going to establish the communication (This script will be loaded by the Java JVM):
 
 ```typescript
-import {RenderAdapter, RenderCallback} from "./renderadapter";
+import {RenderAdapter} from "./renderadapter";
 
-const AppServerModuleNgFactory = require('./../dist/main.bundle').AppServerModuleNgFactory;
+const {AppServerModuleNgFactory, LAZY_MODULE_MAP} = require("./../dist/main.bundle");
 
-export declare function registerRenderAdapter(renderadapter: RenderAdapter): void;
-
-export declare function receiveRenderedPage(uuid: string, html: string, error: any): void;
-
-export const rendercallback: RenderCallback = (uuid: string, html: string, error: any) => {
-receiveRenderedPage(uuid, html, error);
-};
-
-const renderadapter = new RenderAdapter(AppServerModuleNgFactory, rendercallback);
-registerRenderAdapter(renderadapter);
+new RenderAdapter(AppServerModuleNgFactory, LAZY_MODULE_MAP, "<app-root></app-root>");
 ```
 
-This file will create a new render adapter and register this adapter via `registerRenderAdapter` - a method that doesn't exist and will be provided by the Java virtual machine - this is the real glue code. In addition, there is another method `receiveRenderedPage` that will be also be provided by the Java virtual machine and receives all finished render requests.
+In addition, we need webpack to build a relocatable bundle. Create the file `webpack.config.js`:
 
-Now let's update our Node scripts for building all three applications (Snipped from `package.json`:
+```js
+const path = require('path');
+const webpack = require('webpack');
+
+module.exports = {
+    entry: {  server: './library/server.ts' },
+    resolve: { extensions: ['.js', '.ts'] },
+    target: 'node',
+    // this makes sure we include node_modules and other 3rd party libraries
+    externals: [/(node_modules|main\..*\.js)/],
+    output: {
+        path: path.join(__dirname, '../resources'),
+        filename: '[name].js'
+    },
+    module: {
+        rules: [
+            { test: /\.ts$/, loader: 'ts-loader' }
+        ]
+    },
+    plugins: [
+        // Temporary Fix for issue: https://github.com/angular/angular/issues/11580
+        // for "WARNING Critical dependency: the request of a dependency is an expression"
+        new webpack.ContextReplacementPlugin(
+            /(.+)?angular(\\|\/)core(.+)?/,
+            path.join(__dirname, 'src'), // location of your src
+            {} // a map of your routes
+        ),
+        new webpack.ContextReplacementPlugin(
+            /(.+)?express(\\|\/)(.+)?/,
+            path.join(__dirname, 'src'),
+            {}
+        )
+    ]
+}
+```
+
+In short, the generated server.js bundle will be loaded by the Java JVM. The script then passes an instance of the render adapter to the JVM (See `registerRenderAdapter)`, so the JVM can use this instance to render page requests. After a page is rendered, it is passed back to the JVM (See `receiveRenderedPage`) and served to the client. Hence, the functions `registerRenderAdapter` and `receiveRenderedPage` can't be found in the JavaScript code because they are registered Java methods in the script engine.
+
+Now let's update our Node scripts for building all three applications (Snipped from `package.json`):
 
 ```json
 "scripts": {
     "start": "npm run build",
-    "build": "ng build --app 0 --prod --build-optimizer && ng build --app 1 --prod --output-hashing none && webpack --config webpack.server.config.js"
+    "build": "ng build --app 0 --prod --build-optimizer && ng build --app 1 --prod --output-hashing none && webpack"
 },
 ```
 
-Now run 'npm start' or 'npm run build' and the traditional SPA application will land in 'angularj-universal-example-spring-boot-simple/src/main/resources/public', the publicly accessible part of our web server. In addition, we will locate our server side bundle with the API to the Java virtual machine in 'angularj-universal-example-spring-boot-simple/src/main/resources/server.js', the not publicly accessible part of our web server (Only the subdirectory is).
+Now run `npm start` or `npm run build` and the traditional client side SPA application will land in `angularj-universal-example-spring-boot-simple/src/main/resources/public`, the publicly accessible part of our web server. In addition, the relocatable server side bundle that will be loaded by the Java JVM can be found in `angularj-universal-example-spring-boot-simple/src/main/resources/server.js`, the not publicly accessible part of our web server (Only the subdirectory `public` is).
 
-Now we can continue with the third phase and integrate the Angular application into the Java application and automate the NPM build (Because In cause you don't execute it, your application will fail).
+We can continue with the third phase and integrate the Angular application into the Java application and automate the NPM build (Because In cause you don't execute it, your application will fail).
 
 ### Phase 3: Integrate the Angular application into the Java project
 
@@ -166,9 +195,9 @@ Now we switch back to the Java part and create a web application with a controll
 
 Create a new Java class file `angularj-universal-example-spring-boot-simple/src/main/java/ch/swaechter/angularjuniversal/example/springboot/simple/DemoApplication.java` with the following content bellow:
 
-__Note 1:__ In this example we only provide the `/` route, but the example in `angularj-universal-application` has several pages and hence routes (Login, Home etc.)
+__Note 1:__ In this example we only provide the `/` route, but the example in `angularj-universal-application` has several pages and hence routes (Login, Home etc.). For every Angular route you have to define an own route in Spring Boot
 
-__Note 2:__ Check out the Spring Boot integration `angularj-universal-example-spring-boot` to avoid the manual routes (In the integration you specify them in a property file)
+__Note 2:__ To avoid such manual and duplicated routes, check out the Spring Boot integration `angularj-universal-example-spring-boot` (In the integration you specify them in a property file)
 
 ```java
 package ch.swaechter.angularjuniversal.example.springboot.simple;
@@ -194,7 +223,6 @@ import java.util.concurrent.Future;
 
 @SpringBootApplication
 public class WebApplication {
-
 
     public static void main(String[] args) {
         SpringApplication.run(WebApplication.class, args);

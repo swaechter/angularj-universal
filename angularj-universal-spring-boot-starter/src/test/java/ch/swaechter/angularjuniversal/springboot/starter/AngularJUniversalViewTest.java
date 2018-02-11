@@ -43,8 +43,8 @@ public class AngularJUniversalViewTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
         view.renderMergedTemplateModel(map, request, response);
-        Assert.assertTrue(response.getCharacterEncoding().equals(properties.getCharset().name()));
-        Assert.assertTrue(response.getContentType().equals("text/html"));
-        Assert.assertTrue(response.getContentAsString().equals(future.get() + System.lineSeparator()));
+        Assert.assertEquals(properties.getCharset().name(), response.getCharacterEncoding());
+        Assert.assertEquals("text/html", response.getContentType());
+        Assert.assertEquals(response.getContentAsString(), future.get() + System.lineSeparator());
     }
 }

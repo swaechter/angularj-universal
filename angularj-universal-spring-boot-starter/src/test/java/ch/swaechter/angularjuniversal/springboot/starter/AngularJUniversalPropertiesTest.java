@@ -20,10 +20,10 @@ public class AngularJUniversalPropertiesTest {
     public void testAngularJUniversalProperties() {
         AngularJUniversalProperties properties = new AngularJUniversalProperties();
         Assert.assertEquals(1, properties.getRoutes().size());
-        Assert.assertTrue(properties.getRoutes().get(0).equals("/"));
-        Assert.assertTrue(properties.getIndexResourcePath().equals("/public/index.html"));
-        Assert.assertTrue(properties.getServerBundleResourcePath().equals("/server.js"));
-        Assert.assertTrue(properties.getCharset().equals(StandardCharsets.UTF_8));
+        Assert.assertEquals("/", properties.getRoutes().get(0));
+        Assert.assertEquals("/public/index.html", properties.getIndexResourcePath());
+        Assert.assertEquals("/server.js", properties.getServerBundleResourcePath());
+        Assert.assertEquals(StandardCharsets.UTF_8, properties.getCharset());
         Assert.assertEquals(5, properties.getEngines());
 
         properties.setRoutes(Arrays.asList("/", "/home"));
@@ -33,11 +33,11 @@ public class AngularJUniversalPropertiesTest {
         properties.setEngines(10);
 
         Assert.assertEquals(2, properties.getRoutes().size());
-        Assert.assertTrue(properties.getRoutes().get(0).equals("/"));
-        Assert.assertTrue(properties.getRoutes().get(1).equals("/home"));
-        Assert.assertTrue(properties.getIndexResourcePath().equals("/other/public/index.html"));
-        Assert.assertTrue(properties.getServerBundleResourcePath().equals("/other.server.js"));
-        Assert.assertTrue(properties.getCharset().equals(StandardCharsets.ISO_8859_1));
+        Assert.assertEquals("/", properties.getRoutes().get(0));
+        Assert.assertEquals("/home", properties.getRoutes().get(1));
+        Assert.assertEquals("/other/public/index.html", properties.getIndexResourcePath());
+        Assert.assertEquals("/other.server.js", properties.getServerBundleResourcePath());
+        Assert.assertEquals(StandardCharsets.ISO_8859_1, properties.getCharset());
         Assert.assertEquals(10, properties.getEngines());
     }
 }

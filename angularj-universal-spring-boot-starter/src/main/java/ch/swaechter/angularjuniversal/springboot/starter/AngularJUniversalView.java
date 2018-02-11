@@ -51,10 +51,11 @@ public class AngularJUniversalView extends AbstractTemplateView {
      */
     @Override
     protected void renderMergedTemplateModel(Map<String, Object> map, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String uri = request.getRequestURI().substring(request.getContextPath().length());
         response.setCharacterEncoding(properties.getCharset().name());
         response.setContentType("text/html");
         PrintWriter writer = response.getWriter();
-        writer.println(renderer.addRenderRequest(getBeanName()).get());
+        writer.println(renderer.addRenderRequest(uri).get());
         writer.flush();
         writer.close();
     }

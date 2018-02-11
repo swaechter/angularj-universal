@@ -28,7 +28,7 @@ public class RenderUtilsTest {
         String content = "Example";
         InputStream inputstream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
         String result = RenderUtils.getStringFromInputStream(inputstream, StandardCharsets.UTF_8);
-        Assert.assertTrue(result.equals(content));
+        Assert.assertEquals(content, result);
     }
 
     /**
@@ -44,6 +44,6 @@ public class RenderUtilsTest {
         Assert.assertTrue(result.exists());
 
         byte[] data = Files.readAllBytes(Paths.get(result.getAbsolutePath()));
-        Assert.assertTrue(content.equals(new String(data, StandardCharsets.UTF_8)));
+        Assert.assertEquals(content, new String(data, StandardCharsets.UTF_8));
     }
 }

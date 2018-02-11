@@ -17,7 +17,7 @@ public class RenderRequestTest {
     public void testRenderRequest() {
         RenderRequest renderrequest = new RenderRequest("/");
         Assert.assertNotNull(renderrequest.getFuture());
-        Assert.assertTrue(renderrequest.getUri().equals("/"));
+        Assert.assertEquals("/", renderrequest.getUri());
         Assert.assertTrue(renderrequest.getUuid().length() > 0);
     }
 }

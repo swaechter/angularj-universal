@@ -19,6 +19,6 @@ public class V8RenderEngineFactoryTest {
     public void testRenderEngineFactory() {
         RenderEngineFactory renderenginefactory = new V8RenderEngineFactory();
         RenderEngine renderengine = renderenginefactory.createRenderEngine();
-        Assert.assertTrue(renderengine.getClass().getName().equals(V8RenderEngine.class.getName()));
+        Assert.assertEquals(V8RenderEngine.class.getName(), renderengine.getClass().getName());
     }
 }

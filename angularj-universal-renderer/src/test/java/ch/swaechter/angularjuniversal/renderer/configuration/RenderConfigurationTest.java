@@ -20,7 +20,7 @@ public class RenderConfigurationTest {
         File serverbundle = new File("server.bundle.js");
         RenderConfiguration renderconfiguration = new RenderConfiguration("<app-root></app-root>", serverbundle, 10, true);
         Assert.assertEquals(serverbundle, renderconfiguration.getServerBundleFile());
-        Assert.assertTrue(renderconfiguration.getTemplateContent().equals("<app-root></app-root>"));
+        Assert.assertEquals("<app-root></app-root>", renderconfiguration.getTemplateContent());
         Assert.assertEquals(10, renderconfiguration.getEngines());
         Assert.assertTrue(renderconfiguration.getLiveReload());
     }

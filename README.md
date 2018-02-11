@@ -77,18 +77,61 @@ cd angularj-universal-example-spring-boot-simple/src/main
 ng new angular
 ```
 
-This will create a traditional single page application (SPA) that needs some adjustment and preparations for server side rendering. Modify your application with the link bellow and execute step 1 - 3, but skip step 4 and 5 (We will take care of them later on):
+Generate an universal component, add the required third party libraries and update your modules:
 
 ```bash
-https://github.com/angular/angular-cli/wiki/stories-universal-rendering
+ng generate universal server
+npm install --save-dev ts-loader @nguniversal/module-map-ngfactory-loader
+npm update
 ```
 
-In addition, keep a few things in mind:
+This will create a traditional single page application (SPA) that needs some adjustment and preparations to run in a Java server context.
 
- 1. In "Step 3: Create a new project in .angular-cli.json", set the output path of app 1 to `"outDir": "../resources/public",` to respect the Maven project layout
- 2. Step 4 and 5 are skipped because we already have a server (Java & Spring Boot) running and don't need a second one (Express.js)
+To stick with the traditional Maven layout, change the output directory of your client application (App 0) in the `.angular-cli.json`:
 
-Now we need to create a communication mechanism with which the Java JVM can speak to the Angular application (Render a page request) and handle the answer (Receive rendered page request). For this, the Java JVM execute a script that establish this communication.
+```json
+"outDir": "../resources/public",
+```
+
+At the moment, the generated server bundle (App 1) will not be relocatable (The required libraries from `ǹode_modules` are not packaged into the build artifact), hence we have to build a relocatable bundle with webpack. Create the file `webpack.config.js`:
+
+```js
+const path = require('path');
+const webpack = require('webpack');
+
+module.exports = {
+    entry: {server: './library/server.ts'},
+    resolve: {extensions: ['.js', '.ts']},
+    target: 'node',
+    // this makes sure we include node_modules and other 3rd party libraries
+    externals: [/(node_modules|main\..*\.js)/],
+    output: {
+        path: path.join(__dirname, '../resources'),
+        filename: '[name].js'
+    },
+    module: {
+        rules: [
+            {test: /\.ts$/, loader: 'ts-loader'}
+        ]
+    },
+    plugins: [
+        // Temporary Fix for issue: https://github.com/angular/angular/issues/11580
+        // for "WARNING Critical dependency: the request of a dependency is an expression"
+        new webpack.ContextReplacementPlugin(
+            /(.+)?angular(\\|\/)core(.+)?/,
+            path.join(__dirname, 'src'), // location of your src
+            {} // a map of your routes
+        ),
+        new webpack.ContextReplacementPlugin(
+            /(.+)?express(\\|\/)(.+)?/,
+            path.join(__dirname, 'src'),
+            {}
+        )
+    ]
+}
+```
+
+Now we need to create a communication mechanism with which the Java JVM can speak to the Angular application (Render a page request) and handle the answer (Receive rendered page request). For this, the Java JVM executes a script that establish this communication.
 
 Create a file `library/renderadapter.ts` that provides the communication mechanism (I should move this code to an own consumable NPM library):
 
@@ -131,47 +174,9 @@ Then create another file `library/server.ts` that is going to establish the comm
 ```typescript
 import {RenderAdapter} from "./renderadapter";
 
-const {AppServerModuleNgFactory, LAZY_MODULE_MAP} = require("./../dist/main.bundle");
+const {AppServerModuleNgFactory, LAZY_MODULE_MAP} = require("./../dist-server/main.bundle");
 
 new RenderAdapter(AppServerModuleNgFactory, LAZY_MODULE_MAP, "<app-root></app-root>");
-```
-
-In addition, we need webpack to build a relocatable bundle. Create the file `webpack.config.js`:
-
-```js
-const path = require('path');
-const webpack = require('webpack');
-
-module.exports = {
-    entry: {  server: './library/server.ts' },
-    resolve: { extensions: ['.js', '.ts'] },
-    target: 'node',
-    // this makes sure we include node_modules and other 3rd party libraries
-    externals: [/(node_modules|main\..*\.js)/],
-    output: {
-        path: path.join(__dirname, '../resources'),
-        filename: '[name].js'
-    },
-    module: {
-        rules: [
-            { test: /\.ts$/, loader: 'ts-loader' }
-        ]
-    },
-    plugins: [
-        // Temporary Fix for issue: https://github.com/angular/angular/issues/11580
-        // for "WARNING Critical dependency: the request of a dependency is an expression"
-        new webpack.ContextReplacementPlugin(
-            /(.+)?angular(\\|\/)core(.+)?/,
-            path.join(__dirname, 'src'), // location of your src
-            {} // a map of your routes
-        ),
-        new webpack.ContextReplacementPlugin(
-            /(.+)?express(\\|\/)(.+)?/,
-            path.join(__dirname, 'src'),
-            {}
-        )
-    ]
-}
 ```
 
 In short, the generated server.js bundle will be loaded by the Java JVM. The script then passes an instance of the render adapter to the JVM (See `registerRenderAdapter)`, so the JVM can use this instance to render page requests. After a page is rendered, it is passed back to the JVM (See `receiveRenderedPage`) and served to the client. Hence, the functions `registerRenderAdapter` and `receiveRenderedPage` can't be found in the JavaScript code because they are registered Java methods in the script engine.

@@ -1,7 +1,7 @@
-import {Injectable} from "@angular/core";
-import {HttpClient} from "@angular/common/http";
-import {Keyword} from "./keyword.model";
-import {Settings} from "../../settings";
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Keyword} from './keyword.model';
+import {Settings} from '../../settings';
 
 @Injectable()
 export class KeywordService {
@@ -10,6 +10,6 @@ export class KeywordService {
     }
 
     getKeywords() {
-        return this.http.get<Keyword[]>(Settings.BACKEND_URL + "/api/keyword");
+        return this.http.get<Keyword[]>(Settings.BACKEND_URL + '/api/keyword');
     }
 }

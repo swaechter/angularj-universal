@@ -2,8 +2,8 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-    entry: {  server: './library/server.ts' },
-    resolve: { extensions: ['.js', '.ts'] },
+    entry: {server: './library/server.ts'},
+    resolve: {extensions: ['.js', '.ts']},
     target: 'node',
     // this makes sure we include node_modules and other 3rd party libraries
     externals: [/(node_modules|main\..*\.js)/],
@@ -13,7 +13,7 @@ module.exports = {
     },
     module: {
         rules: [
-            { test: /\.ts$/, loader: 'ts-loader' }
+            {test: /\.ts$/, loader: 'ts-loader'}
         ]
     },
     plugins: [

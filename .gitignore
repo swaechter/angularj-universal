@@ -11,7 +11,7 @@
 target/
 
 # Build system for JavaScript
-dist/
+dist-server/
 etc/
 node/
 node_modules/

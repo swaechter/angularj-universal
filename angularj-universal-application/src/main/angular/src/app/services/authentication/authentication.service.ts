@@ -1,6 +1,6 @@
-import {Injectable} from "@angular/core";
-import {HttpClient} from "@angular/common/http";
-import {Headers} from "@angular/http";
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Headers} from '@angular/http';
 
 @Injectable()
 export class AuthenticationService {
@@ -20,7 +20,7 @@ export class AuthenticationService {
 
     public getUnauthenticatedHeaders() {
         let headers = new Headers();
-        headers.append("Content-Type", "application/json");
+        headers.append('Content-Type', 'application/json');
         return headers;
     }
 

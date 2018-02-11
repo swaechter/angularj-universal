@@ -1,8 +1,8 @@
-import {Component} from "@angular/core";
+import {Component} from '@angular/core';
 
 @Component({
-    templateUrl: "page.component.html",
-    styleUrls: ["page.component.css"]
+    templateUrl: 'page.component.html',
+    styleUrls: ['page.component.css']
 })
 export class PageComponent {
 }

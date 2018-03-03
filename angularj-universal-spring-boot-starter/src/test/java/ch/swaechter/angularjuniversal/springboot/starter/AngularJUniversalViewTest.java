@@ -1,6 +1,7 @@
 package ch.swaechter.angularjuniversal.springboot.starter;
 
 import ch.swaechter.angularjuniversal.renderer.Renderer;
+import ch.swaechter.angularjuniversal.renderer.configuration.RenderConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -32,10 +33,10 @@ public class AngularJUniversalViewTest {
         Renderer renderer = Mockito.mock(Renderer.class);
         Mockito.when(renderer.addRenderRequest(Mockito.anyString())).thenReturn(future);
 
-        AngularJUniversalProperties properties = Mockito.mock(AngularJUniversalProperties.class);
-        Mockito.when(properties.getCharset()).thenReturn(StandardCharsets.UTF_8);
+        RenderConfiguration renderconfiguration = Mockito.mock(RenderConfiguration.class);
+        Mockito.when(renderconfiguration.getCharset()).thenReturn(StandardCharsets.UTF_8);
 
-        AngularJUniversalView view = new AngularJUniversalView(renderer, properties);
+        AngularJUniversalView view = new AngularJUniversalView(renderer, renderconfiguration);
 
         Assert.assertFalse(view.isUrlRequired());
 
@@ -43,7 +44,7 @@ public class AngularJUniversalViewTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
         view.renderMergedTemplateModel(map, request, response);
-        Assert.assertEquals(properties.getCharset().name(), response.getCharacterEncoding());
+        Assert.assertEquals(renderconfiguration.getCharset().name(), response.getCharacterEncoding());
         Assert.assertEquals("text/html", response.getContentType());
         Assert.assertEquals(response.getContentAsString(), future.get() + System.lineSeparator());
     }

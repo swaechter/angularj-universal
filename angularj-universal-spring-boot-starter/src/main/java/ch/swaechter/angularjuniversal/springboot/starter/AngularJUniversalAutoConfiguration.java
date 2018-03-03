@@ -5,7 +5,6 @@ import ch.swaechter.angularjuniversal.renderer.configuration.RenderConfiguration
 import ch.swaechter.angularjuniversal.renderer.engine.RenderEngineFactory;
 import ch.swaechter.angularjuniversal.renderer.utils.RenderUtils;
 import ch.swaechter.angularjuniversal.v8renderer.V8RenderEngineFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
@@ -19,6 +18,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * This class serves as an entry point for the AngularJ Universal Spring Boot starter.
@@ -29,21 +29,6 @@ import java.io.InputStream;
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(AngularJUniversalProperties.class)
 public class AngularJUniversalAutoConfiguration {
-
-    /**
-     * Properties loaded by Spring Boot and used by this starter.
-     */
-    private final AngularJUniversalProperties properties;
-
-    /**
-     * Constructor with the starter properties.
-     *
-     * @param properties Starter properties
-     */
-    @Autowired
-    public AngularJUniversalAutoConfiguration(AngularJUniversalProperties properties) {
-        this.properties = properties;
-    }
 
     /**
      * Get the render engine factory. At the moment the V8 implementation is used.
@@ -59,38 +44,22 @@ public class AngularJUniversalAutoConfiguration {
     /**
      * Get the render configuration.
      *
+     * @param properties     Properties loaded by Spring Boot and used by this starter.
      * @param resourceloader Resource loader for accessing the assets
      * @return Render configuration
      */
     @Bean
     @ConditionalOnMissingBean
-    public RenderConfiguration getRenderConfiguration(ResourceLoader resourceloader) {
-        // Get the content of the index template
-        InputStream indexinputstream = AngularJUniversalUtils.getInputStreamFromResource(resourceloader, properties.getIndexResourcePath());
-        if (indexinputstream == null) {
-            throw new RuntimeException("AngularJ Universal starter is unable get an input stream for " + properties.getIndexResourcePath());
-        }
-
-        // Get the input stream for the server bundle
-        InputStream serverbundleinputstream = AngularJUniversalUtils.getInputStreamFromResource(resourceloader, properties.getServerBundleResourcePath());
-        if (serverbundleinputstream == null) {
-            throw new RuntimeException("AngularJ Universal starter is unable get an input stream for " + properties.getServerBundleResourcePath());
-        }
-
-        // Check the engine number
-        int engines = properties.getEngines();
-        if (engines < 0) {
-            throw new RuntimeException("AngularJ Universal requires at least one engine not " + engines);
-        }
-
+    public RenderConfiguration getRenderConfiguration(AngularJUniversalProperties properties, ResourceLoader resourceloader) {
         // Check the charset
         if (properties.getCharset() == null) {
             throw new RuntimeException("AngularJ Universal starter is unable to parse the charset");
         }
 
-        // Read the content from the index template
+        // Get the content of the index template
         String templatecontent;
         try {
+            InputStream indexinputstream = AngularJUniversalUtils.getInputStreamFromResource(resourceloader, properties.getIndexResourcePath());
             templatecontent = RenderUtils.getStringFromInputStream(indexinputstream, properties.getCharset());
         } catch (IOException exception) {
             throw new RuntimeException("AngularJ Universal is unable to read the template content for " + properties.getIndexResourcePath());
@@ -99,13 +68,34 @@ public class AngularJUniversalAutoConfiguration {
         // Create a temporary server bundle from the input stream
         File serverbundlefile;
         try {
+            InputStream serverbundleinputstream = AngularJUniversalUtils.getInputStreamFromResource(resourceloader, properties.getServerBundleResourcePath());
             serverbundlefile = RenderUtils.createTemporaryFileFromInputStream("serverbundle", ".js", serverbundleinputstream);
         } catch (IOException exception) {
             throw new RuntimeException("AngularJ Universal is unable to cache the server bundle file for " + properties.getServerBundleResourcePath());
         }
 
-        // Create the configuration
-        return new RenderConfiguration.RenderConfigurationBuilder(templatecontent, serverbundlefile).build();
+        // Build the render configuration builder
+        RenderConfiguration.RenderConfigurationBuilder builder = new RenderConfiguration.RenderConfigurationBuilder(templatecontent, serverbundlefile);
+        builder.charset(properties.getCharset());
+
+        // Check the engine number
+        int engines = properties.getEngines();
+        if (engines >= 0) {
+            builder.engines(engines);
+        } else {
+            throw new RuntimeException("AngularJ Universal requires at least one engine not " + engines);
+        }
+
+        // Check the routes
+        List<String> routes = properties.getRoutes();
+        if (!properties.getRoutes().isEmpty()) {
+            builder.routes(routes);
+        } else {
+            throw new RuntimeException("AngularJ Universal starter is unable to parse and find any routes for " + properties.getRoutes());
+        }
+
+        // Build the render configuration
+        return builder.build();
     }
 
     /**
@@ -127,23 +117,14 @@ public class AngularJUniversalAutoConfiguration {
     /**
      * Get the view resolver.
      *
-     * @param renderer Renderer used to render page requests
+     * @param renderer            Injected renderer
+     * @param renderconfiguration Injected render configuration
      * @return View resolver
      */
     @Bean
-    public ViewResolver getViewResolver(Renderer renderer) {
-        // Check the routes
-        if (properties.getRoutes().isEmpty()) {
-            throw new RuntimeException("AngularJ Universal starter is unable to parse and find any routes for " + properties.getRoutes());
-        }
-
-        // Check the charset
-        if (properties.getCharset() == null) {
-            throw new RuntimeException("AngularJ Universal starter is unable to parse the charset");
-        }
-
+    public ViewResolver getViewResolver(Renderer renderer, RenderConfiguration renderconfiguration) {
         // Create the view resolver
-        AngularJUniversalViewResolver viewresolver = new AngularJUniversalViewResolver(renderer, properties);
+        AngularJUniversalViewResolver viewresolver = new AngularJUniversalViewResolver(renderer, renderconfiguration);
         viewresolver.setOrder(0);
         return viewresolver;
     }
@@ -151,10 +132,11 @@ public class AngularJUniversalAutoConfiguration {
     /**
      * Get a web MVC configurer that is going to register all routes of the application.
      *
+     * @param renderconfiguration Injected render configuration
      * @return Web MVC configurer with the application routes
      */
     @Bean
-    public WebMvcConfigurer getWebMvcConfigurer() {
-        return new AngularJUniversalConfigurer(properties);
+    public WebMvcConfigurer getWebMvcConfigurer(RenderConfiguration renderconfiguration) {
+        return new AngularJUniversalConfigurer(renderconfiguration);
     }
 }

@@ -1,6 +1,7 @@
 package ch.swaechter.angularjuniversal.springboot.starter;
 
 import ch.swaechter.angularjuniversal.renderer.Renderer;
+import ch.swaechter.angularjuniversal.renderer.configuration.RenderConfiguration;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,19 +17,19 @@ public class AngularJUniversalView extends AbstractTemplateView {
     private final Renderer renderer;
 
     /**
-     * Properties for writing responses.
+     * Render configuration that will be used to check the routes.
      */
-    private final AngularJUniversalProperties properties;
+    private final RenderConfiguration renderconfiguration;
 
     /**
      * Constructor with the new renderer and the properties for rendering page requests.
      *
-     * @param renderer   Renderer
-     * @param properties Properties
+     * @param renderer            Renderer
+     * @param renderconfiguration Render configuration
      */
-    public AngularJUniversalView(Renderer renderer, AngularJUniversalProperties properties) {
+    public AngularJUniversalView(Renderer renderer, RenderConfiguration renderconfiguration) {
         this.renderer = renderer;
-        this.properties = properties;
+        this.renderconfiguration = renderconfiguration;
     }
 
     /**
@@ -51,7 +52,7 @@ public class AngularJUniversalView extends AbstractTemplateView {
      */
     @Override
     protected void renderMergedTemplateModel(Map<String, Object> map, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        response.setCharacterEncoding(properties.getCharset().name());
+        response.setCharacterEncoding(renderconfiguration.getCharset().name());
         response.setContentType("text/html");
         PrintWriter writer = response.getWriter();
         writer.println(renderer.addRenderRequest(request.getRequestURI()).get());

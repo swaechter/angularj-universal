@@ -38,7 +38,7 @@ public class AngularJUniversalProperties {
     /**
      * Number of render engines.
      */
-    private int engines = 5;
+    private int engines = 4;
 
     /**
      * Get all routes as list.

@@ -24,7 +24,7 @@ public class AngularJUniversalPropertiesTest {
         Assert.assertEquals("/public/index.html", properties.getIndexResourcePath());
         Assert.assertEquals("/server.js", properties.getServerBundleResourcePath());
         Assert.assertEquals(StandardCharsets.UTF_8, properties.getCharset());
-        Assert.assertEquals(5, properties.getEngines());
+        Assert.assertEquals(4, properties.getEngines());
 
         properties.setRoutes(Arrays.asList("/", "/home"));
         properties.setIndexResourcePath("/other/public/index.html");

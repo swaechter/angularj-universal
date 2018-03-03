@@ -1,6 +1,7 @@
 package ch.swaechter.angularjuniversal.springboot.starter;
 
 import ch.swaechter.angularjuniversal.renderer.Renderer;
+import ch.swaechter.angularjuniversal.renderer.configuration.RenderConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -22,10 +23,10 @@ public class AngularJUniversalViewResolverTest {
     public void testAngularJUniversalViewResolver() {
         Renderer renderer = Mockito.mock(Renderer.class);
 
-        AngularJUniversalProperties properties = Mockito.mock(AngularJUniversalProperties.class);
-        Mockito.when(properties.getRoutes()).thenReturn(Arrays.asList("/", "/home"));
+        RenderConfiguration renderconfiguration = Mockito.mock(RenderConfiguration.class);
+        Mockito.when(renderconfiguration.getRoutes()).thenReturn(Arrays.asList("/", "/home"));
 
-        AngularJUniversalViewResolver resolver = new AngularJUniversalViewResolver(renderer, properties);
+        AngularJUniversalViewResolver resolver = new AngularJUniversalViewResolver(renderer, renderconfiguration);
 
         Assert.assertEquals(AngularJUniversalView.class.getName(), resolver.requiredViewClass().getName());
 

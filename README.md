@@ -266,7 +266,7 @@ public class WebApplication {
             // File localserverbundlefile = new File("<Local server bundle on the file system>"); --> Also enable auto reload in the configuration
 
             // Create the configuration. For real live reloading, don't use a temporary file but the real generated on from the file system
-            RenderConfiguration configuration = new RenderConfiguration(templatecontent, serverbundlefile, 4, false);
+            RenderConfiguration configuration = new RenderConfiguration.RenderConfigurationBuilder(templatecontent, serverbundlefile).engines(4).liveReload(false).build();
 
             // Create the V8 render engine factory for spawning render engines
             RenderEngineFactory factory = new V8RenderEngineFactory();

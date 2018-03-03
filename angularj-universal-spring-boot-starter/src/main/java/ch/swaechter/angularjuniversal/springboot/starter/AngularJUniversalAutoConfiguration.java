@@ -105,7 +105,7 @@ public class AngularJUniversalAutoConfiguration {
         }
 
         // Create the configuration
-        return new RenderConfiguration(templatecontent, serverbundlefile, engines, false);
+        return new RenderConfiguration.RenderConfigurationBuilder(templatecontent, serverbundlefile).build();
     }
 
     /**

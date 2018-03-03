@@ -37,7 +37,7 @@ public class V8RenderEngineTest {
         Assert.assertTrue(serverbundlefile.exists());
 
         RenderEngineFactory renderenginefactory = new V8RenderEngineFactory();
-        RenderConfiguration renderconfiguration = new RenderConfiguration(templatecontent, serverbundlefile, 5, false);
+        RenderConfiguration renderconfiguration = new RenderConfiguration.RenderConfigurationBuilder(templatecontent, serverbundlefile).build();
         Renderer renderer = new Renderer(renderenginefactory, renderconfiguration);
 
         Assert.assertFalse(renderer.isRendererRunning());

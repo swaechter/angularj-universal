@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
+
 import {Keyword} from './keyword.model';
 import {Settings} from '../../settings';
 

@@ -2,6 +2,6 @@
 <p>Keywords from the backend:</p>
 <ul>
     <li *ngFor="let keyword of keywords">
-        <a routerLink="/keywords/42" routerLinkActive="active">{{keyword.name}}</a>
+        <a [routerLink]="['/keywords', keyword.id]" routerLinkActive="active">{{keyword.name}}</a>
     </li>
 </ul>

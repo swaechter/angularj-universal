@@ -80,12 +80,33 @@ ng new angular
 Generate an universal component, add the required third party libraries and update your modules:
 
 ```bash
+cd angular
 ng generate universal server
 npm install --save-dev ts-loader @nguniversal/module-map-ngfactory-loader
 npm update
 ```
 
-This will create a traditional single page application (SPA) that needs some adjustment and preparations to run in a Java server context.
+This will create a traditional single page application (SPA) that needs some adjustment and preparations. To enable lazy modules, change the file `src/app/app.server.module.ts` to this:
+
+```typescript
+import {NgModule} from '@angular/core';
+import {ServerModule} from '@angular/platform-server';
+
+import {AppModule} from './app.module';
+import {AppComponent} from './app.component';
+import {ModuleMapLoaderModule} from "@nguniversal/module-map-ngfactory-loader";
+
+@NgModule({
+    imports: [
+        AppModule,
+        ServerModule,
+        ModuleMapLoaderModule // Add this line
+    ],
+    bootstrap: [AppComponent],
+})
+export class AppServerModule {
+}
+```
 
 To stick with the traditional Maven layout, change the output directory of your client application (App 0) in the `.angular-cli.json`:
 

@@ -1,33 +1,26 @@
 import {Routes} from '@angular/router';
 
-import {PageHomeComponent} from './components/page-home/page-home.component';
-import {PageKeywordsComponent} from "./components/page-keywords/page-keywords.component";
-import {PageKeywordComponent} from "./components/page-keyword/page-keyword.component";
-import {PageAboutComponent} from './components/page-about/page-about.component';
-
 export const approutes: Routes = [
     {
         path: '',
-        component: PageHomeComponent
+        redirectTo: '/home',
+        pathMatch: 'full'
     },
     {
         path: 'home',
-        component: PageHomeComponent
+        loadChildren: './home/home.module#HomeModule'
     },
     {
         path: 'keywords',
-        component: PageKeywordsComponent
-    },
-    {
-        path: 'keywords/:id',
-        component: PageKeywordComponent
+        loadChildren: './keywords/keywords.module#KeywordsModule'
     },
     {
         path: 'about',
-        component: PageAboutComponent
+        loadChildren: './about/about.module#AboutModule'
     },
     {
         path: '**',
-        component: PageHomeComponent
-    }
+        redirectTo: '/home',
+        pathMatch: 'full'
+    },
 ];

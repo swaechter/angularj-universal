@@ -1,6 +1,7 @@
 package ch.swaechter.angularjuniversal.springboot.starter;
 
 import ch.swaechter.angularjuniversal.renderer.Renderer;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;
 
@@ -55,7 +56,13 @@ public class AngularJUniversalViewResolver extends AbstractTemplateViewResolver 
      */
     @Override
     public boolean canHandle(String modelname, Locale locale) {
-        return properties.getRoutes().contains(modelname);
+        AntPathMatcher antPathMatcher = new AntPathMatcher();
+        for (String url : properties.getRoutes()) {
+            if (antPathMatcher.match(url, modelname)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

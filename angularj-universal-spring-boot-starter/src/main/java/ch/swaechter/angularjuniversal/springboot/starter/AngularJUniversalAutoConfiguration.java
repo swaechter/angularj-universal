@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.io.File;
 import java.io.IOException;
@@ -145,5 +146,15 @@ public class AngularJUniversalAutoConfiguration {
         AngularJUniversalViewResolver viewresolver = new AngularJUniversalViewResolver(renderer, properties);
         viewresolver.setOrder(0);
         return viewresolver;
+    }
+
+    /**
+     * Get a web MVC configurer that is going to register all routes of the application.
+     *
+     * @return Web MVC configurer with the application routes
+     */
+    @Bean
+    public WebMvcConfigurer getWebMvcConfigurer() {
+        return new AngularJUniversalConfigurer(properties);
     }
 }

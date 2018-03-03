@@ -10,6 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,39 +38,27 @@ public class WebApplication {
         }
 
         @ResponseBody
-        @GetMapping("/")
-        public String showIndex() throws Exception {
-            return renderservice.renderPage("/").get();
+        @GetMapping({"/", "/home"})
+        public String showHome() throws Exception {
+            return renderservice.renderPage("/home").get();
         }
 
         @ResponseBody
-        @GetMapping("/login")
+        @GetMapping("/keywords")
         public String showLogin() throws Exception {
-            return renderservice.renderPage("/login").get();
+            return renderservice.renderPage("/keywords").get();
         }
 
         @ResponseBody
-        @GetMapping("/logout")
-        public String showLogout() throws Exception {
-            return renderservice.renderPage("/logout").get();
+        @GetMapping("/keywords/{id}")
+        public String showLogout(@PathVariable("id") int id) throws Exception {
+            return renderservice.renderPage("/keywords/" + id).get();
         }
 
         @ResponseBody
-        @GetMapping("/page")
+        @GetMapping("/about")
         public String showPage() throws Exception {
-            return renderservice.renderPage("/page").get();
-        }
-
-        @ResponseBody
-        @GetMapping("/page/home")
-        public String showPageHome() throws Exception {
-            return renderservice.renderPage("/page/home").get();
-        }
-
-        @ResponseBody
-        @GetMapping("/page/about")
-        public String showPageAbout() throws Exception {
-            return renderservice.renderPage("/page/about").get();
+            return renderservice.renderPage("/about").get();
         }
     }
 

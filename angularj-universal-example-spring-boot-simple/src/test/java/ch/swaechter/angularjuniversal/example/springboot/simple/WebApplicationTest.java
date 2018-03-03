@@ -29,21 +29,18 @@ public class WebApplicationTest {
     @Test
     public void testPages() {
         String page1 = resttemplate.getForObject("/", String.class);
-        Assert.assertTrue(page1.contains("Login"));
+        Assert.assertTrue(page1.contains("Home"));
 
-        String page2 = resttemplate.getForObject("/login", String.class);
-        Assert.assertTrue(page2.contains("Login"));
+        String page2 = resttemplate.getForObject("/home", String.class);
+        Assert.assertTrue(page2.contains("Home"));
 
-        String page3 = resttemplate.getForObject("/logout", String.class);
-        Assert.assertTrue(page3.contains("Login"));
+        String page3 = resttemplate.getForObject("/keywords", String.class);
+        Assert.assertTrue(page3.contains("Keywords"));
 
-        String page4 = resttemplate.getForObject("/page", String.class);
-        Assert.assertTrue(page4.contains("Home"));
+        String page4 = resttemplate.getForObject("/keywords/1", String.class);
+        Assert.assertTrue(page4.contains("Dummy keyword"));
 
-        String page5 = resttemplate.getForObject("/page/home", String.class);
-        Assert.assertTrue(page5.contains("Home"));
-
-        String page6 = resttemplate.getForObject("/page/about", String.class);
-        Assert.assertTrue(page6.contains("About"));
+        String page5 = resttemplate.getForObject("/about", String.class);
+        Assert.assertTrue(page5.contains("About"));
     }
 }

@@ -50,31 +50,27 @@ public class V8RenderEngineTest {
 
         Future<String> future1 = renderer.addRenderRequest("/");
         Assert.assertNotNull(future1);
-        Assert.assertTrue(future1.get().contains("Login"));
+        Assert.assertTrue(future1.get().contains("Home"));
 
-        Future<String> future2 = renderer.addRenderRequest("/login");
+        Future<String> future2 = renderer.addRenderRequest("/home");
         Assert.assertNotNull(future2);
-        Assert.assertTrue(future2.get().contains("Login"));
+        Assert.assertTrue(future2.get().contains("Home"));
 
-        Future<String> future3 = renderer.addRenderRequest("/logout");
+        Future<String> future3 = renderer.addRenderRequest("/keywords");
         Assert.assertNotNull(future3);
-        Assert.assertTrue(future3.get().contains("Login"));
+        Assert.assertTrue(future3.get().contains("Keywords"));
 
-        Future<String> future4 = renderer.addRenderRequest("/page");
+        Future<String> future4 = renderer.addRenderRequest("/keywords/1");
         Assert.assertNotNull(future4);
-        Assert.assertTrue(future4.get().contains("Home"));
+        Assert.assertTrue(future4.get().contains("Dummy keyword"));
 
-        Future<String> future5 = renderer.addRenderRequest("/page/home");
+        Future<String> future5 = renderer.addRenderRequest("/about");
         Assert.assertNotNull(future5);
-        Assert.assertTrue(future5.get().contains("Home"));
+        Assert.assertTrue(future5.get().contains("About"));
 
-        Future<String> future6 = renderer.addRenderRequest("/page/about");
+        Future<String> future6 = renderer.addRenderRequest("/invalid");
         Assert.assertNotNull(future6);
-        Assert.assertTrue(future6.get().contains("About"));
-
-        Future<String> future7 = renderer.addRenderRequest("/invalid");
-        Assert.assertNotNull(future7);
-        Assert.assertTrue(future7.get().contains("Login"));
+        Assert.assertTrue(future6.get().contains("Home"));
 
         renderer.stopRenderer();
     }

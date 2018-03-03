@@ -12,13 +12,13 @@ This project provides a Java API to a local Node.js instance that is responsible
 
 This repository is divided into several modules that all share the same Angular application
 
-| Module name                                   | Content and responsibility                                                                                                                                                                                                                                              |
-| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| angularj-universal-application                | Contains the main Angular application with several pages and a non working login system  |
+| Module name                                   | Content and responsibility                                                                                                                                                                                                                                 |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| angularj-universal-application                | Contains the main Angular application with several pages |
 | angularj-universal-renderer                   | Contains the main render SDK that provides the core functionality and allows a developer to implement an own render solution |
 | angularj-universal-renderer-v8                | Contains a specific render solution that uses a Node.js instance via J2V8 language bindings for rendering requests  |
 | angularj-universal-example-spring-boot        | Contains a Spring Boot web application that serves the Angular application with the help of a custom written Spring Boot starter (See module bellow)  |
-| angularj-universal-example-spring-boot-simple | Contains a Spring Boot web application that serves the Angular application without the help of the Spring Boot starter. This leads to a more simple example, but a lot more boiler plated code is required. For simplicity, this module is used as example  |
+| angularj-universal-example-spring-boot-simple | Contains a Spring Boot web application that serves the Angular application without the help of the Spring Boot starter. This leads to a more simple example, but a lot more boiler plated code is required. For simplicity, this module is used as example |
 | angularj-universal-example-servlet            | TODO: Provide a servlet example  |
 | angularj-universal-spring-boot-starter        | Custom Spring Boot starter that allows are better integration of a server side rendered application into the Spring Boot ecosystem |
 
@@ -200,9 +200,9 @@ Now we switch back to the Java part and create a web application with a controll
 
 Create a new Java class file `angularj-universal-example-spring-boot-simple/src/main/java/ch/swaechter/angularjuniversal/example/springboot/simple/DemoApplication.java` with the following content bellow:
 
-__Note 1:__ In this example we only provide the `/` route, but the example in `angularj-universal-application` has several pages and hence routes (Login, Home etc.). For every Angular route you have to define an own route in Spring Boot
+__Note 1:__ In this example we only provide the `/` route, but the example in `angularj-universal-application` has several pages and hence routes (Home, keywords, about etc.). For every Angular route you have to define an own route in Spring Boot
 
-__Note 2:__ To avoid such manual and duplicated routes, check out the Spring Boot integration `angularj-universal-example-spring-boot` (In the integration you specify them in a property file)
+__Note 2:__ To avoid such manual and duplicated routes, check out the Spring Boot integration `angularj-universal-example-spring-boot`. In the integration you only have to define a `/` route via a `ModelAndView` + define all routes in the application properties file.
 
 ```java
 package ch.swaechter.angularjuniversal.example.springboot.simple;

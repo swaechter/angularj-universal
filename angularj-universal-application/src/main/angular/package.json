@@ -4,6 +4,7 @@
     "license": "MIT",
     "scripts": {
         "start": "npm run build",
+        "develop": "ng serve --proxy proxy.conf.json",
         "build": "ng build --app 0 --prod --build-optimizer && ng build --app 1 --prod --output-hashing none && webpack"
     },
     "private": true,

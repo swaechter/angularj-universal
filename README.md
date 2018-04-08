@@ -223,7 +223,8 @@ Create a new Java class file `angularj-universal-example-spring-boot-simple/src/
 
 __Note 1:__ In this example we only provide the `/` route, but the example in `angularj-universal-application` has several pages and hence routes (Home, keywords, about etc.). For every Angular route you have to define an own route in Spring Boot
 
-__Note 2:__ To avoid such manual and duplicated routes, check out the Spring Boot integration `angularj-universal-example-spring-boot`. In the integration you only have to define a `/` route via a `ModelAndView` + define all routes in the application properties file.
+__Note 2:__ To avoid such manual and duplicated routes, check out the Spring Boot starter example in `angularj-universal-example-spring-boot`. In the starter example, you can define all routes via the `application.properties` and don't have to define any `ModelAndView` at all.
+
 
 ```java
 package ch.swaechter.angularjuniversal.example.springboot.simple;

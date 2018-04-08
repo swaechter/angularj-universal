@@ -35,6 +35,6 @@ public class AngularJUniversalViewResolverTest {
         Assert.assertTrue(resolver.canHandle("/home", locale));
         Assert.assertFalse(resolver.canHandle("/login", locale));
 
-        Assert.assertEquals(AngularJUniversalView.class.getName(), resolver.buildView(Mockito.anyString()).getClass().getName());
+        Assert.assertEquals(AngularJUniversalView.class.getName(), resolver.buildView("/").getClass().getName());
     }
 }

@@ -43,7 +43,6 @@ public class WebApplicationTest {
      */
     @Test
     public void testPages() {
-        // TODO: Fix forward problem
         String page1 = resttemplate.getForObject("/", String.class);
         Assert.assertTrue(page1.contains("Home"));
 

@@ -5,7 +5,7 @@
     <parent>
         <groupId>ch.swaechter</groupId>
         <artifactId>angularj-universal</artifactId>
-        <version>0.0.2</version>
+        <version>0.0.3</version>
     </parent>
     <artifactId>angularj-universal-application</artifactId>
     <packaging>jar</packaging>
@@ -37,8 +37,8 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v9.5.0</nodeVersion>
-                            <npmVersion>5.6.0</npmVersion>
+                            <nodeVersion>v9.11.1</nodeVersion>
+                            <npmVersion>5.8.0</npmVersion>
                         </configuration>
                     </execution>
                     <execution>

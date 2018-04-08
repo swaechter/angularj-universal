@@ -5,7 +5,7 @@
     <parent>
         <groupId>ch.swaechter</groupId>
         <artifactId>angularj-universal</artifactId>
-        <version>0.0.2</version>
+        <version>0.0.3</version>
     </parent>
     <artifactId>angularj-universal-renderer-v8</artifactId>
     <packaging>jar</packaging>
@@ -17,12 +17,12 @@
         <dependency>
             <groupId>ch.swaechter</groupId>
             <artifactId>angularj-universal-renderer</artifactId>
-            <version>0.0.2</version>
+            <version>0.0.3</version>
         </dependency>
         <dependency>
             <groupId>ch.swaechter</groupId>
             <artifactId>angularj-universal-application</artifactId>
-            <version>0.0.2</version>
+            <version>0.0.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>

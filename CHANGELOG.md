@@ -1,5 +1,24 @@
 # Changelog for AngularJ Universal
 
+## 0.0.3 (08.04.2018)
+
+### New Features
+
+* Added `ModuleMapLoaderModule` to show how to use lazy loaded modules
+* Added a proxy `proxy.conf.json` for local development
+* Redesigned the render configuration and switched to a fluent API
+* Redesigned the Spring Boot integration. The integration will now auto-register all values defined in the `application.properties`
+* Upgraded to Spring Boot 2
+
+### Breaking Changes
+
+* The render configuration class was refactored and now uses a fluent API style
+* The Spring Boot starter was upgraded to Spring Boot 2. Applications that still rely on Spring Boot 1 can't use the current starter
+
+### Known Issues
+
+* None
+
 ## 0.0.2 (29.11.2017)
 
 ### New Features

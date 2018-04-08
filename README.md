@@ -54,12 +54,12 @@ Download and import that Maven project in your favorite Java IDE. In addition, a
 <dependency>
     <groupId>ch.swaechter</groupId>
     <artifactId>angularj-universal-renderer</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
 </dependency>
 <dependency>
     <groupId>ch.swaechter</groupId>
     <artifactId>angularj-universal-renderer-v8</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
 </dependency>
 ```
 

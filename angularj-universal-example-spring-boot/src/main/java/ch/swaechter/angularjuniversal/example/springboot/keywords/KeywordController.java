@@ -1,15 +1,14 @@
 package ch.swaechter.angularjuniversal.example.springboot.keywords;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import ch.swaechter.angularjuniversal.keywords.Keyword;
+import ch.swaechter.angularjuniversal.keywords.KeywordService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * This class is responsible for providing all keywords.
@@ -23,13 +22,10 @@ public class KeywordController {
     private final KeywordService keywordservice;
 
     /**
-     * Constructor with the keyword service.
-     *
-     * @param keywordservice Keyword service
+     * Default constructor.
      */
-    @Autowired
-    public KeywordController(KeywordService keywordservice) {
-        this.keywordservice = keywordservice;
+    public KeywordController() {
+        this.keywordservice = new KeywordService();
     }
 
     /**
@@ -40,11 +36,5 @@ public class KeywordController {
     @GetMapping("/keyword")
     public ResponseEntity<List<Keyword>> getKeywords() {
         return new ResponseEntity<>(keywordservice.getKeywords(), HttpStatus.OK);
-    }
-
-    @GetMapping("/keyword/{id}")
-    public ResponseEntity<Keyword> getKeyword(@PathVariable("id") Integer id) {
-        Optional<Keyword> keyword = keywordservice.getKeyword(id);
-        return keyword.map(keyword1 -> new ResponseEntity<>(keyword1, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 }

@@ -1,11 +1,13 @@
 const path = require('path');
 const webpack = require('webpack');
 
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+
 module.exports = {
-    entry: {server: './library/server.ts'},
+    mode: 'development',
+    entry: {server: './server.ts'},
     resolve: {extensions: ['.js', '.ts']},
     target: 'node',
-    // this makes sure we include node_modules and other 3rd party libraries
     externals: [/(node_modules|main\..*\.js)/],
     output: {
         path: path.join(__dirname, '../resources'),
@@ -28,6 +30,14 @@ module.exports = {
             /(.+)?express(\\|\/)(.+)?/,
             path.join(__dirname, 'src'),
             {}
-        )
+        ),
+        new UglifyJsPlugin({
+            uglifyOptions: {
+                ecma: 6,
+                compress: false,
+                mangle: false,
+                comments: false
+            }
+        })
     ]
-}
+};

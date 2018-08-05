@@ -1,5 +1,7 @@
 package ch.swaechter.angularjuniversal.example.springboot.simple;
 
+import ch.swaechter.angularjuniversal.keywords.Keyword;
+import ch.swaechter.angularjuniversal.keywords.KeywordService;
 import ch.swaechter.angularjuniversal.renderer.Renderer;
 import ch.swaechter.angularjuniversal.renderer.configuration.RenderConfiguration;
 import ch.swaechter.angularjuniversal.renderer.engine.RenderEngineFactory;
@@ -8,16 +10,16 @@ import ch.swaechter.angularjuniversal.v8renderer.V8RenderEngineFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.concurrent.Future;
 
 @SpringBootApplication
@@ -59,6 +61,22 @@ public class WebApplication {
         @GetMapping("/about")
         public String showPage() throws Exception {
             return renderservice.renderPage("/about").get();
+        }
+    }
+
+    @RestController
+    @RequestMapping("/api")
+    public class KeywordController {
+
+        private final KeywordService keywordservice;
+
+        public KeywordController() {
+            this.keywordservice = new KeywordService();
+        }
+
+        @GetMapping("/keyword")
+        public ResponseEntity<List<Keyword>> getKeywords() {
+            return new ResponseEntity<>(keywordservice.getKeywords(), HttpStatus.OK);
         }
     }
 

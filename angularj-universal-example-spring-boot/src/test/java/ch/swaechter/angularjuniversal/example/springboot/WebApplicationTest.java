@@ -1,6 +1,6 @@
 package ch.swaechter.angularjuniversal.example.springboot;
 
-import ch.swaechter.angularjuniversal.example.springboot.keywords.Keyword;
+import ch.swaechter.angularjuniversal.keywords.Keyword;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -77,12 +77,13 @@ cd angularj-universal-example-spring-boot-simple/src/main
 ng new angular
 ```
 
-Generate an universal component, add the required third party libraries and update your modules:
+Generate the universal component and add all required third party libraries:
 
 ```bash
 cd angular
-ng generate universal server
-npm install --save-dev ts-loader @nguniversal/module-map-ngfactory-loader
+ng generate universal --client-project angular
+npm install --save @nguniversal/module-map-ngfactory-loader
+npm install --save-dev webpack-cli ts-loader
 npm update
 ```
 
@@ -108,23 +109,25 @@ export class AppServerModule {
 }
 ```
 
-To stick with the traditional Maven layout, change the output directory of your client application (App 0) in the `.angular-cli.json`:
+To stick with the traditional Maven layout, change the output path of the application (Property `projects.angular.architect.build.options.outputPath`) in `angular.json`;
 
 ```json
-"outDir": "../resources/public",
+"outputPath": "../resources/public"
 ```
 
-At the moment, the generated server bundle (App 1) will not be relocatable (The required libraries from `ǹode_modules` are not packaged into the build artifact), hence we have to build a relocatable bundle with webpack. Create the file `webpack.config.js`:
+At the moment, the generated server bundle will not be relocatable (The required libraries from `ǹode_modules` are not packaged into the build artifact), hence we have to build a relocatable bundle with webpack. Create the file `webpack.config.js`:
 
 ```js
 const path = require('path');
 const webpack = require('webpack');
 
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+
 module.exports = {
-    entry: {server: './library/server.ts'},
+    mode: 'development',
+    entry: {server: './server.ts'},
     resolve: {extensions: ['.js', '.ts']},
     target: 'node',
-    // this makes sure we include node_modules and other 3rd party libraries
     externals: [/(node_modules|main\..*\.js)/],
     output: {
         path: path.join(__dirname, '../resources'),
@@ -147,20 +150,31 @@ module.exports = {
             /(.+)?express(\\|\/)(.+)?/,
             path.join(__dirname, 'src'),
             {}
-        )
+        ),
+        new UglifyJsPlugin({
+            uglifyOptions: {
+                ecma: 6,
+                compress: false,
+                mangle: false,
+                comments: false
+            }
+        })
     ]
-}
+};
 ```
 
-Now we need to create a communication mechanism with which the Java JVM can speak to the Angular application (Render a page request) and handle the answer (Receive rendered page request). For this, the Java JVM executes a script that establish this communication.
+Now we need to create a communication mechanism with which the Java JVM can speak to the Angular application (Render a page request) and handle the answer (Receive rendered page request). For this, the Java JVM executes a script that establish this communication called `server.js`.
 
-Create a file `library/renderadapter.ts` that provides the communication mechanism (I should move this code to an own consumable NPM library):
+Create a file `server.ts` that provides the communication mechanism (I should move this code to an own consumable NPM library):
 
 ```typescript
-require("zone.js/dist/zone-node");
+require('zone.js/dist/zone-node');
 
-import {provideModuleMap} from "@nguniversal/module-map-ngfactory-loader";
-import {renderModuleFactory} from "@angular/platform-server";
+import {provideModuleMap} from '@nguniversal/module-map-ngfactory-loader';
+
+import {renderModuleFactory} from '@angular/platform-server';
+
+const {AppServerModuleNgFactory, LAZY_MODULE_MAP} = require('./dist/angular-server/main');
 
 export declare function registerRenderAdapter(renderadapter: RenderAdapter): void;
 
@@ -188,16 +202,8 @@ export class RenderAdapter {
         });
     }
 }
-```
 
-Then create another file `library/server.ts` that is going to establish the communication (This script will be loaded by the Java JVM):
-
-```typescript
-import {RenderAdapter} from "./renderadapter";
-
-const {AppServerModuleNgFactory, LAZY_MODULE_MAP} = require("./../dist-server/main.bundle");
-
-new RenderAdapter(AppServerModuleNgFactory, LAZY_MODULE_MAP, "<app-root></app-root>");
+new RenderAdapter(AppServerModuleNgFactory, LAZY_MODULE_MAP, '<app-root></app-root>');
 ```
 
 In short, the generated server.js bundle will be loaded by the Java JVM. The script then passes an instance of the render adapter to the JVM (See `registerRenderAdapter)`, so the JVM can use this instance to render page requests. After a page is rendered, it is passed back to the JVM (See `receiveRenderedPage`) and served to the client. Hence, the functions `registerRenderAdapter` and `receiveRenderedPage` can't be found in the JavaScript code because they are registered Java methods in the script engine.
@@ -207,7 +213,7 @@ Now let's update our Node scripts for building all three applications (Snipped f
 ```json
 "scripts": {
     "start": "npm run build",
-    "build": "ng build --app 0 --prod --build-optimizer && ng build --app 1 --prod --output-hashing none && webpack"
+    "build": "ng build --prod && ng run angular:server && webpack --config webpack.config.js"
 },
 ```
 

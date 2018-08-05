@@ -1,6 +1,4 @@
-package ch.swaechter.angularjuniversal.example.springboot.keywords;
-
-import org.springframework.stereotype.Service;
+package ch.swaechter.angularjuniversal.keywords;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,12 +9,11 @@ import java.util.Optional;
  *
  * @author Simon Wächter
  */
-@Service
-public class KeywordServiceImpl implements KeywordService {
+public class KeywordService {
 
     private final List<Keyword> keywords;
 
-    public KeywordServiceImpl() {
+    public KeywordService() {
         Keyword keyword1 = new Keyword(1, "Hallo Welt!");
         Keyword keyword2 = new Keyword(2, "Hello world!");
         Keyword keyword3 = new Keyword(3, "Здравствуй, мир!");
@@ -28,7 +25,6 @@ public class KeywordServiceImpl implements KeywordService {
      *
      * @return All keywords as list
      */
-    @Override
     public List<Keyword> getKeywords() {
         return keywords;
     }

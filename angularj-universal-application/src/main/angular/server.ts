@@ -1,7 +1,10 @@
-require("zone.js/dist/zone-node");
+require('zone.js/dist/zone-node');
 
-import {provideModuleMap} from "@nguniversal/module-map-ngfactory-loader";
-import {renderModuleFactory} from "@angular/platform-server";
+import {provideModuleMap} from '@nguniversal/module-map-ngfactory-loader';
+
+import {renderModuleFactory} from '@angular/platform-server';
+
+const {AppServerModuleNgFactory, LAZY_MODULE_MAP} = require('./dist/angular-server/main');
 
 export declare function registerRenderAdapter(renderadapter: RenderAdapter): void;
 
@@ -29,3 +32,5 @@ export class RenderAdapter {
         });
     }
 }
+
+new RenderAdapter(AppServerModuleNgFactory, LAZY_MODULE_MAP, '<app-root></app-root>');

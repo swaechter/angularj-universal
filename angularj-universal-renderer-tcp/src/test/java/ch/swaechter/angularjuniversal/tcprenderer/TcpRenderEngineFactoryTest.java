@@ -1,4 +1,4 @@
-package ch.swaechter.angularjuniversal.v8renderer;
+package ch.swaechter.angularjuniversal.tcprenderer;
 
 import ch.swaechter.angularjuniversal.renderer.engine.RenderEngine;
 import ch.swaechter.angularjuniversal.renderer.engine.RenderEngineFactory;
@@ -10,15 +10,15 @@ import org.junit.Test;
  *
  * @author Simon Wächter
  */
-public class V8RenderEngineFactoryTest {
+public class TcpRenderEngineFactoryTest {
 
     /**
      * Test the render engine factory functionality.
      */
     @Test
     public void testRenderEngineFactory() {
-        RenderEngineFactory renderEngineFactory = new V8RenderEngineFactory();
+        RenderEngineFactory renderEngineFactory = new TcpRenderEngineFactory();
         RenderEngine renderEngine = renderEngineFactory.createRenderEngine();
-        Assert.assertEquals(V8RenderEngine.class.getName(), renderEngine.getClass().getName());
+        Assert.assertEquals(TcpRenderEngine.class.getName(), renderEngine.getClass().getName());
     }
 }

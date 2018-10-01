@@ -6,9 +6,7 @@ import ch.swaechter.angularjuniversal.renderer.engine.RenderEngineFactory;
 import ch.swaechter.angularjuniversal.renderer.request.RenderRequest;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
@@ -22,75 +20,68 @@ import java.util.concurrent.LinkedBlockingDeque;
 public class Renderer {
 
     /**
-     * Render engine factory for creating new render requests.
-     */
-    private final RenderEngineFactory renderenginefactory;
-
-    /**
-     * List with all active render engines.
-     */
-    private final List<RenderEngine> renderengines;
-
-    /**
      * Queue with all active render requests.
      */
-    private final BlockingQueue<Optional<RenderRequest>> renderrequests;
+    private final BlockingQueue<Optional<RenderRequest>> renderRequests;
 
     /**
      * Render configuration with all important information.
      */
-    private final RenderConfiguration renderconfiguration;
+    private final RenderConfiguration renderConfiguration;
 
     /**
-     * Date of the server bundle file, needed for live reload.
+     * Render engine factory for creating new render requests.
      */
-    private Date startdate;
+
+    private final RenderEngineFactory renderEngineFactory;
 
     /**
-     * Create a new render engine that used the render engine factory for creating new render engines and the render
-     * configuration for the configuration.
+     * Current render engine.
+     */
+    private RenderEngine renderEngine;
+
+    /**
+     * Date of the server bundle file, used for live reloading.
+     */
+    private Date startDate;
+
+    /**
+     * Create a new render that uses the render engine factory to for creating a render engine based on the given
+     * configuration.
      *
-     * @param renderenginefactory Render engine factory used for creating new render engines
-     * @param renderconfiguration Render configuration used for the configuration
+     * @param renderConfiguration Render configuration used as main configuration
+     * @param renderEngineFactory Render engine factory used for creating new render engines
      */
-    public Renderer(RenderEngineFactory renderenginefactory, RenderConfiguration renderconfiguration) {
-        this.renderenginefactory = renderenginefactory;
-        this.renderengines = new ArrayList<>();
-        this.renderrequests = new LinkedBlockingDeque<>();
-        this.renderconfiguration = renderconfiguration;
+    public Renderer(RenderConfiguration renderConfiguration, RenderEngineFactory renderEngineFactory) {
+        this.renderRequests = new LinkedBlockingDeque<>();
+        this.renderConfiguration = renderConfiguration;
+        this.renderEngineFactory = renderEngineFactory;
     }
 
     /**
      * Start the renderer. If the renderer is already running, this has no impact.
      */
     public synchronized void startRenderer() {
-        if (renderengines.size() != 0) {
+        if (renderEngine != null) {
             return;
         }
 
-        startdate = new Date();
+        startDate = new Date();
+        renderEngine = renderEngineFactory.createRenderEngine();
+        Thread engineThread = new Thread(() -> renderEngine.startWorking(renderRequests, renderConfiguration));
+        engineThread.start();
 
-        for (int i = 0; i < renderconfiguration.getEngines(); i++) {
-            RenderEngine renderengine = renderenginefactory.createRenderEngine();
-            renderengines.add(renderengine);
-
-            Thread thread = new Thread(() -> {
-                renderengine.startWorking(renderrequests, renderconfiguration);
-            });
-            thread.start();
-        }
-
-        if (renderconfiguration.getLiveReload()) {
-            Thread thread = new Thread(() -> {
+        if (renderConfiguration.getLiveReload()) {
+            Thread reloadThread = new Thread(() -> {
                 while (isRendererRunning()) {
-                    File file = renderconfiguration.getServerBundleFile();
-                    if (startdate.before(new Date(file.lastModified()))) {
+                    File file = renderConfiguration.getServerBundleFile();
+                    if (startDate.before(new Date(file.lastModified()))) {
                         stopRenderer();
                         startRenderer();
                     }
                 }
             });
-            thread.start();
+            reloadThread.start();
         }
     }
 
@@ -99,19 +90,17 @@ public class Renderer {
      * this has no impact.
      */
     public synchronized void stopRenderer() {
-        if (renderengines.size() == 0) {
+        if (renderEngine == null) {
             return;
         }
 
-        for (int i = 0; i < renderconfiguration.getEngines(); i++) {
-            renderrequests.add(Optional.empty());
-        }
+        renderRequests.add(Optional.empty());
 
-        while (renderrequests.size() != 0) {
+        while (renderRequests.size() != 0) {
             // Wait for an empty request queue
         }
 
-        renderengines.clear();
+        renderEngine = null;
     }
 
     /**
@@ -120,7 +109,7 @@ public class Renderer {
      * @return Status of the check
      */
     public synchronized boolean isRendererRunning() {
-        return renderengines.size() != 0;
+        return renderEngine != null;
     }
 
     /**
@@ -130,8 +119,8 @@ public class Renderer {
      * @return Future that can be accessed later on to get the rendered content
      */
     public Future<String> addRenderRequest(String uri) {
-        RenderRequest renderrequest = new RenderRequest(uri);
-        renderrequests.add(Optional.of(renderrequest));
-        return renderrequest.getFuture();
+        RenderRequest renderRequest = new RenderRequest(uri);
+        renderRequests.add(Optional.of(renderRequest));
+        return renderRequest.getFuture();
     }
 }

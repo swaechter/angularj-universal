@@ -13,19 +13,19 @@ public class RenderUtils {
     /**
      * Get the content of an input stream as string.
      *
-     * @param inputstream Given input stream with the content
+     * @param inputStream Given input stream with the content
      * @param charset     Charset of the input stream
      * @return Input stream content as string
      * @throws IOException Exception in case of an IO problem
      */
-    public static String getStringFromInputStream(InputStream inputstream, Charset charset) throws IOException {
-        ByteArrayOutputStream outputstream = new ByteArrayOutputStream();
-        int result = inputstream.read();
+    public static String getStringFromInputStream(InputStream inputStream, Charset charset) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        int result = inputStream.read();
         while (result != -1) {
-            outputstream.write((byte) result);
-            result = inputstream.read();
+            outputStream.write((byte) result);
+            result = inputStream.read();
         }
-        return outputstream.toString(charset.name());
+        return outputStream.toString(charset.name());
 
     }
 
@@ -34,19 +34,19 @@ public class RenderUtils {
      *
      * @param suffix      Suffix of the temporary file
      * @param prefix      Prefix of the temporary file
-     * @param inputstream Given input stream with the content
+     * @param inputStream Given input stream with the content
      * @return Newly created temporary file
      * @throws IOException Exception in case of an IO problem
      */
-    public static File createTemporaryFileFromInputStream(String suffix, String prefix, InputStream inputstream) throws IOException {
+    public static File createTemporaryFileFromInputStream(String suffix, String prefix, InputStream inputStream) throws IOException {
         File file = File.createTempFile(suffix, prefix);
         file.deleteOnExit();
 
-        OutputStream outputstream = new FileOutputStream(file);
-        int result = inputstream.read();
+        OutputStream outputStream = new FileOutputStream(file);
+        int result = inputStream.read();
         while (result != -1) {
-            outputstream.write((byte) result);
-            result = inputstream.read();
+            outputStream.write((byte) result);
+            result = inputStream.read();
         }
         return file;
     }

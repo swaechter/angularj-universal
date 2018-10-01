@@ -19,17 +19,17 @@ public class AngularJUniversalView extends AbstractTemplateView {
     /**
      * Render configuration that will be used to check the routes.
      */
-    private final RenderConfiguration renderconfiguration;
+    private final RenderConfiguration renderConfiguration;
 
     /**
      * Constructor with the new renderer and the properties for rendering page requests.
      *
      * @param renderer            Renderer
-     * @param renderconfiguration Render configuration
+     * @param renderConfiguration Render configuration
      */
-    public AngularJUniversalView(Renderer renderer, RenderConfiguration renderconfiguration) {
+    public AngularJUniversalView(Renderer renderer, RenderConfiguration renderConfiguration) {
         this.renderer = renderer;
-        this.renderconfiguration = renderconfiguration;
+        this.renderConfiguration = renderConfiguration;
     }
 
     /**
@@ -52,7 +52,7 @@ public class AngularJUniversalView extends AbstractTemplateView {
      */
     @Override
     protected void renderMergedTemplateModel(Map<String, Object> map, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        response.setCharacterEncoding(renderconfiguration.getCharset().name());
+        response.setCharacterEncoding(renderConfiguration.getCharset().name());
         response.setContentType("text/html");
         PrintWriter writer = response.getWriter();
         writer.println(renderer.addRenderRequest(request.getRequestURI()).get());

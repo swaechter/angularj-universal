@@ -1,4 +1,4 @@
-package ch.swaechter.angularjuniversal.v8renderer;
+package ch.swaechter.angularjuniversal.tcprenderer;
 
 import ch.swaechter.angularjuniversal.data.DataLoader;
 import ch.swaechter.angularjuniversal.renderer.Renderer;
@@ -14,18 +14,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 
 /**
- * This class provides a test to guarantee the functionality of the V8 renderer.
+ * This class provides a test to guarantee the functionality of the TCP renderer.
  *
  * @author Simon Wächter
  */
-public class V8RenderEngineTest {
+public class TcpRenderEngineTest {
 
     /**
      * Test the renderer.
      */
     @Test
     public void testRenderEngine() throws Exception {
-        DataLoader dataLoader = new DataLoader();
+        /*DataLoader dataLoader = new DataLoader();
         InputStream indexInputStream = dataLoader.getIndexAsInputStream();
         InputStream serverBundleInputStream = dataLoader.getServerBundleAsInputStream();
         Assert.assertNotNull(indexInputStream);
@@ -37,7 +37,7 @@ public class V8RenderEngineTest {
         Assert.assertTrue(serverBundleFile.exists());
 
         RenderConfiguration renderConfiguration = new RenderConfiguration.RenderConfigurationBuilder(templateContent, serverBundleFile).build();
-        RenderEngineFactory renderEngineFactory = new V8RenderEngineFactory();
+        RenderEngineFactory renderEngineFactory = new TcpRenderEngineFactory();
         Renderer renderer = new Renderer(renderConfiguration, renderEngineFactory);
 
         Assert.assertFalse(renderer.isRendererRunning());
@@ -72,6 +72,6 @@ public class V8RenderEngineTest {
         Assert.assertNotNull(future6);
         Assert.assertTrue(future6.get().contains("Home"));
 
-        renderer.stopRenderer();
+        renderer.stopRenderer();*/
     }
 }

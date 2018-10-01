@@ -23,18 +23,18 @@ public class AngularJUniversalViewResolver extends AbstractTemplateViewResolver 
     /**
      * Render configuration that will be used to check the routes.
      */
-    private final RenderConfiguration renderconfiguration;
+    private final RenderConfiguration renderConfiguration;
 
     /**
      * Constructor with the renderer and properties that will be passed to the view.
      *
      * @param renderer            Renderer
-     * @param renderconfiguration Render configuration
+     * @param renderConfiguration Render configuration
      */
-    public AngularJUniversalViewResolver(Renderer renderer, RenderConfiguration renderconfiguration) {
+    public AngularJUniversalViewResolver(Renderer renderer, RenderConfiguration renderConfiguration) {
         setViewClass(requiredViewClass());
         this.renderer = renderer;
-        this.renderconfiguration = renderconfiguration;
+        this.renderConfiguration = renderConfiguration;
     }
 
     /**
@@ -51,15 +51,15 @@ public class AngularJUniversalViewResolver extends AbstractTemplateViewResolver 
      * Check if the given model name can be handled as valid URI. If yes, we will render the request later on, otherwise
      * we will not.
      *
-     * @param modelname Model name that we threat as URI
+     * @param modelName Model name that we threat as URI
      * @param locale    Locale of the page request
      * @return Status of the check
      */
     @Override
-    public boolean canHandle(String modelname, Locale locale) {
+    public boolean canHandle(String modelName, Locale locale) {
         AntPathMatcher antPathMatcher = new AntPathMatcher();
-        for (String url : renderconfiguration.getRoutes()) {
-            if (antPathMatcher.match(url, modelname)) {
+        for (String url : renderConfiguration.getRoutes()) {
+            if (antPathMatcher.match(url, modelName)) {
                 return true;
             }
         }
@@ -74,6 +74,6 @@ public class AngularJUniversalViewResolver extends AbstractTemplateViewResolver 
      */
     @Override
     public AbstractUrlBasedView buildView(String uri) {
-        return new AngularJUniversalView(renderer, renderconfiguration);
+        return new AngularJUniversalView(renderer, renderConfiguration);
     }
 }

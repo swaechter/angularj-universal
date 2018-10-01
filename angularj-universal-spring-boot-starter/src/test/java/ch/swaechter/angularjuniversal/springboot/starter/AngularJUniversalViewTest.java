@@ -33,10 +33,10 @@ public class AngularJUniversalViewTest {
         Renderer renderer = Mockito.mock(Renderer.class);
         Mockito.when(renderer.addRenderRequest(Mockito.anyString())).thenReturn(future);
 
-        RenderConfiguration renderconfiguration = Mockito.mock(RenderConfiguration.class);
-        Mockito.when(renderconfiguration.getCharset()).thenReturn(StandardCharsets.UTF_8);
+        RenderConfiguration renderConfiguration = Mockito.mock(RenderConfiguration.class);
+        Mockito.when(renderConfiguration.getCharset()).thenReturn(StandardCharsets.UTF_8);
 
-        AngularJUniversalView view = new AngularJUniversalView(renderer, renderconfiguration);
+        AngularJUniversalView view = new AngularJUniversalView(renderer, renderConfiguration);
 
         Assert.assertFalse(view.isUrlRequired());
 
@@ -44,7 +44,7 @@ public class AngularJUniversalViewTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
         view.renderMergedTemplateModel(map, request, response);
-        Assert.assertEquals(renderconfiguration.getCharset().name(), response.getCharacterEncoding());
+        Assert.assertEquals(renderConfiguration.getCharset().name(), response.getCharacterEncoding());
         Assert.assertEquals("text/html", response.getContentType());
         Assert.assertEquals(response.getContentAsString(), future.get() + System.lineSeparator());
     }

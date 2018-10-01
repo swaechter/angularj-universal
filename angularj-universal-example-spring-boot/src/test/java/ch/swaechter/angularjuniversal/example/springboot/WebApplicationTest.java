@@ -23,15 +23,15 @@ public class WebApplicationTest {
      * Use a rest template to handle HTTP requests.
      */
     @Autowired
-    private TestRestTemplate resttemplate;
+    private TestRestTemplate restTemplate;
 
     /**
      * Test the API.
      */
     @Test
     public void testApi() {
-        ResponseEntity<Keyword[]> responseentity = resttemplate.getForEntity("/api/keyword", Keyword[].class);
-        Keyword[] keywords = responseentity.getBody();
+        ResponseEntity<Keyword[]> responseEntity = restTemplate.getForEntity("/api/keyword", Keyword[].class);
+        Keyword[] keywords = responseEntity.getBody();
         Assert.assertEquals(3, keywords.length);
         Assert.assertEquals("Hallo Welt!", keywords[0].getName());
         Assert.assertEquals("Hello world!", keywords[1].getName());
@@ -43,19 +43,19 @@ public class WebApplicationTest {
      */
     @Test
     public void testPages() {
-        String page1 = resttemplate.getForObject("/", String.class);
+        String page1 = restTemplate.getForObject("/", String.class);
         Assert.assertTrue(page1.contains("Home"));
 
-        String page2 = resttemplate.getForObject("/home", String.class);
+        String page2 = restTemplate.getForObject("/home", String.class);
         Assert.assertTrue(page2.contains("Home"));
 
-        String page3 = resttemplate.getForObject("/keywords", String.class);
+        String page3 = restTemplate.getForObject("/keywords", String.class);
         Assert.assertTrue(page3.contains("Keywords"));
 
-        String page4 = resttemplate.getForObject("/keywords/1", String.class);
+        String page4 = restTemplate.getForObject("/keywords/1", String.class);
         Assert.assertTrue(page4.contains("Dummy keyword"));
 
-        String page5 = resttemplate.getForObject("/about", String.class);
+        String page5 = restTemplate.getForObject("/about", String.class);
         Assert.assertTrue(page5.contains("About"));
     }
 }

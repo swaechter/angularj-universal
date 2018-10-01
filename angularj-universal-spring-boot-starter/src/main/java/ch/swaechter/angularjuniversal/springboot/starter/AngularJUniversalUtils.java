@@ -16,15 +16,14 @@ public class AngularJUniversalUtils {
     /**
      * Get the input stream from a resource.
      *
-     * @param resourceloader   Resource loader that serves as resource context
-     * @param resourcefilepath Path to the resource
+     * @param resourceLoader   Resource loader that serves as resource context
+     * @param resourceFilePath Path to the resource
      * @return Valid input stream or null
      * @throws IOException Exception in case of an IO problem
      */
 
-    public static InputStream getInputStreamFromResource(ResourceLoader resourceloader, String resourcefilepath) throws IOException {
-        Resource resource = resourceloader.getResource("classpath:" + resourcefilepath);
+    public static InputStream getInputStreamFromResource(ResourceLoader resourceLoader, String resourceFilePath) throws IOException {
+        Resource resource = resourceLoader.getResource("classpath:" + resourceFilePath);
         return resource.getInputStream();
-
     }
 }

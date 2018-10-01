@@ -27,10 +27,9 @@ public class RenderConfigurationTest {
         List<String> routes = Arrays.asList("/", "/home", "/about");
         List<String> emptyroutes = Arrays.asList("/");
 
-        RenderConfiguration renderconfiguration1 = new RenderConfiguration.RenderConfigurationBuilder(templatecontent, serverbundle).engines(10).liveReload(true).charset(charset).routes(routes).build();
+        RenderConfiguration renderconfiguration1 = new RenderConfiguration.RenderConfigurationBuilder(templatecontent, serverbundle).liveReload(true).charset(charset).routes(routes).build();
         Assert.assertEquals(serverbundle, renderconfiguration1.getServerBundleFile());
         Assert.assertEquals(templatecontent, renderconfiguration1.getTemplateContent());
-        Assert.assertEquals(10, renderconfiguration1.getEngines());
         Assert.assertTrue(renderconfiguration1.getLiveReload());
         Assert.assertEquals(charset, renderconfiguration1.getCharset());
         Assert.assertEquals(routes, renderconfiguration1.getRoutes());
@@ -38,7 +37,6 @@ public class RenderConfigurationTest {
         RenderConfiguration renderconfiguration2 = new RenderConfiguration.RenderConfigurationBuilder(templatecontent, serverbundle).build();
         Assert.assertEquals(serverbundle, renderconfiguration2.getServerBundleFile());
         Assert.assertEquals(templatecontent, renderconfiguration2.getTemplateContent());
-        Assert.assertEquals(4, renderconfiguration2.getEngines());
         Assert.assertFalse(renderconfiguration2.getLiveReload());
         Assert.assertEquals(charset, renderconfiguration2.getCharset());
         Assert.assertEquals(emptyroutes, renderconfiguration2.getRoutes());

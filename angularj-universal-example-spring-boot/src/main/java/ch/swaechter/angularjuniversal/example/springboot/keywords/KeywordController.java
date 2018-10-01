@@ -19,13 +19,13 @@ import java.util.List;
 @RequestMapping("/api")
 public class KeywordController {
 
-    private final KeywordService keywordservice;
+    private final KeywordService keywordService;
 
     /**
      * Default constructor.
      */
     public KeywordController() {
-        this.keywordservice = new KeywordService();
+        this.keywordService = new KeywordService();
     }
 
     /**
@@ -35,6 +35,6 @@ public class KeywordController {
      */
     @GetMapping("/keyword")
     public ResponseEntity<List<Keyword>> getKeywords() {
-        return new ResponseEntity<>(keywordservice.getKeywords(), HttpStatus.OK);
+        return new ResponseEntity<>(keywordService.getKeywords(), HttpStatus.OK);
     }
 }

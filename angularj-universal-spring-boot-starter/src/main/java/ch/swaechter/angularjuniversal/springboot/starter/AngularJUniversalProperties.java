@@ -111,22 +111,4 @@ public class AngularJUniversalProperties {
     public void setCharset(Charset charset) {
         this.charset = charset;
     }
-
-    /**
-     * Get the number of render engines.
-     *
-     * @return Number of render engines
-     */
-    public int getEngines() {
-        return engines;
-    }
-
-    /**
-     * Set the new number of render engines.
-     *
-     * @param engines New number of render engines
-     */
-    public void setEngines(int engines) {
-        this.engines = engines;
-    }
 }

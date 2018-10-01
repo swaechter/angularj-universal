@@ -16,28 +16,28 @@ public class AngularJUniversalConfigurer implements WebMvcConfigurer {
     /**
      * Render configuration that will be used to check the routes.
      */
-    private final RenderConfiguration renderconfiguration;
+    private final RenderConfiguration renderConfiguration;
 
     /**
      * Constructor with the render configuration.
      *
-     * @param renderconfiguration Render configuration
+     * @param renderConfiguration Render configuration
      */
-    public AngularJUniversalConfigurer(RenderConfiguration renderconfiguration) {
-        this.renderconfiguration = renderconfiguration;
+    public AngularJUniversalConfigurer(RenderConfiguration renderConfiguration) {
+        this.renderConfiguration = renderConfiguration;
     }
 
     /**
      * Add all view controllers than are defined as routing, so no further request mapping in the application is
      * required.
      *
-     * @param registry Registry to add new view controllers
+     * @param viewControllerRegistry Registry to add new view controllers
      */
     @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        for (String url : renderconfiguration.getRoutes()) {
-            ViewControllerRegistration viewControllerRegistry = registry.addViewController(url);
-            viewControllerRegistry.setViewName(url);
+    public void addViewControllers(ViewControllerRegistry viewControllerRegistry) {
+        for (String url : renderConfiguration.getRoutes()) {
+            ViewControllerRegistration viewControllerRegistration = viewControllerRegistry.addViewController(url);
+            viewControllerRegistration.setViewName(url);
         }
     }
 }

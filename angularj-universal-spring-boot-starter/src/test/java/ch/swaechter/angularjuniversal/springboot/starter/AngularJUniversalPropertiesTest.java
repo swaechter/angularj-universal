@@ -24,13 +24,11 @@ public class AngularJUniversalPropertiesTest {
         Assert.assertEquals("/public/index.html", properties.getIndexResourcePath());
         Assert.assertEquals("/server.js", properties.getServerBundleResourcePath());
         Assert.assertEquals(StandardCharsets.UTF_8, properties.getCharset());
-        Assert.assertEquals(4, properties.getEngines());
 
         properties.setRoutes(Arrays.asList("/", "/home"));
         properties.setIndexResourcePath("/other/public/index.html");
         properties.setServerBundleResourcePath("/other.server.js");
         properties.setCharset(StandardCharsets.ISO_8859_1);
-        properties.setEngines(10);
 
         Assert.assertEquals(2, properties.getRoutes().size());
         Assert.assertEquals("/", properties.getRoutes().get(0));
@@ -38,6 +36,5 @@ public class AngularJUniversalPropertiesTest {
         Assert.assertEquals("/other/public/index.html", properties.getIndexResourcePath());
         Assert.assertEquals("/other.server.js", properties.getServerBundleResourcePath());
         Assert.assertEquals(StandardCharsets.ISO_8859_1, properties.getCharset());
-        Assert.assertEquals(10, properties.getEngines());
     }
 }

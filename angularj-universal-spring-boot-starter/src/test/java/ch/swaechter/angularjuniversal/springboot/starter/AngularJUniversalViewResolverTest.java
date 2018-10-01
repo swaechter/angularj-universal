@@ -23,10 +23,10 @@ public class AngularJUniversalViewResolverTest {
     public void testAngularJUniversalViewResolver() {
         Renderer renderer = Mockito.mock(Renderer.class);
 
-        RenderConfiguration renderconfiguration = Mockito.mock(RenderConfiguration.class);
-        Mockito.when(renderconfiguration.getRoutes()).thenReturn(Arrays.asList("/", "/home"));
+        RenderConfiguration renderConfiguration = Mockito.mock(RenderConfiguration.class);
+        Mockito.when(renderConfiguration.getRoutes()).thenReturn(Arrays.asList("/", "/home"));
 
-        AngularJUniversalViewResolver resolver = new AngularJUniversalViewResolver(renderer, renderconfiguration);
+        AngularJUniversalViewResolver resolver = new AngularJUniversalViewResolver(renderer, renderConfiguration);
 
         Assert.assertEquals(AngularJUniversalView.class.getName(), resolver.requiredViewClass().getName());
 

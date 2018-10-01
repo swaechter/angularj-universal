@@ -32,35 +32,35 @@ public class WebApplication {
     @RestController
     public class ContentController {
 
-        private final RenderService renderservice;
+        private final RenderService renderService;
 
         @Autowired
-        public ContentController(RenderService renderservice) {
-            this.renderservice = renderservice;
+        public ContentController(RenderService renderService) {
+            this.renderService = renderService;
         }
 
         @ResponseBody
         @GetMapping({"/", "/home"})
         public String showHome() throws Exception {
-            return renderservice.renderPage("/home").get();
+            return renderService.renderPage("/home").get();
         }
 
         @ResponseBody
         @GetMapping("/keywords")
         public String showLogin() throws Exception {
-            return renderservice.renderPage("/keywords").get();
+            return renderService.renderPage("/keywords").get();
         }
 
         @ResponseBody
         @GetMapping("/keywords/{id}")
         public String showLogout(@PathVariable("id") int id) throws Exception {
-            return renderservice.renderPage("/keywords/" + id).get();
+            return renderService.renderPage("/keywords/" + id).get();
         }
 
         @ResponseBody
         @GetMapping("/about")
         public String showPage() throws Exception {
-            return renderservice.renderPage("/about").get();
+            return renderService.renderPage("/about").get();
         }
     }
 
@@ -68,15 +68,15 @@ public class WebApplication {
     @RequestMapping("/api")
     public class KeywordController {
 
-        private final KeywordService keywordservice;
+        private final KeywordService keywordService;
 
         public KeywordController() {
-            this.keywordservice = new KeywordService();
+            this.keywordService = new KeywordService();
         }
 
         @GetMapping("/keyword")
         public ResponseEntity<List<Keyword>> getKeywords() {
-            return new ResponseEntity<>(keywordservice.getKeywords(), HttpStatus.OK);
+            return new ResponseEntity<>(keywordService.getKeywords(), HttpStatus.OK);
         }
     }
 
@@ -87,20 +87,20 @@ public class WebApplication {
 
         public RenderService() throws IOException {
             // Load the template and create a temporary server bundle file from the resource (This file will of course never change until manually edited)
-            InputStream templateinputstream = getClass().getResourceAsStream("/public/index.html");
-            InputStream serverbundleinputstream = getClass().getResourceAsStream("/server.js");
-            String templatecontent = RenderUtils.getStringFromInputStream(templateinputstream, StandardCharsets.UTF_8);
-            File serverbundlefile = RenderUtils.createTemporaryFileFromInputStream("serverbundle", "tmp", serverbundleinputstream);
-            // File localserverbundlefile = new File("<Local server bundle on the file system>"); --> Also enable auto reload in the configuration
+            InputStream templateInputStream = getClass().getResourceAsStream("/public/index.html");
+            InputStream serverBundleInputStream = getClass().getResourceAsStream("/server.js");
+            String templateContent = RenderUtils.getStringFromInputStream(templateInputStream, StandardCharsets.UTF_8);
+            File serverBundleFile = RenderUtils.createTemporaryFileFromInputStream("serverbundle", "tmp", serverBundleInputStream);
+            // File serverBundleFile = new File("<Local server bundle on the file system>"); --> Also enable auto reload in the configuration
 
             // Create the configuration. For real live reloading, don't use a temporary file but the real generated on from the file system
-            RenderConfiguration configuration = new RenderConfiguration.RenderConfigurationBuilder(templatecontent, serverbundlefile).engines(4).liveReload(false).build();
+            RenderConfiguration renderConfiguration = new RenderConfiguration.RenderConfigurationBuilder(templateContent, serverBundleFile).liveReload(false).build();
 
             // Create the V8 render engine factory for spawning render engines
-            RenderEngineFactory factory = new V8RenderEngineFactory();
+            RenderEngineFactory renderEngineFactory = new V8RenderEngineFactory();
 
             // Create and start the renderer
-            this.renderer = new Renderer(factory, configuration);
+            this.renderer = new Renderer(renderConfiguration, renderEngineFactory);
             this.renderer.startRenderer();
         }
 

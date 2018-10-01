@@ -15,8 +15,8 @@ public class DataLoaderTest {
      */
     @Test
     public void testInputStreams() {
-        DataLoader dataloader = new DataLoader();
-        Assert.assertNotNull(dataloader.getIndexAsInputStream());
-        Assert.assertNotNull(dataloader.getServerBundleAsInputStream());
+        DataLoader dataLoader = new DataLoader();
+        Assert.assertNotNull(dataLoader.getIndexAsInputStream());
+        Assert.assertNotNull(dataLoader.getServerBundleAsInputStream());
     }
 }

@@ -19,8 +19,8 @@ public interface RenderEngine {
      * Start working and handle all incoming requests and resolve them. The engine will work as long it receives a valid
      * and non optional request and will shutdown itself as soon it received an ooptional request from the queue.
      *
-     * @param renderrequests      Blocking queue with requests to read from
-     * @param renderconfiguration Render configuration with the all required information
+     * @param renderRequests      Blocking queue with requests to read from
+     * @param renderConfiguration Render configuration with the all required information
      */
-    void startWorking(BlockingQueue<Optional<RenderRequest>> renderrequests, RenderConfiguration renderconfiguration);
+    void startWorking(BlockingQueue<Optional<RenderRequest>> renderRequests, RenderConfiguration renderConfiguration);
 }

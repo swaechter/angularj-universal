@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 
@@ -20,9 +21,19 @@ import java.util.concurrent.BlockingQueue;
 public class TcpRenderEngine implements RenderEngine {
 
     /**
+     * Name of the environment variable passed to Node.js to indicate the port.
+     */
+    private static final String NODE_PORT_ENVIRONMENT_VARIABLE_NAME = "NODEPORT";
+
+    /**
      * Object mapper used to serialize/deserialize TCP request and responses.
      */
     private final ObjectMapper objectMapper;
+
+    /**
+     * Proccess of the Node.js render service.
+     */
+    private Process process;
 
     /**
      * Create a new TCP based render engine that will access a NodeJS server for rendering
@@ -41,6 +52,12 @@ public class TcpRenderEngine implements RenderEngine {
     @Override
     public void startWorking(BlockingQueue<Optional<RenderRequest>> renderRequests, RenderConfiguration renderConfiguration) {
         try {
+            // Start the Node.js render service
+            ProcessBuilder processBuilder = new ProcessBuilder(renderConfiguration.getNodePath(), renderConfiguration.getServerBundleFile().getAbsolutePath());
+            Map<String, String> processEnvironment = processBuilder.environment();
+            processEnvironment.put(NODE_PORT_ENVIRONMENT_VARIABLE_NAME, String.valueOf(renderConfiguration.getNodePort()));
+            process = processBuilder.start();
+
             while (true) {
                 Optional<RenderRequest> renderRequestItem = renderRequests.take();
                 if (renderRequestItem.isPresent()) {
@@ -65,7 +82,7 @@ public class TcpRenderEngine implements RenderEngine {
                         exception.printStackTrace();
                     }
                 } else {
-                    break;
+                    process.destroy();
                 }
             }
         } catch (Exception exception) {

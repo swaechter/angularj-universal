@@ -10,7 +10,7 @@ This project provides a Java API to a local running Node.js instance that is res
 
 After the initial request and response, the browser takes over and the single page application is fully running in the browser (No further server side rendering requests are required until the next F5 page refresh):
 
-TODO: Add high level image from doc directory
+[![High Level Overview](https://github.com/swaechter/angularj-universal/blob/master/doc/AngularJ_Universal_HighLevelOverview.png?raw=true)](https://github.com/swaechter/angularj-universal/blob/master/doc/AngularJ_Universal_HighLevelOverview.png?raw=true)
 
 ## Overview
 

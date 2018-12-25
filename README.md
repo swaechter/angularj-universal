@@ -176,8 +176,10 @@ require('zone.js/dist/zone-node');
 const socketEngine = require('@nguniversal/socket-engine');
 const {AppServerModuleNgFactory} = require('./dist/angular-server/main');
 
-console.log('Going to start the server!'');
-socketEngine.startSocketEngine(AppServerModuleNgFactory);
+const port: Number = parseInt(process.env.NODEPORT) || 9090;
+
+console.log('Going to start the server on port: ' + port);
+socketEngine.startSocketEngine(AppServerModuleNgFactory, [], 'localhost', port);
 ```
 
 This script will provide a rendering service on port `9090` which we can use from the Java render engine (**Note: Ensure, that this port is local-link only accessible! Not from another system!**).

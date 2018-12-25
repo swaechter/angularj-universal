@@ -31,11 +31,6 @@ public class TcpRenderEngine implements RenderEngine {
     private final ObjectMapper objectMapper;
 
     /**
-     * Proccess of the Node.js render service.
-     */
-    private Process process;
-
-    /**
      * Create a new TCP based render engine that will access a NodeJS server for rendering
      */
     public TcpRenderEngine() {
@@ -56,7 +51,7 @@ public class TcpRenderEngine implements RenderEngine {
             ProcessBuilder processBuilder = new ProcessBuilder(renderConfiguration.getNodePath(), renderConfiguration.getServerBundleFile().getAbsolutePath());
             Map<String, String> processEnvironment = processBuilder.environment();
             processEnvironment.put(NODE_PORT_ENVIRONMENT_VARIABLE_NAME, String.valueOf(renderConfiguration.getNodePort()));
-            process = processBuilder.start();
+            Process process = processBuilder.start();
 
             while (true) {
                 Optional<RenderRequest> renderRequestItem = renderRequests.take();
@@ -66,7 +61,7 @@ public class TcpRenderEngine implements RenderEngine {
                         RenderRequest renderRequest = renderRequestItem.get();
 
                         // Create the socket and initialize the writer reader
-                        Socket socket = new Socket("localhost", 9090);
+                        Socket socket = new Socket("localhost", renderConfiguration.getNodePort());
                         PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
                         BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 

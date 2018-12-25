@@ -4,9 +4,13 @@
 
 With the introduction of Angular Universal, a solution for dynamically prerendering Angular applications on the server side (SSR) and sending the content directly to the browser as 'already-bootstrapped' application, Angular became more interesting for many developers that were using a Node.js environment. It solved the problems of SEO optimization, empty page previews from Facebooks & others and resource management (For more information see https://scotch.io/tutorials/server-side-rendering-in-angular-2-with-angular-universal).
 
-For traditional web developers in the Java enterprise environment with technologies like Spring Boot or Java EE, these technologies required the use of a separate Node.js runtime in combination with a web framework like Express.js or even worse, inter process communication between two servers. Requirements that often just weren't possible or not allowed: Two run times with two server sockets, technology fragmentation or just skepticism against Node.js on the server side or JavaScript in general. All in all, Java developers weren't able to use the benefits made in the Node.js ecosystem.
+For traditional web developers in the Java enterprise environment with technologies like Spring Boot or Java EE, these technologies required the use of a separate Node.js runtime in combination with a web framework like Express.js or even worse, inter process communication between two servers.
 
-This project provides a Java API to a local Node.js instance that is responsible for server side rendering the Angular application. For this, the JNI language bindings of the J2V8 projects were used. This makes it possible to use the latest Angular Universal features without having a second [JavaScript] web server (Only a second VM by Node.js) - an integration of a prerendered Angular application into a pure Java stack is now possible.
+This project provides a Java API to a local running Node.js instance that is responsible for server side rendering the Angular application. For this, a regular TCP connection (gRPC is planned in the future) is used to exchange the render requests and to receive the rendered pages.
+
+After the initial request and response, the browser takes over and the single page application is fully running in the browser (No further server side rendering requests are required until the next F5 page refresh):
+
+TODO: Add high level image from doc directory
 
 ## Overview
 
@@ -16,7 +20,8 @@ This repository is divided into several modules that all share the same Angular 
 | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | angularj-universal-application                | Contains the main Angular application with several pages |
 | angularj-universal-renderer                   | Contains the main render SDK that provides the core functionality and allows a developer to implement an own render solution |
-| angularj-universal-renderer-v8                | Contains a specific render solution that uses a Node.js instance via J2V8 language bindings for rendering requests  |
+| angularj-universal-renderer-tcp                | Contains a specific render solution that uses a Node.js instance via a TCP connection for rendering requests  |
+| angularj-universal-renderer-v8                | Contains a specific render solution that uses a Node.js instance via J2V8 language bindings for rendering requests (**Note: This module is obsolete and deprecated - no further development and support!**  |
 | angularj-universal-example-spring-boot        | Contains a Spring Boot web application that serves the Angular application with the help of a custom written Spring Boot starter (See module bellow)  |
 | angularj-universal-example-spring-boot-simple | Contains a Spring Boot web application that serves the Angular application without the help of the Spring Boot starter. This leads to a more simple example, but a lot more boiler plated code is required. For simplicity, this module is used as example |
 | angularj-universal-example-servlet            | TODO: Provide a servlet example  |
@@ -101,7 +106,7 @@ import {ModuleMapLoaderModule} from "@nguniversal/module-map-ngfactory-loader";
     imports: [
         AppModule,
         ServerModule,
-        ModuleMapLoaderModule // Add this line
+        // ModuleMapLoaderModule // Add this line // TODO: Check how to add this line - lazy loading is at the moment not supported!
     ],
     bootstrap: [AppComponent],
 })
@@ -163,9 +168,7 @@ module.exports = {
 };
 ```
 
-Now we need to create a communication mechanism with which the Java JVM can speak to the Angular application (Render a page request) and handle the answer (Receive rendered page request). For this, the Java JVM executes a script that establish this communication called `server.js`.
-
-Create a file `server.ts` that provides the communication mechanism (I should move this code to an own consumable NPM library):
+Now we need to create the Node.js script that allows us to establish a TCP connection between the Java webserver and the Node.js rednering process. For this, create a script called `server.ts` that provides the communication mechanism::
 
 ```typescript
 require('zone.js/dist/zone-node');
@@ -173,13 +176,13 @@ require('zone.js/dist/zone-node');
 const socketEngine = require('@nguniversal/socket-engine');
 const {AppServerModuleNgFactory} = require('./dist/angular-server/main');
 
-console.log("Going to start the server!");
+console.log('Going to start the server!'');
 socketEngine.startSocketEngine(AppServerModuleNgFactory);
 ```
 
-In short, the generated server.js bundle will be loaded by the Java JVM. The script then passes an instance of the render adapter to the JVM (See `registerRenderAdapter)`, so the JVM can use this instance to render page requests. After a page is rendered, it is passed back to the JVM (See `receiveRenderedPage`) and served to the client. Hence, the functions `registerRenderAdapter` and `receiveRenderedPage` can't be found in the JavaScript code because they are registered Java methods in the script engine.
+This script will provide a rendering service on port `9090` which we can use from the Java render engine (**Note: Ensure, that this port is local-link only accessible! Not from another system!**).
 
-Now let's update our Node scripts for building all three applications (Snipped from `package.json`):
+Now let's update our Node scripts to all three applications at once (Snipped from `package.json`):
 
 ```json
 "scripts": {
@@ -258,20 +261,21 @@ public class WebApplication {
 
         public RenderService() throws IOException {
             // Load the template and create a temporary server bundle file from the resource (This file will of course never change until manually edited)
-            InputStream templateinputstream = getClass().getResourceAsStream("/public/index.html");
-            InputStream serverbundleinputstream = getClass().getResourceAsStream("/server.js");
-            String templatecontent = RenderUtils.getStringFromInputStream(templateinputstream, StandardCharsets.UTF_8);
-            File serverbundlefile = RenderUtils.createTemporaryFileFromInputStream("serverbundle", "tmp", serverbundleinputstream);
-            // File localserverbundlefile = new File("<Local server bundle on the file system>"); --> Also enable auto reload in the configuration
+            InputStream templateInputStream = getClass().getResourceAsStream("/public/index.html");
+            InputStream serverBundleInputStream = getClass().getResourceAsStream("/server.js");
+            String templateContent = RenderUtils.getStringFromInputStream(templateInputStream, StandardCharsets.UTF_8);
+            File serverBundleFile = RenderUtils.createTemporaryFileFromInputStream("serverbundle", "tmp", serverBundleInputStream);
+            // File serverBundleFile = new File("<Local server bundle on the file system>"); --> Also enable auto reload in the configuration
 
             // Create the configuration. For real live reloading, don't use a temporary file but the real generated on from the file system
-            RenderConfiguration configuration = new RenderConfiguration.RenderConfigurationBuilder(templatecontent, serverbundlefile).engines(4).liveReload(false).build();
+            // The string "node" is the path or executable name of the Node.js process and has to match/be found
+            RenderConfiguration renderConfiguration = new RenderConfiguration.RenderConfigurationBuilder("node", 9090, serverBundleFile, templateContent).liveReload(false).build();
 
-            // Create the V8 render engine factory for spawning render engines
-            RenderEngineFactory factory = new V8RenderEngineFactory();
+            // Create the TCP render engine factory for spawning render engines
+            RenderEngineFactory renderEngineFactory = new TcpRenderEngineFactory();
 
             // Create and start the renderer
-            this.renderer = new Renderer(factory, configuration);
+            this.renderer = new Renderer(renderConfiguration, renderEngineFactory);
             this.renderer.startRenderer();
         }
 
@@ -293,7 +297,7 @@ You can test if the server side rendering is working if:
 
 * You see the page in general
 * You disable JavaScript temporary, reload and still see the page
-* You inspect the source code of the current page
+* You inspect the source code of the current page and see the rendered page (Not only the content of the index.html file)
 
 ### Final notes
 

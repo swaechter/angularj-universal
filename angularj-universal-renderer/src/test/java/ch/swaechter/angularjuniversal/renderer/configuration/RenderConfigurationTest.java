@@ -21,20 +21,26 @@ public class RenderConfigurationTest {
      */
     @Test
     public void testRenderConfiguration() {
-        String templatecontent = "<app-root></app-root>";
+        String nodePath = "node";
+        Integer nodePort = 9090;
         File serverbundle = new File("server.bundle.js");
+        String templatecontent = "<app-root></app-root>";
         Charset charset = StandardCharsets.UTF_8;
         List<String> routes = Arrays.asList("/", "/home", "/about");
         List<String> emptyroutes = Arrays.asList("/");
 
-        RenderConfiguration renderconfiguration1 = new RenderConfiguration.RenderConfigurationBuilder(templatecontent, serverbundle).liveReload(true).charset(charset).routes(routes).build();
+        RenderConfiguration renderconfiguration1 = new RenderConfiguration.RenderConfigurationBuilder(nodePath, nodePort, serverbundle, templatecontent).liveReload(true).charset(charset).routes(routes).build();
+        Assert.assertEquals(nodePath, renderconfiguration1.getNodePath());
+        Assert.assertEquals(nodePort, renderconfiguration1.getNodePort());
         Assert.assertEquals(serverbundle, renderconfiguration1.getServerBundleFile());
         Assert.assertEquals(templatecontent, renderconfiguration1.getTemplateContent());
         Assert.assertTrue(renderconfiguration1.getLiveReload());
         Assert.assertEquals(charset, renderconfiguration1.getCharset());
         Assert.assertEquals(routes, renderconfiguration1.getRoutes());
 
-        RenderConfiguration renderconfiguration2 = new RenderConfiguration.RenderConfigurationBuilder(templatecontent, serverbundle).build();
+        RenderConfiguration renderconfiguration2 = new RenderConfiguration.RenderConfigurationBuilder(nodePath, nodePort, serverbundle, templatecontent).build();
+        Assert.assertEquals(nodePath, renderconfiguration2.getNodePath());
+        Assert.assertEquals(nodePort, renderconfiguration2.getNodePort());
         Assert.assertEquals(serverbundle, renderconfiguration2.getServerBundleFile());
         Assert.assertEquals(templatecontent, renderconfiguration2.getTemplateContent());
         Assert.assertFalse(renderconfiguration2.getLiveReload());

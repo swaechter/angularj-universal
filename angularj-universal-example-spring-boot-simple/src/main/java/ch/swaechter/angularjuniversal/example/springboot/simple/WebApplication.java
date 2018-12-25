@@ -94,7 +94,8 @@ public class WebApplication {
             // File serverBundleFile = new File("<Local server bundle on the file system>"); --> Also enable auto reload in the configuration
 
             // Create the configuration. For real live reloading, don't use a temporary file but the real generated on from the file system
-            RenderConfiguration renderConfiguration = new RenderConfiguration.RenderConfigurationBuilder(templateContent, serverBundleFile).liveReload(false).build();
+            // The string "node" is the path or executable name of the Node.js process and has to match/be found
+            RenderConfiguration renderConfiguration = new RenderConfiguration.RenderConfigurationBuilder("node", 9090, serverBundleFile, templateContent).liveReload(false).build();
 
             // Create the TCP render engine factory for spawning render engines
             RenderEngineFactory renderEngineFactory = new TcpRenderEngineFactory();

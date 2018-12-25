@@ -56,14 +56,11 @@ public class AngularJUniversalAutoConfiguration {
             throw new RuntimeException("AngularJ Universal starter is unable to parse the charset");
         }
 
-        // Get the content of the index template
-        String templateContent;
-        try {
-            InputStream indexInputStream = AngularJUniversalUtils.getInputStreamFromResource(resourceLoader, properties.getIndexResourcePath());
-            templateContent = RenderUtils.getStringFromInputStream(indexInputStream, properties.getCharset());
-        } catch (IOException exception) {
-            throw new RuntimeException("AngularJ Universal is unable to read the template content for " + properties.getIndexResourcePath());
-        }
+        // Get the Node.js path
+        String nodePath = properties.getNodePath();
+
+        // Get the Node.js port
+        Integer nodePort = properties.getNodePort();
 
         // Create a temporary server bundle from the input stream
         File serverBundleFile;
@@ -74,8 +71,17 @@ public class AngularJUniversalAutoConfiguration {
             throw new RuntimeException("AngularJ Universal is unable to cache the server bundle file for " + properties.getServerBundleResourcePath());
         }
 
+        // Get the content of the index template
+        String templateContent;
+        try {
+            InputStream indexInputStream = AngularJUniversalUtils.getInputStreamFromResource(resourceLoader, properties.getIndexResourcePath());
+            templateContent = RenderUtils.getStringFromInputStream(indexInputStream, properties.getCharset());
+        } catch (IOException exception) {
+            throw new RuntimeException("AngularJ Universal is unable to read the template content for " + properties.getIndexResourcePath());
+        }
+
         // Build the render configuration builder
-        RenderConfiguration.RenderConfigurationBuilder builder = new RenderConfiguration.RenderConfigurationBuilder(templateContent, serverBundleFile);
+        RenderConfiguration.RenderConfigurationBuilder builder = new RenderConfiguration.RenderConfigurationBuilder(nodePath, nodePort, serverBundleFile, templateContent);
         builder.charset(properties.getCharset());
 
         // Check the routes

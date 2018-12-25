@@ -16,14 +16,14 @@ import java.util.List;
 public class AngularJUniversalProperties {
 
     /**
-     * Comma separated list with all routes of the application.
+     * Path or executable name of the Node.js executable. This path is used to start a Node.js process for rendering.
      */
-    private List<String> routes = Arrays.asList("/");
+    private String nodepath = "node";
 
     /**
-     * Path of the index resource.
+     * Port of the Node.js process is opening a TCP server.
      */
-    private String indexresourcepath = "/public/index.html";
+    private Integer nodeport = 9090;
 
     /**
      * Path of the server bundle resource.
@@ -31,49 +31,54 @@ public class AngularJUniversalProperties {
     private String serverbundleresourcepath = "/server.js";
 
     /**
+     * Path of the index resource.
+     */
+    private String indexresourcepath = "/public/index.html";
+
+    /**
      * Charset used for reading and rendering.
      */
     private Charset charset = StandardCharsets.UTF_8;
 
     /**
-     * Number of render engines.
+     * Comma separated list with all routes of the application.
      */
-    private int engines = 4;
+    private List<String> routes = Arrays.asList("/");
 
     /**
-     * Get all routes as list.
+     * Get the path or executable name of the Node.js executable.
      *
-     * @return All routes as list
+     * @return Node.js path or executable name
      */
-    public List<String> getRoutes() {
-        return routes;
+    public String getNodePath() {
+        return nodepath;
     }
 
     /**
-     * Set all routes as list.
+     * Set the new path or executable name of the Node.js executable.
      *
-     * @param routes All routes as list
+     * @param nodepath New Node.js path or executable name
      */
-    public void setRoutes(List<String> routes) {
-        this.routes = routes;
+    public void setNodePath(String nodepath) {
+        this.nodepath = nodepath;
     }
 
     /**
-     * Get the path of the index resource.
+     * Get the port of the Node.js TCP socket used for the rendering communication
      *
-     * @return Path of the index resource
+     * @return Node.js port used for TCP communication
      */
-    public String getIndexResourcePath() {
-        return indexresourcepath;
+    public Integer getNodePort() {
+        return nodeport;
     }
 
     /**
-     * Set the path of the new index resource.
+     * Set the new port for the Node.js TCP socket used for the rendering communication.
      *
-     * @param indexresourcepath Path of the new index resource
+     * @param nodeport New Node.js port used for TCP communication
      */
-    public void setIndexResourcePath(String indexresourcepath) {
-        this.indexresourcepath = indexresourcepath;
+    public void setNodePort(Integer nodeport) {
+        this.nodeport = nodeport;
     }
 
     /**
@@ -95,6 +100,24 @@ public class AngularJUniversalProperties {
     }
 
     /**
+     * Get the path of the index resource.
+     *
+     * @return Path of the index resource
+     */
+    public String getIndexResourcePath() {
+        return indexresourcepath;
+    }
+
+    /**
+     * Set the path of the new index resource.
+     *
+     * @param indexresourcepath Path of the new index resource
+     */
+    public void setIndexResourcePath(String indexresourcepath) {
+        this.indexresourcepath = indexresourcepath;
+    }
+
+    /**
      * Get the charset used for reading and rendering.
      *
      * @return Charset
@@ -110,5 +133,23 @@ public class AngularJUniversalProperties {
      */
     public void setCharset(Charset charset) {
         this.charset = charset;
+    }
+
+    /**
+     * Get all routes as list.
+     *
+     * @return All routes as list
+     */
+    public List<String> getRoutes() {
+        return routes;
+    }
+
+    /**
+     * Set all routes as list.
+     *
+     * @param routes All routes as list
+     */
+    public void setRoutes(List<String> routes) {
+        this.routes = routes;
     }
 }

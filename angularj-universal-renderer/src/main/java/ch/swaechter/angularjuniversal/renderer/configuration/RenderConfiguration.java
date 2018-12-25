@@ -14,9 +14,14 @@ import java.util.List;
 public class RenderConfiguration {
 
     /**
-     * Content of the template.
+     * Path or executable name of the Node.js executable. This path is used to start a Node.js process for rendering.
      */
-    private final String templateContent;
+    private final String nodePath;
+
+    /**
+     * Port of the Node.js process is opening a TCP server.
+     */
+    private final Integer nodePort;
 
     /**
      * File of the server bundle.
@@ -24,9 +29,14 @@ public class RenderConfiguration {
     private final File serverBundleFile;
 
     /**
+     * Content of the template.
+     */
+    private final String templateContent;
+
+    /**
      * Status of live reload
      */
-    private final boolean liveReload;
+    private final Boolean liveReload;
 
     /**
      * Charset of the application.
@@ -41,26 +51,39 @@ public class RenderConfiguration {
     /**
      * Create a new render configuration with the given parameters.
      *
-     * @param templateContent  Content of the template that is used for rendering the application
+     * @param nodePath         Node.js path or executable name that is used to start a Node.js path used for rendering
+     * @param nodePort         Port of the Node.js TCP socket used for the rendering communication
      * @param serverBundleFile File path of the server bundle that will be loaded by the render engine
+     * @param templateContent  Content of the template that is used for rendering the application
      * @param liveReload       Status if live reload is enabled or not
      * @param routes           Routes of the application
      */
-    private RenderConfiguration(String templateContent, File serverBundleFile, boolean liveReload, Charset charset, List<String> routes) {
-        this.templateContent = templateContent;
+    private RenderConfiguration(String nodePath, Integer nodePort, File serverBundleFile, String templateContent, Boolean liveReload, Charset charset, List<String> routes) {
+        this.nodePath = nodePath;
+        this.nodePort = nodePort;
         this.serverBundleFile = serverBundleFile;
+        this.templateContent = templateContent;
         this.liveReload = liveReload;
         this.charset = charset;
         this.routes = routes;
     }
 
     /**
-     * Get the content of the template.
+     * Get the Node.js path or executable name that is used to start a Node.js path used for rendering.
      *
-     * @return Content of the template
+     * @return Path or executable Node.js name
      */
-    public String getTemplateContent() {
-        return templateContent;
+    public String getNodePath() {
+        return nodePath;
+    }
+
+    /**
+     * Get the port of the Node.js TCP socket used for the rendering communication.
+     *
+     * @return TCP port used for the communication
+     */
+    public Integer getNodePort() {
+        return nodePort;
     }
 
     /**
@@ -73,11 +96,20 @@ public class RenderConfiguration {
     }
 
     /**
+     * Get the content of the template.
+     *
+     * @return Content of the template
+     */
+    public String getTemplateContent() {
+        return templateContent;
+    }
+
+    /**
      * Get the status of live reload.
      *
      * @return Status of live reload
      */
-    public boolean getLiveReload() {
+    public Boolean getLiveReload() {
         return liveReload;
     }
 
@@ -107,6 +139,16 @@ public class RenderConfiguration {
     public static class RenderConfigurationBuilder {
 
         /**
+         * Path or executable name of the Node.js executable. This path is used to start a Node.js process for rendering.
+         */
+        private final String nodePath;
+
+        /**
+         * Port of the Node.js process is opening a TCP server.
+         */
+        private final Integer nodePort;
+
+        /**
          * Content of the template.
          */
         private final String templateContent;
@@ -119,7 +161,7 @@ public class RenderConfiguration {
         /**
          * Status of live reload
          */
-        private boolean liveReload = false;
+        private Boolean liveReload = false;
 
         /**
          * Charset of the application.
@@ -137,7 +179,17 @@ public class RenderConfiguration {
          * @param templateContent  Content of the template used for rendering
          * @param serverBundleFile Server bundle file used for rendering
          */
-        public RenderConfigurationBuilder(String templateContent, File serverBundleFile) {
+        /**
+         * Create a new render configuration builder that can be used to build the render configuration.
+         *
+         * @param nodePath         Path or executable name of the Node.js executable. This path is used to start a Node.js process for rendering.
+         * @param nodePort         Port of the Node.js process is opening a TCP server.
+         * @param serverBundleFile Server bundle file used for rendering
+         * @param templateContent  Content of the template used for rendering
+         */
+        public RenderConfigurationBuilder(String nodePath, Integer nodePort, File serverBundleFile, String templateContent) {
+            this.nodePath = nodePath;
+            this.nodePort = nodePort;
             this.templateContent = templateContent;
             this.serverBundleFile = serverBundleFile;
         }
@@ -181,7 +233,7 @@ public class RenderConfiguration {
          * @return New render configuration
          */
         public RenderConfiguration build() {
-            return new RenderConfiguration(templateContent, serverBundleFile, liveReload, charset, routes);
+            return new RenderConfiguration(nodePath, nodePort, serverBundleFile, templateContent, liveReload, charset, routes);
         }
     }
 }

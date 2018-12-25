@@ -54,7 +54,7 @@ public class TcpRenderEngine implements RenderEngine {
                         BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
                         // Write the request
-                        TcpRequest tcpRequest = new TcpRequest(renderRequest.getUuid(), renderRequest.getUri(), "<app-root></app-root>");
+                        TcpRequest tcpRequest = new TcpRequest(renderRequest.getUuid(), renderRequest.getUri(), renderConfiguration.getTemplateContent());
                         writer.println(objectMapper.writeValueAsString(tcpRequest));
                         writer.flush();
 

@@ -5,7 +5,7 @@
     <parent>
         <groupId>ch.swaechter</groupId>
         <artifactId>angularj-universal</artifactId>
-        <version>0.0.3</version>
+        <version>0.0.4-SNAPSHOT</version>
     </parent>
     <artifactId>angularj-universal-renderer-tcp</artifactId>
     <packaging>jar</packaging>
@@ -17,12 +17,12 @@
         <dependency>
             <groupId>ch.swaechter</groupId>
             <artifactId>angularj-universal-renderer</artifactId>
-            <version>0.0.3</version>
+            <version>0.0.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>ch.swaechter</groupId>
             <artifactId>angularj-universal-application</artifactId>
-            <version>0.0.3</version>
+            <version>0.0.4-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -30,6 +30,11 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.9.8</version>
         </dependency>
     </dependencies>
 </project>

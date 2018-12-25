@@ -82,7 +82,7 @@ Generate the universal component and add all required third party libraries:
 ```bash
 cd angular
 ng generate universal --client-project angular
-npm install --save @nguniversal/module-map-ngfactory-loader
+npm install --save @nguniversal/module-map-ngfactory-loader @nguniversal/socket-engine
 npm install --save-dev webpack-cli ts-loader
 npm update
 ```
@@ -170,40 +170,11 @@ Create a file `server.ts` that provides the communication mechanism (I should mo
 ```typescript
 require('zone.js/dist/zone-node');
 
-import {provideModuleMap} from '@nguniversal/module-map-ngfactory-loader';
+const socketEngine = require('@nguniversal/socket-engine');
+const {AppServerModuleNgFactory} = require('./dist/angular-server/main');
 
-import {renderModuleFactory} from '@angular/platform-server';
-
-const {AppServerModuleNgFactory, LAZY_MODULE_MAP} = require('./dist/angular-server/main');
-
-export declare function registerRenderAdapter(renderadapter: RenderAdapter): void;
-
-export declare function receiveRenderedPage(uuid: string, html: string, error: any): void;
-
-export class RenderAdapter {
-
-    constructor(private appservermodulengfactory: any, private lazymodulemap: any, private html: string) {
-        registerRenderAdapter(this);
-    }
-
-    setHtml(html: string) {
-        this.html = html;
-    }
-
-    renderPage(uuid: string, uri: string) {
-        renderModuleFactory(this.appservermodulengfactory, {
-            document: this.html,
-            url: uri,
-            extraProviders: [
-                provideModuleMap(this.lazymodulemap)
-            ]
-        }).then(html => {
-            receiveRenderedPage(uuid, html, null);
-        });
-    }
-}
-
-new RenderAdapter(AppServerModuleNgFactory, LAZY_MODULE_MAP, '<app-root></app-root>');
+console.log("Going to start the server!");
+socketEngine.startSocketEngine(AppServerModuleNgFactory);
 ```
 
 In short, the generated server.js bundle will be loaded by the Java JVM. The script then passes an instance of the render adapter to the JVM (See `registerRenderAdapter)`, so the JVM can use this instance to render page requests. After a page is rendered, it is passed back to the JVM (See `receiveRenderedPage`) and served to the client. Hence, the functions `registerRenderAdapter` and `receiveRenderedPage` can't be found in the JavaScript code because they are registered Java methods in the script engine.

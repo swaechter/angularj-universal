@@ -5,7 +5,7 @@
     <parent>
         <groupId>ch.swaechter</groupId>
         <artifactId>angularj-universal</artifactId>
-        <version>0.0.3</version>
+        <version>0.0.4-SNAPSHOT</version>
     </parent>
     <artifactId>angularj-universal-application</artifactId>
     <packaging>jar</packaging>

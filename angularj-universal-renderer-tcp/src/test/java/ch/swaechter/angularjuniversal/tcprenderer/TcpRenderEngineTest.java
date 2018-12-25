@@ -1,17 +1,13 @@
 package ch.swaechter.angularjuniversal.tcprenderer;
 
-import ch.swaechter.angularjuniversal.data.DataLoader;
-import ch.swaechter.angularjuniversal.renderer.Renderer;
-import ch.swaechter.angularjuniversal.renderer.configuration.RenderConfiguration;
-import ch.swaechter.angularjuniversal.renderer.engine.RenderEngineFactory;
-import ch.swaechter.angularjuniversal.renderer.utils.RenderUtils;
-import org.junit.Assert;
+import ch.swaechter.angularjuniversal.renderer.request.RenderRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.Future;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 
 /**
  * This class provides a test to guarantee the functionality of the TCP renderer.
@@ -73,5 +69,31 @@ public class TcpRenderEngineTest {
         Assert.assertTrue(future6.get().contains("Home"));
 
         renderer.stopRenderer();*/
+    }
+
+    @Test
+    public void testConnection() throws Exception {
+        RenderRequest renderRequest = new RenderRequest("/");
+        sendRequestAndReceiveBody(renderRequest);
+        System.out.println("The response was: " + renderRequest.getFuture().get());
+    }
+
+    private void sendRequestAndReceiveBody(RenderRequest renderRequest) throws Exception {
+        // Create the object mapper
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        // Create the socket and initialize the writer reader
+        Socket socket = new Socket("localhost", 9090);
+        PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+        // Write the request
+        TcpRequest tcpRequest = new TcpRequest(renderRequest.getUuid(), renderRequest.getUri(), "<app-root></app-root>");
+        writer.println(objectMapper.writeValueAsString(tcpRequest));
+        writer.flush();
+
+        // Read the response
+        TcpResponse tcpResponse = objectMapper.readValue(reader, TcpResponse.class);
+        renderRequest.getFuture().complete(tcpResponse.getHtml());
     }
 }

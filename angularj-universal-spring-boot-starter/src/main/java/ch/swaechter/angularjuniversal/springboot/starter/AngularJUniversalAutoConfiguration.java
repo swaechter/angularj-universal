@@ -4,7 +4,7 @@ import ch.swaechter.angularjuniversal.renderer.Renderer;
 import ch.swaechter.angularjuniversal.renderer.configuration.RenderConfiguration;
 import ch.swaechter.angularjuniversal.renderer.engine.RenderEngineFactory;
 import ch.swaechter.angularjuniversal.renderer.utils.RenderUtils;
-import ch.swaechter.angularjuniversal.v8renderer.V8RenderEngineFactory;
+import ch.swaechter.angularjuniversal.tcprenderer.TcpRenderEngineFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
@@ -38,7 +38,7 @@ public class AngularJUniversalAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public RenderEngineFactory getRenderEngineFactory() {
-        return new V8RenderEngineFactory();
+        return new TcpRenderEngineFactory();
     }
 
     /**

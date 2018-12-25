@@ -6,7 +6,7 @@ import ch.swaechter.angularjuniversal.renderer.Renderer;
 import ch.swaechter.angularjuniversal.renderer.configuration.RenderConfiguration;
 import ch.swaechter.angularjuniversal.renderer.engine.RenderEngineFactory;
 import ch.swaechter.angularjuniversal.renderer.utils.RenderUtils;
-import ch.swaechter.angularjuniversal.v8renderer.V8RenderEngineFactory;
+import ch.swaechter.angularjuniversal.tcprenderer.TcpRenderEngineFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -96,8 +96,8 @@ public class WebApplication {
             // Create the configuration. For real live reloading, don't use a temporary file but the real generated on from the file system
             RenderConfiguration renderConfiguration = new RenderConfiguration.RenderConfigurationBuilder(templateContent, serverBundleFile).liveReload(false).build();
 
-            // Create the V8 render engine factory for spawning render engines
-            RenderEngineFactory renderEngineFactory = new V8RenderEngineFactory();
+            // Create the TCP render engine factory for spawning render engines
+            RenderEngineFactory renderEngineFactory = new TcpRenderEngineFactory();
 
             // Create and start the renderer
             this.renderer = new Renderer(renderConfiguration, renderEngineFactory);

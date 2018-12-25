@@ -20,8 +20,8 @@ This repository is divided into several modules that all share the same Angular 
 | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | angularj-universal-application                | Contains the main Angular application with several pages |
 | angularj-universal-renderer                   | Contains the main render SDK that provides the core functionality and allows a developer to implement an own render solution |
-| angularj-universal-renderer-tcp                | Contains a specific render solution that uses a Node.js instance via a TCP connection for rendering requests  |
-| angularj-universal-renderer-v8                | Contains a specific render solution that uses a Node.js instance via J2V8 language bindings for rendering requests (**Note: This module is obsolete and deprecated - no further development and support!**  |
+| angularj-universal-renderer-tcp               | Contains a specific render solution that uses a Node.js instance via a TCP connection for rendering requests  |
+| angularj-universal-renderer-v8                | Contains a specific render solution that uses a Node.js instance via J2V8 language bindings for rendering requests (**Note: This module is obsolete and deprecated - no further development and support!**)  |
 | angularj-universal-example-spring-boot        | Contains a Spring Boot web application that serves the Angular application with the help of a custom written Spring Boot starter (See module bellow)  |
 | angularj-universal-example-spring-boot-simple | Contains a Spring Boot web application that serves the Angular application without the help of the Spring Boot starter. This leads to a more simple example, but a lot more boiler plated code is required. For simplicity, this module is used as example |
 | angularj-universal-example-servlet            | TODO: Provide a servlet example  |

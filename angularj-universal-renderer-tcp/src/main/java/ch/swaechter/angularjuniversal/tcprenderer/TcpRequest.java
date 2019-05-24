@@ -15,27 +15,24 @@ public class TcpRequest {
      * ID of the render request.
      */
     @NotNull
-    private String id;
+    private Long id = 0L;
 
     /**
      * URL of the render request.
      */
     @NotNull
-    private String url;
+    private String url = "";
 
     /**
      * Fallback document template.
      */
     @NotNull
-    private String document;
+    private String document = "";
 
     /**
      * Default constructor for Jackson
      */
     public TcpRequest() {
-        this.id = UUID.randomUUID().toString();
-        this.url = "";
-        this.document = "";
     }
 
     /**
@@ -45,7 +42,7 @@ public class TcpRequest {
      * @param url      URL of the render request
      * @param document Fallback document template
      */
-    public TcpRequest(@NotNull String id, @NotNull String url, @NotNull String document) {
+    public TcpRequest(long id, @NotNull String url, @NotNull String document) {
         this.id = id;
         this.url = url;
         this.document = document;
@@ -57,7 +54,7 @@ public class TcpRequest {
      * @return ID of the request
      */
     @NotNull
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
@@ -66,7 +63,7 @@ public class TcpRequest {
      *
      * @param id New ID of the request
      */
-    public void setId(@NotNull String id) {
+    public void setId(@NotNull Long id) {
         this.id = id;
     }
 

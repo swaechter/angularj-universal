@@ -80,7 +80,7 @@ public class TcpRenderEngine implements RenderEngine {
 
                         // Write the request
                         @NotNull
-                        TcpRequest tcpRequest = new TcpRequest(renderRequest.getUuid(), renderRequest.getUri(), renderConfiguration.getTemplateContent());
+                        TcpRequest tcpRequest = new TcpRequest(renderRequest.getId(), renderRequest.getUri(), renderConfiguration.getTemplateContent());
                         writer.println(objectMapper.writeValueAsString(tcpRequest));
                         writer.flush();
 

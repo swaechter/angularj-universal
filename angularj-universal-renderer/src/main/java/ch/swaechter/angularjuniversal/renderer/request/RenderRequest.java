@@ -13,17 +13,18 @@ import java.util.concurrent.CompletableFuture;
  */
 public class RenderRequest {
 
+    private static long lastId = 0L;
+
     /**
      * Completable future that will contain the rendered content.
      */
     @NotNull
-    private CompletableFuture<String> future;
+    private CompletableFuture<String> future = new CompletableFuture<>();
 
     /**
      * Unique UUID of the request.
      */
-    @NotNull
-    private String uuid;
+    private long id = ++RenderRequest.lastId;
 
     /**
      * URI of the request.
@@ -37,8 +38,6 @@ public class RenderRequest {
      * @param uri URI of the page request
      */
     public RenderRequest(@NotNull String uri) {
-        this.future = new CompletableFuture<>();
-        this.uuid = UUID.randomUUID().toString();
         this.uri = uri;
     }
 
@@ -57,9 +56,8 @@ public class RenderRequest {
      *
      * @return Unique UUID of the render request
      */
-    @NotNull
-    public String getUuid() {
-        return uuid;
+    public long getId() {
+        return id;
     }
 
     /**

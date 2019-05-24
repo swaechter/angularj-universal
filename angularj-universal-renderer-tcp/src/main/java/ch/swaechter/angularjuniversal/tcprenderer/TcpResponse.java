@@ -20,7 +20,7 @@ public class TcpResponse {
      * ID of the render response.
      */
     @NotNull
-    private String id;
+    private Long id = 0L;
 
     /**
      * The error if one occurred
@@ -59,7 +59,7 @@ public class TcpResponse {
      * @return ID of the response
      */
     @NotNull
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
@@ -68,7 +68,7 @@ public class TcpResponse {
      *
      * @param id New ID of the response
      */
-    public void setId(@NotNull String id) {
+    public void setId(@NotNull Long id) {
         this.id = id;
     }
 

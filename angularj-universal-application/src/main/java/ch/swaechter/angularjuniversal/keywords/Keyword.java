@@ -1,5 +1,7 @@
 package ch.swaechter.angularjuniversal.keywords;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * This class is responsible for representing a keyword with a name.
  *
@@ -10,17 +12,21 @@ public class Keyword {
     /**
      * ID of the keyword.
      */
+    @NotNull
     private Integer id;
 
     /**
      * Name of the keyword.
      */
+    @NotNull
     private String name;
 
     /**
      * Default constructor.
      */
     public Keyword() {
+        this.id = (int) Math.round(Math.random() * Integer.MAX_VALUE);
+        this.name = "";
     }
 
     /**
@@ -29,7 +35,7 @@ public class Keyword {
      * @param id   ID of the keyword
      * @param name Name of the keyword
      */
-    public Keyword(Integer id, String name) {
+    public Keyword(@NotNull Integer id, @NotNull String name) {
         this.id = id;
         this.name = name;
     }
@@ -39,6 +45,7 @@ public class Keyword {
      *
      * @return ID of the keyword
      */
+    @NotNull
     public Integer getId() {
         return id;
     }
@@ -48,8 +55,7 @@ public class Keyword {
      *
      * @param id New ID of the keyword
      */
-
-    public void setId(Integer id) {
+    public void setId(@NotNull Integer id) {
         this.id = id;
     }
 
@@ -58,6 +64,7 @@ public class Keyword {
      *
      * @return Name of the keyword
      */
+    @NotNull
     public String getName() {
         return name;
     }
@@ -67,7 +74,7 @@ public class Keyword {
      *
      * @param name New name of the keyword
      */
-    public void setName(String name) {
+    public void setName(@NotNull String name) {
         this.name = name;
     }
 }

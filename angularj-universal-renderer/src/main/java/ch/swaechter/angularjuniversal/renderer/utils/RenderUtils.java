@@ -1,5 +1,7 @@
 package ch.swaechter.angularjuniversal.renderer.utils;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.*;
 import java.nio.charset.Charset;
 
@@ -18,7 +20,7 @@ public class RenderUtils {
      * @return Input stream content as string
      * @throws IOException Exception in case of an IO problem
      */
-    public static String getStringFromInputStream(InputStream inputStream, Charset charset) throws IOException {
+    public static String getStringFromInputStream(@NotNull InputStream inputStream, @NotNull Charset charset) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         int result = inputStream.read();
         while (result != -1) {
@@ -38,7 +40,7 @@ public class RenderUtils {
      * @return Newly created temporary file
      * @throws IOException Exception in case of an IO problem
      */
-    public static File createTemporaryFileFromInputStream(String suffix, String prefix, InputStream inputStream) throws IOException {
+    public static File createTemporaryFileFromInputStream(@NotNull String suffix, @NotNull String prefix, @NotNull InputStream inputStream) throws IOException {
         File file = File.createTempFile(suffix, prefix);
         file.deleteOnExit();
 

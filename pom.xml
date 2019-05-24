@@ -22,6 +22,12 @@
             <organization>None</organization>
             <organizationUrl>https://github.com/swaechter</organizationUrl>
         </developer>
+        <developer>
+            <name>Marcel Mundl</name>
+            <email>marcel@mundlhome.de</email>
+            <organization>None</organization>
+            <organizationUrl>https://github.com/haringat</organizationUrl>
+        </developer>
     </developers>
     <scm>
         <connection>scm:git:git://github.com/swaechter/angularj-universal.git</connection>
@@ -50,6 +56,13 @@
         <module>angularj-universal-example-spring-boot</module>
         <module>angularj-universal-example-spring-boot-simple</module>
     </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>17.0.0</version>
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
             <plugin>
@@ -57,7 +70,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.7.0</version>
                 <configuration>
-                    <source>1.8</source>
+                    <source>1.11</source>
                     <target>1.8</target>
                 </configuration>
             </plugin>

@@ -1,5 +1,7 @@
 package ch.swaechter.angularjuniversal.keywords;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +13,7 @@ import java.util.Optional;
  */
 public class KeywordService {
 
+    @NotNull
     private final List<Keyword> keywords;
 
     public KeywordService() {
@@ -25,6 +28,7 @@ public class KeywordService {
      *
      * @return All keywords as list
      */
+    @NotNull
     public List<Keyword> getKeywords() {
         return keywords;
     }
@@ -35,6 +39,7 @@ public class KeywordService {
      * @param id ID of the keyword
      * @return Optional keyword
      */
+    @NotNull
     public Optional<Keyword> getKeyword(int id) {
         if (id >= 0 && id < keywords.size()) {
             return Optional.of(keywords.get(id));

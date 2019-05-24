@@ -1,5 +1,8 @@
 package ch.swaechter.angularjuniversal.tcprenderer;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 /**
  * TCP response represeing the JSON object with the rendered page from the server.
  *
@@ -10,12 +13,20 @@ public class TcpResponse {
     /**
      * Rendered HTML in the response.
      */
+    @Nullable
     private String html;
 
     /**
      * ID of the render response.
      */
+    @NotNull
     private String id;
+
+    /**
+     * The error if one occurred
+     */
+    @Nullable
+    private String error;
 
     /**
      * Default constructor for Jackson
@@ -28,6 +39,7 @@ public class TcpResponse {
      *
      * @return Rendered HTML of the response
      */
+    @Nullable
     public String getHtml() {
         return html;
     }
@@ -37,7 +49,7 @@ public class TcpResponse {
      *
      * @param html New rendered HTML of the response
      */
-    public void setHtml(String html) {
+    public void setHtml(@Nullable String html) {
         this.html = html;
     }
 
@@ -46,6 +58,7 @@ public class TcpResponse {
      *
      * @return ID of the response
      */
+    @NotNull
     public String getId() {
         return id;
     }
@@ -55,7 +68,26 @@ public class TcpResponse {
      *
      * @param id New ID of the response
      */
-    public void setId(String id) {
+    public void setId(@NotNull String id) {
         this.id = id;
+    }
+
+    /**
+     * Get the occurred error if one occurred
+     *
+     * @return the error description
+     */
+    @Nullable
+    public String getError() {
+        return error;
+    }
+
+    /**
+     * Set the error if one occurred
+     *
+     * @param error the error description
+     */
+    public void setError(@Nullable String error) {
+        this.error = error;
     }
 }

@@ -1,5 +1,8 @@
 package ch.swaechter.angularjuniversal.data;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.InputStream;
 
 /**
@@ -14,6 +17,7 @@ public class DataLoader {
      *
      * @return Input stream of the index template
      */
+    @Nullable
     public InputStream getIndexAsInputStream() {
         return this.getClass().getResourceAsStream("/public/index.html");
     }
@@ -23,6 +27,7 @@ public class DataLoader {
      *
      * @return Input stream of the server bundle
      */
+    @Nullable
     public InputStream getServerBundleAsInputStream() {
         return this.getClass().getResourceAsStream("/server.js");
     }

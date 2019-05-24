@@ -1,5 +1,9 @@
 package ch.swaechter.angularjuniversal.tcprenderer;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.UUID;
+
 /**
  * TCP request representing the JSON object sent to the render server.
  *
@@ -10,22 +14,28 @@ public class TcpRequest {
     /**
      * ID of the render request.
      */
+    @NotNull
     private String id;
 
     /**
      * URL of the render request.
      */
+    @NotNull
     private String url;
 
     /**
      * Fallback document template.
      */
+    @NotNull
     private String document;
 
     /**
      * Default constructor for Jackson
      */
     public TcpRequest() {
+        this.id = UUID.randomUUID().toString();
+        this.url = "";
+        this.document = "";
     }
 
     /**
@@ -35,7 +45,7 @@ public class TcpRequest {
      * @param url      URL of the render request
      * @param document Fallback document template
      */
-    public TcpRequest(String id, String url, String document) {
+    public TcpRequest(@NotNull String id, @NotNull String url, @NotNull String document) {
         this.id = id;
         this.url = url;
         this.document = document;
@@ -46,6 +56,7 @@ public class TcpRequest {
      *
      * @return ID of the request
      */
+    @NotNull
     public String getId() {
         return id;
     }
@@ -55,7 +66,7 @@ public class TcpRequest {
      *
      * @param id New ID of the request
      */
-    public void setId(String id) {
+    public void setId(@NotNull String id) {
         this.id = id;
     }
 
@@ -64,6 +75,7 @@ public class TcpRequest {
      *
      * @return ID of the request
      */
+    @NotNull
     public String getUrl() {
         return url;
     }
@@ -73,7 +85,7 @@ public class TcpRequest {
      *
      * @param url New URL of the request
      */
-    public void setUrl(String url) {
+    public void setUrl(@NotNull String url) {
         this.url = url;
     }
 
@@ -82,6 +94,7 @@ public class TcpRequest {
      *
      * @return Fallback document template of the request
      */
+    @NotNull
     public String getDocument() {
         return document;
     }
@@ -91,7 +104,7 @@ public class TcpRequest {
      *
      * @param document New fallback document template of the request
      */
-    public void setDocument(String document) {
+    public void setDocument(@NotNull String document) {
         this.document = document;
     }
 }

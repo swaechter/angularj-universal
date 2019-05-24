@@ -1,5 +1,6 @@
 package ch.swaechter.angularjuniversal.springboot.starter;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
@@ -11,7 +12,10 @@ import java.io.InputStream;
  *
  * @author Simon Wächter
  */
-public class AngularJUniversalUtils {
+public abstract class AngularJUniversalUtils {
+
+    private AngularJUniversalUtils() {
+    }
 
     /**
      * Get the input stream from a resource.
@@ -21,8 +25,8 @@ public class AngularJUniversalUtils {
      * @return Valid input stream or null
      * @throws IOException Exception in case of an IO problem
      */
-
-    public static InputStream getInputStreamFromResource(ResourceLoader resourceLoader, String resourceFilePath) throws IOException {
+    @NotNull
+    public static InputStream getInputStreamFromResource(@NotNull ResourceLoader resourceLoader, @NotNull String resourceFilePath) throws IOException {
         Resource resource = resourceLoader.getResource("classpath:" + resourceFilePath);
         return resource.getInputStream();
     }

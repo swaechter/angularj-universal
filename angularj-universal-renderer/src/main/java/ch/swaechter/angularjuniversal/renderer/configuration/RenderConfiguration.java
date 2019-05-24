@@ -1,5 +1,9 @@
 package ch.swaechter.angularjuniversal.renderer.configuration;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -16,36 +20,43 @@ public class RenderConfiguration {
     /**
      * Path or executable name of the Node.js executable. This path is used to start a Node.js process for rendering.
      */
+    @NotNull
     private final String nodePath;
 
     /**
      * Port of the Node.js process is opening a TCP server.
      */
+    @NotNull
     private final Integer nodePort;
 
     /**
      * File of the server bundle.
      */
+    @NotNull
     private final File serverBundleFile;
 
     /**
      * Content of the template.
      */
+    @NotNull
     private final String templateContent;
 
     /**
      * Status of live reload
      */
+    @NotNull
     private final Boolean liveReload;
 
     /**
      * Charset of the application.
      */
+    @NotNull
     private final Charset charset;
 
     /**
      * Routes of the application.
      */
+    @NotNull
     private final List<String> routes;
 
     /**
@@ -58,7 +69,8 @@ public class RenderConfiguration {
      * @param liveReload       Status if live reload is enabled or not
      * @param routes           Routes of the application
      */
-    private RenderConfiguration(String nodePath, Integer nodePort, File serverBundleFile, String templateContent, Boolean liveReload, Charset charset, List<String> routes) {
+    @Contract(pure = true)
+    private RenderConfiguration(@NotNull String nodePath, @NotNull Integer nodePort, @NotNull File serverBundleFile, @NotNull String templateContent, @NotNull Boolean liveReload, @NotNull Charset charset, @NotNull List<String> routes) {
         this.nodePath = nodePath;
         this.nodePort = nodePort;
         this.serverBundleFile = serverBundleFile;
@@ -73,6 +85,8 @@ public class RenderConfiguration {
      *
      * @return Path or executable Node.js name
      */
+    @NotNull
+    @Contract(pure = true)
     public String getNodePath() {
         return nodePath;
     }
@@ -82,6 +96,8 @@ public class RenderConfiguration {
      *
      * @return TCP port used for the communication
      */
+    @NotNull
+    @Contract(pure = true)
     public Integer getNodePort() {
         return nodePort;
     }
@@ -91,6 +107,8 @@ public class RenderConfiguration {
      *
      * @return File path of the server bundle
      */
+    @NotNull
+    @Contract(pure = true)
     public File getServerBundleFile() {
         return serverBundleFile;
     }
@@ -100,6 +118,8 @@ public class RenderConfiguration {
      *
      * @return Content of the template
      */
+    @NotNull
+    @Contract(pure = true)
     public String getTemplateContent() {
         return templateContent;
     }
@@ -109,6 +129,8 @@ public class RenderConfiguration {
      *
      * @return Status of live reload
      */
+    @NotNull
+    @Contract(pure = true)
     public Boolean getLiveReload() {
         return liveReload;
     }
@@ -118,6 +140,8 @@ public class RenderConfiguration {
      *
      * @return Charset of the application
      */
+    @NotNull
+    @Contract(pure = true)
     public Charset getCharset() {
         return charset;
     }
@@ -127,6 +151,8 @@ public class RenderConfiguration {
      *
      * @return Routes of the application
      */
+    @NotNull
+    @Contract(pure = true)
     public List<String> getRoutes() {
         return routes;
     }
@@ -141,44 +167,45 @@ public class RenderConfiguration {
         /**
          * Path or executable name of the Node.js executable. This path is used to start a Node.js process for rendering.
          */
+        @NotNull
         private final String nodePath;
 
         /**
          * Port of the Node.js process is opening a TCP server.
          */
+        @NotNull
         private final Integer nodePort;
 
         /**
          * Content of the template.
          */
+        @NotNull
         private final String templateContent;
 
         /**
          * File of the server bundle.
          */
+        @NotNull
         private final File serverBundleFile;
 
         /**
          * Status of live reload
          */
+        @NotNull
         private Boolean liveReload = false;
 
         /**
          * Charset of the application.
          */
+        @NotNull
         private Charset charset = StandardCharsets.UTF_8;
 
         /**
          * Routes of the application.
          */
+        @NotNull
         private List<String> routes = Arrays.asList("/");
 
-        /**
-         * Create a new render configuration builder that can be used to build the render configuration.
-         *
-         * @param templateContent  Content of the template used for rendering
-         * @param serverBundleFile Server bundle file used for rendering
-         */
         /**
          * Create a new render configuration builder that can be used to build the render configuration.
          *
@@ -187,7 +214,7 @@ public class RenderConfiguration {
          * @param serverBundleFile Server bundle file used for rendering
          * @param templateContent  Content of the template used for rendering
          */
-        public RenderConfigurationBuilder(String nodePath, Integer nodePort, File serverBundleFile, String templateContent) {
+        public RenderConfigurationBuilder(@NotNull String nodePath, @NotNull Integer nodePort, @NotNull File serverBundleFile, @NotNull String templateContent) {
             this.nodePath = nodePath;
             this.nodePort = nodePort;
             this.templateContent = templateContent;
@@ -200,6 +227,8 @@ public class RenderConfiguration {
          * @param liveReload Status of live reloading
          * @return Current render configuration builder
          */
+        @NotNull
+        @Contract(value = "_ -> this")
         public RenderConfigurationBuilder liveReload(boolean liveReload) {
             this.liveReload = liveReload;
             return this;
@@ -211,7 +240,9 @@ public class RenderConfiguration {
          * @param charset Charset of the application
          * @return Current render configuration builder
          */
-        public RenderConfigurationBuilder charset(Charset charset) {
+        @NotNull
+        @Contract(value = "_ -> this")
+        public RenderConfigurationBuilder charset(@NotNull Charset charset) {
             this.charset = charset;
             return this;
         }
@@ -222,7 +253,9 @@ public class RenderConfiguration {
          * @param routes Routes of the application
          * @return Current render configuration builder
          */
-        public RenderConfigurationBuilder routes(List<String> routes) {
+        @NotNull
+        @Contract(value = "_ -> this")
+        public RenderConfigurationBuilder routes(@NotNull List<String> routes) {
             this.routes = routes;
             return this;
         }
@@ -232,6 +265,7 @@ public class RenderConfiguration {
          *
          * @return New render configuration
          */
+        @NotNull
         public RenderConfiguration build() {
             return new RenderConfiguration(nodePath, nodePort, serverBundleFile, templateContent, liveReload, charset, routes);
         }

@@ -2,6 +2,7 @@ package ch.swaechter.angularjuniversal.springboot.starter;
 
 import ch.swaechter.angularjuniversal.renderer.Renderer;
 import ch.swaechter.angularjuniversal.renderer.configuration.RenderConfiguration;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;
@@ -18,11 +19,13 @@ public class AngularJUniversalViewResolver extends AbstractTemplateViewResolver 
     /**
      * Renderer that will be passed to the view for rendering the page request.
      */
+    @NotNull
     private final Renderer renderer;
 
     /**
      * Render configuration that will be used to check the routes.
      */
+    @NotNull
     private final RenderConfiguration renderConfiguration;
 
     /**
@@ -31,7 +34,7 @@ public class AngularJUniversalViewResolver extends AbstractTemplateViewResolver 
      * @param renderer            Renderer
      * @param renderConfiguration Render configuration
      */
-    public AngularJUniversalViewResolver(Renderer renderer, RenderConfiguration renderConfiguration) {
+    public AngularJUniversalViewResolver(@NotNull Renderer renderer, @NotNull RenderConfiguration renderConfiguration) {
         setViewClass(requiredViewClass());
         this.renderer = renderer;
         this.renderConfiguration = renderConfiguration;
@@ -43,6 +46,7 @@ public class AngularJUniversalViewResolver extends AbstractTemplateViewResolver 
      * @return AngularJ Universal view class
      */
     @Override
+    @NotNull
     public Class<?> requiredViewClass() {
         return AngularJUniversalView.class;
     }
@@ -56,7 +60,8 @@ public class AngularJUniversalViewResolver extends AbstractTemplateViewResolver 
      * @return Status of the check
      */
     @Override
-    public boolean canHandle(String modelName, Locale locale) {
+    public boolean canHandle(@NotNull String modelName, @NotNull Locale locale) {
+        @NotNull
         AntPathMatcher antPathMatcher = new AntPathMatcher();
         for (String url : renderConfiguration.getRoutes()) {
             if (antPathMatcher.match(url, modelName)) {
@@ -73,7 +78,8 @@ public class AngularJUniversalViewResolver extends AbstractTemplateViewResolver 
      * @return Valid view
      */
     @Override
-    public AbstractUrlBasedView buildView(String uri) {
+    @NotNull
+    public AbstractUrlBasedView buildView(@NotNull String uri) {
         return new AngularJUniversalView(renderer, renderConfiguration);
     }
 }

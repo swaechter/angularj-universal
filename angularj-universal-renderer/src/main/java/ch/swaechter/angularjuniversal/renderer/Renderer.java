@@ -4,6 +4,8 @@ import ch.swaechter.angularjuniversal.renderer.configuration.RenderConfiguration
 import ch.swaechter.angularjuniversal.renderer.engine.RenderEngine;
 import ch.swaechter.angularjuniversal.renderer.engine.RenderEngineFactory;
 import ch.swaechter.angularjuniversal.renderer.request.RenderRequest;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Date;
@@ -22,27 +24,31 @@ public class Renderer {
     /**
      * Queue with all active render requests.
      */
+    @NotNull
     private final BlockingQueue<Optional<RenderRequest>> renderRequests;
 
     /**
      * Render configuration with all important information.
      */
+    @NotNull
     private final RenderConfiguration renderConfiguration;
 
     /**
      * Render engine factory for creating new render requests.
      */
-
+    @NotNull
     private final RenderEngineFactory renderEngineFactory;
 
     /**
      * Current render engine.
      */
+    @Nullable
     private RenderEngine renderEngine;
 
     /**
      * Date of the server bundle file, used for live reloading.
      */
+    @Nullable
     private Date startDate;
 
     /**
@@ -52,7 +58,7 @@ public class Renderer {
      * @param renderConfiguration Render configuration used as main configuration
      * @param renderEngineFactory Render engine factory used for creating new render engines
      */
-    public Renderer(RenderConfiguration renderConfiguration, RenderEngineFactory renderEngineFactory) {
+    public Renderer(@NotNull RenderConfiguration renderConfiguration, @NotNull RenderEngineFactory renderEngineFactory) {
         this.renderRequests = new LinkedBlockingDeque<>();
         this.renderConfiguration = renderConfiguration;
         this.renderEngineFactory = renderEngineFactory;
@@ -68,12 +74,15 @@ public class Renderer {
 
         startDate = new Date();
         renderEngine = renderEngineFactory.createRenderEngine();
+        @NotNull
         Thread engineThread = new Thread(() -> renderEngine.startWorking(renderRequests, renderConfiguration));
         engineThread.start();
 
         if (renderConfiguration.getLiveReload()) {
+            @NotNull
             Thread reloadThread = new Thread(() -> {
                 while (isRendererRunning()) {
+                    @Nullable
                     File file = renderConfiguration.getServerBundleFile();
                     if (startDate.before(new Date(file.lastModified()))) {
                         stopRenderer();
@@ -96,8 +105,9 @@ public class Renderer {
 
         renderRequests.add(Optional.empty());
 
+        // Wait for an empty request queue
         while (renderRequests.size() != 0) {
-            // Wait for an empty request queue
+            Thread.yield();
         }
 
         renderEngine = null;
@@ -118,7 +128,9 @@ public class Renderer {
      * @param uri URI of the render request
      * @return Future that can be accessed later on to get the rendered content
      */
+    @NotNull
     public Future<String> addRenderRequest(String uri) {
+        @NotNull
         RenderRequest renderRequest = new RenderRequest(uri);
         renderRequests.add(Optional.of(renderRequest));
         return renderRequest.getFuture();

@@ -7,6 +7,7 @@ import ch.swaechter.angularjuniversal.renderer.configuration.RenderConfiguration
 import ch.swaechter.angularjuniversal.renderer.engine.RenderEngineFactory;
 import ch.swaechter.angularjuniversal.renderer.utils.RenderUtils;
 import ch.swaechter.angularjuniversal.tcprenderer.TcpRenderEngineFactory;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -32,33 +33,38 @@ public class WebApplication {
     @RestController
     public class ContentController {
 
+        @NotNull
         private final RenderService renderService;
 
         @Autowired
-        public ContentController(RenderService renderService) {
+        public ContentController(@NotNull RenderService renderService) {
             this.renderService = renderService;
         }
 
         @ResponseBody
         @GetMapping({"/", "/home"})
+        @NotNull
         public String showHome() throws Exception {
             return renderService.renderPage("/home").get();
         }
 
         @ResponseBody
         @GetMapping("/keywords")
+        @NotNull
         public String showLogin() throws Exception {
             return renderService.renderPage("/keywords").get();
         }
 
         @ResponseBody
         @GetMapping("/keywords/{id}")
+        @NotNull
         public String showLogout(@PathVariable("id") int id) throws Exception {
             return renderService.renderPage("/keywords/" + id).get();
         }
 
         @ResponseBody
         @GetMapping("/about")
+        @NotNull
         public String showPage() throws Exception {
             return renderService.renderPage("/about").get();
         }
@@ -68,6 +74,7 @@ public class WebApplication {
     @RequestMapping("/api")
     public class KeywordController {
 
+        @NotNull
         private final KeywordService keywordService;
 
         public KeywordController() {
@@ -75,6 +82,7 @@ public class WebApplication {
         }
 
         @GetMapping("/keyword")
+        @NotNull
         public ResponseEntity<List<Keyword>> getKeywords() {
             return new ResponseEntity<>(keywordService.getKeywords(), HttpStatus.OK);
         }
@@ -83,8 +91,10 @@ public class WebApplication {
     @Service
     public class RenderService {
 
+        @NotNull
         private final Renderer renderer;
 
+        @NotNull
         public RenderService() throws IOException {
             // Load the template and create a temporary server bundle file from the resource (This file will of course never change until manually edited)
             InputStream templateInputStream = getClass().getResourceAsStream("/public/index.html");
@@ -105,7 +115,8 @@ public class WebApplication {
             this.renderer.startRenderer();
         }
 
-        Future<String> renderPage(String uri) {
+        @NotNull
+        Future<String> renderPage(@NotNull String uri) {
             // Render a request and return a resolvable future
             return renderer.addRenderRequest(uri);
         }

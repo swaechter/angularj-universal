@@ -1,6 +1,7 @@
 package ch.swaechter.angularjuniversal.springboot.starter;
 
 import ch.swaechter.angularjuniversal.renderer.configuration.RenderConfiguration;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistration;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -16,6 +17,7 @@ public class AngularJUniversalConfigurer implements WebMvcConfigurer {
     /**
      * Render configuration that will be used to check the routes.
      */
+    @NotNull
     private final RenderConfiguration renderConfiguration;
 
     /**
@@ -23,7 +25,7 @@ public class AngularJUniversalConfigurer implements WebMvcConfigurer {
      *
      * @param renderConfiguration Render configuration
      */
-    public AngularJUniversalConfigurer(RenderConfiguration renderConfiguration) {
+    public AngularJUniversalConfigurer(@NotNull RenderConfiguration renderConfiguration) {
         this.renderConfiguration = renderConfiguration;
     }
 
@@ -34,8 +36,9 @@ public class AngularJUniversalConfigurer implements WebMvcConfigurer {
      * @param viewControllerRegistry Registry to add new view controllers
      */
     @Override
-    public void addViewControllers(ViewControllerRegistry viewControllerRegistry) {
+    public void addViewControllers(@NotNull ViewControllerRegistry viewControllerRegistry) {
         for (String url : renderConfiguration.getRoutes()) {
+            @NotNull
             ViewControllerRegistration viewControllerRegistration = viewControllerRegistry.addViewController(url);
             viewControllerRegistration.setViewName(url);
         }

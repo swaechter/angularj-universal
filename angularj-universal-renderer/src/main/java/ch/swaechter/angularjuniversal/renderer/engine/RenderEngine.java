@@ -2,6 +2,7 @@ package ch.swaechter.angularjuniversal.renderer.engine;
 
 import ch.swaechter.angularjuniversal.renderer.configuration.RenderConfiguration;
 import ch.swaechter.angularjuniversal.renderer.request.RenderRequest;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
@@ -22,5 +23,5 @@ public interface RenderEngine {
      * @param renderRequests      Blocking queue with requests to read from
      * @param renderConfiguration Render configuration with the all required information
      */
-    void startWorking(BlockingQueue<Optional<RenderRequest>> renderRequests, RenderConfiguration renderConfiguration);
+    void startWorking(@NotNull BlockingQueue<Optional<RenderRequest>> renderRequests, @NotNull RenderConfiguration renderConfiguration);
 }

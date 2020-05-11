@@ -1,5 +1,6 @@
 package ch.swaechter.angularjuniversal.springboot.starter;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.nio.charset.Charset;
@@ -18,31 +19,37 @@ public class AngularJUniversalProperties {
     /**
      * Path or executable name of the Node.js executable. This path is used to start a Node.js process for rendering.
      */
+    @NotNull
     private String nodepath = "node";
 
     /**
      * Port of the Node.js process is opening a TCP server.
      */
+    @NotNull
     private Integer nodeport = 9090;
 
     /**
      * Path of the server bundle resource.
      */
+    @NotNull
     private String serverbundleresourcepath = "/server.js";
 
     /**
      * Path of the index resource.
      */
+    @NotNull
     private String indexresourcepath = "/public/index.html";
 
     /**
      * Charset used for reading and rendering.
      */
+    @NotNull
     private Charset charset = StandardCharsets.UTF_8;
 
     /**
      * Comma separated list with all routes of the application.
      */
+    @NotNull
     private List<String> routes = Arrays.asList("/");
 
     /**
@@ -50,6 +57,7 @@ public class AngularJUniversalProperties {
      *
      * @return Node.js path or executable name
      */
+    @NotNull
     public String getNodePath() {
         return nodepath;
     }
@@ -59,7 +67,7 @@ public class AngularJUniversalProperties {
      *
      * @param nodepath New Node.js path or executable name
      */
-    public void setNodePath(String nodepath) {
+    public void setNodePath(@NotNull String nodepath) {
         this.nodepath = nodepath;
     }
 
@@ -68,6 +76,7 @@ public class AngularJUniversalProperties {
      *
      * @return Node.js port used for TCP communication
      */
+    @NotNull
     public Integer getNodePort() {
         return nodeport;
     }
@@ -77,7 +86,7 @@ public class AngularJUniversalProperties {
      *
      * @param nodeport New Node.js port used for TCP communication
      */
-    public void setNodePort(Integer nodeport) {
+    public void setNodePort(@NotNull Integer nodeport) {
         this.nodeport = nodeport;
     }
 
@@ -86,6 +95,7 @@ public class AngularJUniversalProperties {
      *
      * @return Path of the server bundle
      */
+    @NotNull
     public String getServerBundleResourcePath() {
         return serverbundleresourcepath;
     }
@@ -95,7 +105,7 @@ public class AngularJUniversalProperties {
      *
      * @param serverbundleresourcepath Path of the new server bundle resource
      */
-    public void setServerBundleResourcePath(String serverbundleresourcepath) {
+    public void setServerBundleResourcePath(@NotNull String serverbundleresourcepath) {
         this.serverbundleresourcepath = serverbundleresourcepath;
     }
 
@@ -104,6 +114,7 @@ public class AngularJUniversalProperties {
      *
      * @return Path of the index resource
      */
+    @NotNull
     public String getIndexResourcePath() {
         return indexresourcepath;
     }
@@ -113,7 +124,7 @@ public class AngularJUniversalProperties {
      *
      * @param indexresourcepath Path of the new index resource
      */
-    public void setIndexResourcePath(String indexresourcepath) {
+    public void setIndexResourcePath(@NotNull String indexresourcepath) {
         this.indexresourcepath = indexresourcepath;
     }
 
@@ -122,6 +133,7 @@ public class AngularJUniversalProperties {
      *
      * @return Charset
      */
+    @NotNull
     public Charset getCharset() {
         return charset;
     }
@@ -131,7 +143,7 @@ public class AngularJUniversalProperties {
      *
      * @param charset New charset
      */
-    public void setCharset(Charset charset) {
+    public void setCharset(@NotNull Charset charset) {
         this.charset = charset;
     }
 
@@ -140,6 +152,7 @@ public class AngularJUniversalProperties {
      *
      * @return All routes as list
      */
+    @NotNull
     public List<String> getRoutes() {
         return routes;
     }
@@ -149,7 +162,7 @@ public class AngularJUniversalProperties {
      *
      * @param routes All routes as list
      */
-    public void setRoutes(List<String> routes) {
+    public void setRoutes(@NotNull List<String> routes) {
         this.routes = routes;
     }
 }

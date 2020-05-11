@@ -1,5 +1,7 @@
 package ch.swaechter.angularjuniversal.renderer.engine;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * This interface is used to create new render engines.
  *
@@ -12,5 +14,6 @@ public interface RenderEngineFactory {
      *
      * @return New render engine
      */
+    @NotNull
     RenderEngine createRenderEngine();
 }

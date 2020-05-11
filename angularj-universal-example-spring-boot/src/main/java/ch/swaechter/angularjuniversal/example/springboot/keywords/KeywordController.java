@@ -2,6 +2,7 @@ package ch.swaechter.angularjuniversal.example.springboot.keywords;
 
 import ch.swaechter.angularjuniversal.keywords.Keyword;
 import ch.swaechter.angularjuniversal.keywords.KeywordService;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import java.util.List;
 @RequestMapping("/api")
 public class KeywordController {
 
+    @NotNull
     private final KeywordService keywordService;
 
     /**
@@ -34,6 +36,7 @@ public class KeywordController {
      * @return All keywords
      */
     @GetMapping("/keyword")
+    @NotNull
     public ResponseEntity<List<Keyword>> getKeywords() {
         return new ResponseEntity<>(keywordService.getKeywords(), HttpStatus.OK);
     }

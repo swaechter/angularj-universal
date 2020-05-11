@@ -1,5 +1,7 @@
 package ch.swaechter.angularjuniversal.renderer.request;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -11,19 +13,23 @@ import java.util.concurrent.CompletableFuture;
  */
 public class RenderRequest {
 
+    private static long lastId = 0L;
+
     /**
      * Completable future that will contain the rendered content.
      */
-    private CompletableFuture<String> future;
+    @NotNull
+    private CompletableFuture<String> future = new CompletableFuture<>();
 
     /**
      * Unique UUID of the request.
      */
-    private String uuid;
+    private long id = ++RenderRequest.lastId;
 
     /**
      * URI of the request.
      */
+    @NotNull
     private String uri;
 
     /**
@@ -31,9 +37,7 @@ public class RenderRequest {
      *
      * @param uri URI of the page request
      */
-    public RenderRequest(String uri) {
-        this.future = new CompletableFuture<>();
-        this.uuid = UUID.randomUUID().toString();
+    public RenderRequest(@NotNull String uri) {
         this.uri = uri;
     }
 
@@ -42,6 +46,7 @@ public class RenderRequest {
      *
      * @return Completable future of the render request
      */
+    @NotNull
     public CompletableFuture<String> getFuture() {
         return future;
     }
@@ -51,8 +56,8 @@ public class RenderRequest {
      *
      * @return Unique UUID of the render request
      */
-    public String getUuid() {
-        return uuid;
+    public long getId() {
+        return id;
     }
 
     /**
@@ -60,6 +65,7 @@ public class RenderRequest {
      *
      * @return URI of the render request
      */
+    @NotNull
     public String getUri() {
         return uri;
     }
